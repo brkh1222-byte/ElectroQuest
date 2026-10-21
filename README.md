@@ -1,5 +1,7 @@
 # AI Arena
 
+_Team 9 · PineQuest S5 Episode 2 (`pinequest-s5-episode-2-team-9`)_
+
 LeetCode-style practice platform for AI development: prompt engineering, LLM pipelines, and
 AI-from-scratch problems. Free for learners: no API keys, no GPUs. Learner code runs in the browser (Pyodide).
 
