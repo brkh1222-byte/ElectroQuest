@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: { default: "AI Arena", template: "%s · AI Arena" },
+  title: { default: "EvalQuest", template: "%s · EvalQuest" },
   description: "Learn to build with AI by solving problems. Free, no API keys, no GPUs.",
 };
 
@@ -29,7 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <header className="border-b border-border bg-surface">
           <nav className="mx-auto flex h-14 max-w-7xl items-center gap-6 px-4 text-sm">
             <Link href="/" className="font-semibold tracking-tight">
-              AI Arena
+              EvalQuest
             </Link>
             <Link href="/problems" className="text-muted hover:text-foreground">
               Problems

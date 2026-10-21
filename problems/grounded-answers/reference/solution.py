@@ -1,4 +1,4 @@
-from arena import llm, fixtures
+from evalquest import llm, fixtures
 
 DOCS = fixtures["docs"]
 CONTEXT = "\n".join(f"- {d['text']}" for d in DOCS)

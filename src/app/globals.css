@@ -49,41 +49,41 @@ body {
 }
 
 /* Problem statements */
-.prose-arena {
+.prose-content {
   line-height: 1.65;
 }
-.prose-arena p,
-.prose-arena ul,
-.prose-arena ol,
-.prose-arena pre {
+.prose-content p,
+.prose-content ul,
+.prose-content ol,
+.prose-content pre {
   margin-bottom: 0.85rem;
 }
-.prose-arena ul {
+.prose-content ul {
   list-style: disc;
   padding-left: 1.25rem;
 }
-.prose-arena ol {
+.prose-content ol {
   list-style: decimal;
   padding-left: 1.25rem;
 }
-.prose-arena code {
+.prose-content code {
   font-family: var(--font-mono);
   font-size: 0.875em;
   background: color-mix(in srgb, var(--muted) 15%, transparent);
   border-radius: 4px;
   padding: 0.1rem 0.3rem;
 }
-.prose-arena pre {
+.prose-content pre {
   background: color-mix(in srgb, var(--muted) 12%, transparent);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 0.75rem 1rem;
   overflow-x: auto;
 }
-.prose-arena pre code {
+.prose-content pre code {
   background: none;
   padding: 0;
 }
-.prose-arena strong {
+.prose-content strong {
   font-weight: 600;
 }

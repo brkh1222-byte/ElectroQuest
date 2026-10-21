@@ -1,4 +1,4 @@
-# AI Arena
+# EvalQuest
 
 _Team 9 · PineQuest S5 Episode 2 (`pinequest-s5-episode-2-team-9`)_
 
@@ -23,10 +23,10 @@ Without a gateway key, from-scratch problems work fully. Prompt and pipeline pro
 | Problem type | Learner submits | Runs where | Graded where |
 |---|---|---|---|
 | `prompt` | system prompt | server (LLM) | server; hidden inputs never leave it |
-| `pipeline` | Python using `arena` SDK | browser (Pyodide worker) | server; expected outputs stay server-side |
+| `pipeline` | Python using `evalquest` SDK | browser (Pyodide worker) | server; expected outputs stay server-side |
 | `scratch` | Python/NumPy | browser | browser (tests ship to client, no leaderboard) |
 
-- `public/pyodide-worker.js`: runs learner Python and defines the `arena` SDK (`llm.chat`, `embed`, `fixtures`).
+- `public/pyodide-worker.js`: runs learner Python and defines the `evalquest` SDK (`llm.chat`, `embed`, `fixtures`).
   Model calls use synchronous XHR to `/api/llm/*` with a signed per-attempt session token.
 - `src/app/api/problems/[slug]/*`: `prompt` (run/submit prompt problems), `chat` (scratch chat),
   `session` + `score` (pipeline attempts).
@@ -45,7 +45,7 @@ starter.py | starter_prompt.md
 tests/visible.jsonl   # {"id","input"|"args","expected"}
 tests/hidden.jsonl
 reference/            # reference solution (must pass before publishing)
-fixtures/*.json       # optional data exposed as arena.fixtures
+fixtures/*.json       # optional data exposed as evalquest.fixtures
 ```
 
 ## Not yet wired (temporary stand-ins)

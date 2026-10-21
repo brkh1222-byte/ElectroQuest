@@ -26,7 +26,7 @@ export default function Home() {
         Learn to build with AI by solving real problems.
       </h1>
       <p className="mt-5 max-w-2xl text-lg text-muted text-pretty">
-        LeetCode taught a generation to code. Kaggle taught data science. AI Arena is the practice ground for
+        LeetCode taught a generation to code. Kaggle taught data science. EvalQuest is the practice ground for
         AI development, open to anyone with a browser.
       </p>
       <Link
