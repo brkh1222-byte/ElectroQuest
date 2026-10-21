@@ -19,8 +19,9 @@ export const submissionKind = pgEnum("submission_kind", ["run", "submit"]);
 
 export const users = pgTable("users", {
   id: text("id").primaryKey(), // Clerk user id
-  username: text("username").notNull().unique(),
+  username: text("username").unique(), // null when the Clerk account has no username
   displayName: text("display_name"),
+  imageUrl: text("image_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

@@ -1,6 +1,8 @@
+import { ClerkProvider, Show, SignInButton, UserButton } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import { Suspense } from "react";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 
@@ -26,6 +28,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
+        {/* Inside <body> because cacheComponents is on (Clerk Core 3). */}
+        <ClerkProvider>
         <header className="border-b border-border bg-surface">
           <nav className="mx-auto flex h-14 max-w-7xl items-center gap-6 px-4 text-sm">
             <Link href="/" className="font-semibold tracking-tight">
@@ -40,9 +44,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <span className="text-muted/60" title="Coming soon">
               Contests
             </span>
+            <div className="ml-auto flex items-center">
+              {/* Auth state is request data; keep it out of the prerendered shell. */}
+              <Suspense>
+                <Show when="signed-in" fallback={<SignInButton mode="modal" />}>
+                  <UserButton />
+                </Show>
+              </Suspense>
+            </div>
           </nav>
         </header>
         {children}
+        </ClerkProvider>
       </body>
     </html>
   );

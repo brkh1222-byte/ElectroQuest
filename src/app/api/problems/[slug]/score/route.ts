@@ -3,7 +3,7 @@ import { recordSubmission } from "@/db/submissions";
 import { jsonError, parseBody } from "@/lib/api";
 import { getProblem } from "@/lib/problems/loader";
 import { aggregate, scoreCase, type CaseResult } from "@/lib/scoring";
-import { bearerToken, verifySession } from "@/lib/sessions";
+import { bearerToken, markScored, verifySession } from "@/lib/sessions";
 
 const bodySchema = z.object({
   code: z.string().max(50_000),
@@ -13,7 +13,7 @@ const bodySchema = z.object({
 // Scores outputs produced in the learner's browser against server-held expected outputs.
 export async function POST(req: Request, ctx: RouteContext<"/api/problems/[slug]/score">) {
   const { slug } = await ctx.params;
-  const session = verifySession(bearerToken(req));
+  const session = await verifySession(bearerToken(req));
   if (!session || session.claims.slug !== slug) return jsonError(401, "Session expired. Run again.");
   if (session.scored) return jsonError(409, "This attempt was already scored.");
 
@@ -21,7 +21,7 @@ export async function POST(req: Request, ctx: RouteContext<"/api/problems/[slug]
   if (!problem) return jsonError(404, "Problem not found.");
   const body = await parseBody(req, bodySchema);
   if (!body) return jsonError(400, "Invalid request.");
-  session.scored = true;
+  if (!(await markScored(session.claims.sid))) return jsonError(409, "This attempt was already scored.");
 
   const { mode } = session.claims;
   const tests = mode === "run" ? problem.visibleTests : problem.hiddenTests;

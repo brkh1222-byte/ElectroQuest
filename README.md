@@ -11,12 +11,12 @@ Product spec: [`.plans/ai-playground-platform-spec.md`](.plans/ai-playground-pla
 
 ```bash
 npm install
-cp .env.example .env.local   # add AI_GATEWAY_API_KEY to enable prompt/pipeline problems
+npx vercel link          # pick the team's "evalquest" project
+npx vercel env pull      # writes .env.local: Neon, Clerk, Upstash, AI Gateway (OIDC)
 npm run dev
 ```
 
-Without a gateway key, from-scratch problems work fully. Prompt and pipeline problems show
-"The model call failed".
+Schema changes: edit `src/db/schema.ts`, then `npm run db:generate && npm run db:migrate`.
 
 ## How it works
 
@@ -48,11 +48,11 @@ reference/            # reference solution (must pass before publishing)
 fixtures/*.json       # optional data exposed as evalquest.fixtures
 ```
 
-## Not yet wired (temporary stand-ins)
+## Infrastructure
 
-- **Auth**: `src/lib/auth.ts` treats everyone as `dev-user` in development and nobody in production → Clerk.
-- **Quota + sessions**: in-memory maps (`src/lib/quota.ts`, `src/lib/sessions.ts`) → Upstash Redis / Postgres.
-  These won't work across multiple serverless instances.
-- **Database**: run `npm run db:generate && npm run db:migrate` once Neon is provisioned.
+- **Auth**: Clerk (`src/proxy.ts`, `src/lib/auth.ts`). Users are copied into `users` on their first recorded submission
+  (`src/db/users.ts`); Clerk webhooks to keep them fresh are still TODO.
+- **Quota + pipeline sessions**: Upstash Redis (`src/lib/quota.ts`, `src/lib/sessions.ts`).
+- **Database**: Neon Postgres via Drizzle; migrations in `drizzle/`.
 - Not built yet: tracks, lessons, leaderboard/discussion UI, profiles, streak UI, contests, certificates, authoring pipeline,
   OpenAI-compatible endpoint, failure explanations.
