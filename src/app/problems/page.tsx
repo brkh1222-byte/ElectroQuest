@@ -12,6 +12,12 @@ export default async function ProblemsPage() {
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-10">
       <h1 className="text-2xl font-semibold tracking-tight">Problems</h1>
       <p className="mt-1 text-sm text-muted">{problems.length} problems</p>
+      <p className="mt-4 rounded-lg border border-accent/40 bg-surface px-4 py-3 text-sm">
+        New to AI? Problems make more sense after their lessons.{" "}
+        <Link href="/tracks" className="font-medium text-accent hover:underline">
+          Start with the learning path →
+        </Link>
+      </p>
 
       <div className="mt-6 overflow-hidden rounded-xl border border-border bg-surface">
         <table className="w-full text-left text-sm">

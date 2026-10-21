@@ -1,0 +1,16 @@
+{"id":"h1","input":"Are you open on Monday?","expected":["closed","not open"]}
+{"id":"h2","input":"How much is a croissant?","expected":["3.50"]}
+{"id":"h3","input":"Can you deliver a loaf to my house?","expected":["don't deliver","don’t deliver","do not deliver","not offer delivery","no delivery","not deliver"]}
+{"id":"h4","input":"What time do you open on Saturday?","expected":["7am","7 am","7:00","7 a.m"]}
+{"id":"h5","input":"Can I order a birthday cake for tomorrow?","expected":["48 hours","two days","2 days"]}
+{"id":"h6","input":"Is there gluten-free bread on Wednesday?","expected":["saturday","saturdays"]}
+{"id":"h7","input":"Do you sell coffee?","expected":["I don't know","I don’t know"]}
+{"id":"h8","input":"Where can I park?","expected":["behind"]}
+{"id":"h9","input":"Can I pay by credit card?","expected":["card","cards"]}
+{"id":"h10","input":"What's the owner's name?","expected":["I don't know","I don’t know"]}
+{"id":"h11","input":"When do you close?","expected":["3pm","3 pm","3:00","3 p.m"]}
+{"id":"h12","input":"Do you have vegan croissants?","expected":["I don't know","I don’t know"]}
+{"id":"h13","input":"How much does a whole cake cost?","expected":["40"]}
+{"id":"h14","input":"What's your address?","expected":["maple street","12 maple"]}
+{"id":"h15","input":"Is your bread fresh?","expected":["every day","daily"]}
+{"id":"h16","input":"Are you open on Christmas Day?","expected":["I don't know","I don’t know"]}

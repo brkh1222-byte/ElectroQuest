@@ -1,0 +1,14 @@
+title: Steady Labels
+type: prompt
+difficulty: easy
+tags: [basics, temperature, consistency, beginner]
+model: default
+metric: label_accuracy
+threshold: 0.85
+labels: [urgent, normal]
+# The learner controls temperature; every case runs 3 times and must be right every time.
+settings:
+  temperature: { default: 1.5, min: 0, max: 1.5 }
+repeat: 3
+limits:
+  maxOutputTokens: 10

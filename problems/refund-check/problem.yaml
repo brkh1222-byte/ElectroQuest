@@ -1,0 +1,10 @@
+title: Refund Check
+type: prompt
+difficulty: easy
+tags: [prompting, rules, reasoning, beginner]
+model: default
+# Only the last line is graded, so the model may check each rule first.
+metric: final_answer
+threshold: 0.85
+limits:
+  maxOutputTokens: 300

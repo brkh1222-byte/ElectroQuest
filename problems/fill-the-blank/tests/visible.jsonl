@@ -1,0 +1,4 @@
+{"id": "v1", "input": "The sun rises in the ___.", "expected": "east"}
+{"id": "v2", "input": "Bees make ___.", "expected": "honey"}
+{"id": "v3", "input": "There are seven days in a ___.", "expected": "week"}
+{"id": "v4", "input": "A spider has eight ___.", "expected": "legs"}

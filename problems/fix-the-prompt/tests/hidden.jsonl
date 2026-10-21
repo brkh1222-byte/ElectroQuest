@@ -1,0 +1,8 @@
+{"id": "h1", "input": "Can I change the delivery address for my order?", "expected": "shipping"}
+{"id": "h2", "input": "Please unsubscribe me from your newsletter.", "expected": "account"}
+{"id": "h3", "input": "You sent me a blue jacket but I ordered a black one.", "expected": "returns"}
+{"id": "h4", "input": "My tracking number doesn't work on the courier's website.", "expected": "shipping"}
+{"id": "h5", "input": "How do I change the email on my profile?", "expected": "account"}
+{"id": "h6", "input": "When will I get my refund for the returned dress?", "expected": "returns"}
+{"id": "h7", "input": "How long does delivery to Darkhan usually take?", "expected": "shipping"}
+{"id": "h8", "input": "The glass plate was cracked when I opened the box.", "expected": "returns"}

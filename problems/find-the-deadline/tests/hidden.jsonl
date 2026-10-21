@@ -1,0 +1,10 @@
+{"id": "h1", "input": "Sent: Thursday\n\nHi team, our end-of-year party is on Saturday. Please tell me by tomorrow if you are coming. Thanks, Nina", "expected": "friday"}
+{"id": "h2", "input": "Sent: Monday\n\nDear students, the exam is on Friday. Your practice essay must be handed in two days before the exam. Mr. Cole", "expected": "wednesday"}
+{"id": "h3", "input": "Sent: Tuesday\n\nHi Mia, the invoice was due on Wednesday, but the client asked for more time. Please send it on Thursday instead. Thanks, Raj", "expected": "thursday"}
+{"id": "h4", "input": "Sent: Friday\n\nHi Leo, the contract signing is on Wednesday. Please review the contract by Monday morning. Best, Dana", "expected": "monday"}
+{"id": "h5", "input": "Sent: Wednesday\n\nHello, I'm out of the office on Thursday and Friday. Please send me the budget numbers by the end of today. Thanks, Omar", "expected": "wednesday"}
+{"id": "h6", "input": "Sent: Monday\n\nHi all, results will be shared at the meeting on Friday. Please fill in the survey. It closes three days from today. Kim", "expected": "thursday"}
+{"id": "h7", "input": "Sent: Tuesday\n\nHi Sam, the team photo is on Thursday. Please send your photo form one day before the photo. Thanks, Ella", "expected": "wednesday"}
+{"id": "h8", "input": "Sent: Thursday\n\nHi! The deadline for the poster was Friday. Because the printer is broken, it has moved to next Tuesday. Sorry! Ms. Grant", "expected": "tuesday"}
+{"id": "h9", "input": "Sent: Sunday\n\nHi, the cooking course starts on Wednesday. Please pay the course fee by tomorrow to keep your place. Thanks, Luca", "expected": "monday"}
+{"id": "h10", "input": "Sent: Friday\n\nHi Nora, the talk is next Thursday. Could you finish the slides three days from today? Thanks, Ben", "expected": "monday"}

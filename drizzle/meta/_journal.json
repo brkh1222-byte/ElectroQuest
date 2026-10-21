@@ -15,6 +15,20 @@
       "when": 1792562641489,
       "tag": "0001_brown_stephen_strange",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792568940058,
+      "tag": "0002_beginner_answers",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792572704697,
+      "tag": "0003_contests",
+      "breakpoints": true
     }
   ]
 }

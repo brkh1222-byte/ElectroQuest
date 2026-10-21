@@ -21,15 +21,21 @@ export function useOnSubmitted(handler: () => void) {
   }, []);
 }
 
-/** Puts a past submission's code or prompt back into the editor. */
-export function loadDraft(content: string) {
-  window.dispatchEvent(new CustomEvent(LOAD_DRAFT, { detail: content }));
+export type DraftSettings = { temperature?: number; maxOutputTokens?: number; model?: string };
+type Draft = { content: string; settings?: DraftSettings | null };
+
+/** Puts a past submission's (or the answer's) code or prompt, and its settings, back into the editor. */
+export function loadDraft(content: string, settings?: DraftSettings | null) {
+  window.dispatchEvent(new CustomEvent<Draft>(LOAD_DRAFT, { detail: { content, settings } }));
 }
 
-export function useOnLoadDraft(handler: (content: string) => void) {
+export function useOnLoadDraft(handler: (content: string, settings?: DraftSettings | null) => void) {
   const onEvent = useEffectEvent(handler);
   useEffect(() => {
-    const listener = (e: Event) => onEvent((e as CustomEvent<string>).detail);
+    const listener = (e: Event) => {
+      const { content, settings } = (e as CustomEvent<Draft>).detail;
+      onEvent(content, settings);
+    };
     window.addEventListener(LOAD_DRAFT, listener);
     return () => window.removeEventListener(LOAD_DRAFT, listener);
   }, []);

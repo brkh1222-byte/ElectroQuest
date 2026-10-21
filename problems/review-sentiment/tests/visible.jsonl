@@ -1,0 +1,4 @@
+{"id":"v1","input":"Absolutely love it, feels premium in the hand.","expected":"positive"}
+{"id":"v2","input":"Cracked within a week of normal use.","expected":"negative"}
+{"id":"v3","input":"Didn't expect much, but it's actually great.","expected":"positive"}
+{"id":"v4","input":"The wireless charging stopped working with this case on.","expected":"negative"}

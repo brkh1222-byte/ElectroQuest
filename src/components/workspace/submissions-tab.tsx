@@ -3,12 +3,13 @@
 import { SignInButton } from "@clerk/nextjs";
 import { useState } from "react";
 import type { PublicProblem } from "@/lib/problems/schema";
-import { loadDraft, useOnSubmitted } from "./events";
+import { loadDraft, useOnSubmitted, type DraftSettings } from "./events";
 import { useJson } from "./use-json";
 
 type Submission = {
   id: string;
   content: string;
+  settings: DraftSettings | null;
   score: number;
   tokens: number;
   accepted: boolean;
@@ -67,7 +68,7 @@ export function SubmissionsTab({ problem }: { problem: PublicProblem }) {
                 {s.content}
               </pre>
               <button
-                onClick={() => loadDraft(s.content)}
+                onClick={() => loadDraft(s.content, s.settings)}
                 className="rounded-lg border border-border px-3 py-1.5 text-xs hover:bg-background"
               >
                 Load into editor

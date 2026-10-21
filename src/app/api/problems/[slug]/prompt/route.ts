@@ -1,14 +1,17 @@
 import { z } from "zod";
-import { jsonError, mapLimit, parseBody, requireUserAndProblem } from "@/lib/api";
+import { jsonError, mapLimit, parseBody, requireUserAndProblem, settingsSchema } from "@/lib/api";
+import { hasRevealedAnswer } from "@/db/answers";
 import { recordSubmission } from "@/db/submissions";
+import { findAnswerLock } from "@/lib/contests";
+import { gradePrompt } from "@/lib/grade-prompt";
 import { chat, modelErrorMessage, resolveModel } from "@/lib/llm";
 import { consumeQuota } from "@/lib/quota";
-import { aggregate, scoreCase, type CaseResult } from "@/lib/scoring";
 
 const bodySchema = z.object({
   mode: z.enum(["run", "submit"]),
   prompt: z.string().min(1).max(8000),
   model: z.string().optional(),
+  settings: settingsSchema,
 });
 
 // Prompt problems are graded fully server-side: hidden inputs never reach the client (spec §3.1).
@@ -27,36 +30,31 @@ export async function POST(req: Request, ctx: RouteContext<"/api/problems/[slug]
   }
 
   const tests = body.mode === "run" ? problem.visibleTests : problem.hiddenTests;
-  const metric = problem.config.metric ?? "label_accuracy";
-  let inputTokens = 0;
-  let outputTokens = 0;
-
-  const results = await mapLimit(tests, 5, async (test): Promise<CaseResult> => {
-    try {
-      const reply = await chat({
+  const graded = await gradePrompt({
+    config: problem.config,
+    prompt: body.prompt,
+    settings: body.settings,
+    tests,
+    map: (items, fn) => mapLimit(items, 5, fn),
+    onError: modelErrorMessage,
+    call: ({ system, input, temperature, maxOutputTokens }) =>
+      chat({
         model,
         messages: [
-          { role: "system", content: body.prompt },
-          { role: "user", content: test.input ?? "" },
+          { role: "system", content: system },
+          { role: "user", content: input },
         ],
-        maxOutputTokens: problem.config.limits.maxOutputTokens,
-      });
-      inputTokens += reply.inputTokens;
-      outputTokens += reply.outputTokens;
-      return { id: test.id, passed: scoreCase(metric, test, reply.text), actual: reply.text };
-    } catch (err) {
-      return { id: test.id, passed: false, actual: null, error: modelErrorMessage(err) };
-    }
+        temperature,
+        maxOutputTokens,
+      }),
   });
-
-  const summary = aggregate(results);
-  const accepted = summary.score >= (problem.config.threshold ?? 1);
-  const tokens = inputTokens + outputTokens;
+  const { results, passed, total, score, accepted, overBudget, avgOutputTokens, tokenBudget, tokens } = graded;
+  const summary = { passed, total, score, tokens, avgOutputTokens, tokenBudget, overBudget };
 
   if (body.mode === "run") {
     // Visible cases: show everything so the learner can debug.
     const cases = results.map((r, i) => ({ ...r, input: tests[i].input, expected: tests[i].expected }));
-    return Response.json({ mode: "run", ...summary, tokens, cases });
+    return Response.json({ mode: "run", ...summary, cases });
   }
 
   await recordSubmission({
@@ -64,11 +62,16 @@ export async function POST(req: Request, ctx: RouteContext<"/api/problems/[slug]
     slug,
     kind: "submit",
     content: body.prompt,
-    score: summary.score,
+    settings: { ...graded.settings, model },
+    score,
     tokens,
     accepted,
+    // Seeing the answer first keeps the solve but takes the learner off the leaderboard.
+    ranked: !(await hasRevealedAnswer(user.id, slug)),
   });
+  // Tells a contest participant that this Accepted submit scored for their running contest.
+  const contest = accepted ? await findAnswerLock(user.id, slug).catch(() => null) : null;
   // Hidden cases: pass/fail per case only, never inputs or expected outputs.
   const cases = results.map((r) => ({ id: r.id, passed: r.passed, error: r.error }));
-  return Response.json({ mode: "submit", ...summary, accepted, tokens, cases });
+  return Response.json({ mode: "submit", ...summary, accepted, cases, contest: contest && { slug: contest.slug, title: contest.title } });
 }

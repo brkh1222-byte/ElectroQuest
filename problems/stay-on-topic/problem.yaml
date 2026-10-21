@@ -1,0 +1,9 @@
+title: Stay on Topic
+type: prompt
+difficulty: easy
+tags: [prompting, scope, safety, beginner]
+model: default
+metric: contains_any
+threshold: 0.85
+limits:
+  maxOutputTokens: 150

@@ -1,0 +1,10 @@
+title: Review Sentiment
+type: prompt
+difficulty: easy
+tags: [prompting, classification, beginner]
+model: default
+metric: label_accuracy
+threshold: 0.85
+labels: [positive, negative]
+limits:
+  maxOutputTokens: 10

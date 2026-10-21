@@ -1,0 +1,8 @@
+{"id": "h1", "input": "The website shows an error when I click 'pay', but I can still order by phone. Just letting you know!!", "expected": "support | low"}
+{"id": "h2", "input": "Hello, I applied for the designer job last week. Is there any news?", "expected": "hr | low"}
+{"id": "h3", "input": "None of our staff can log in to the system at all. Please help.", "expected": "support | high"}
+{"id": "h4", "input": "Do you offer a discount if we buy 20 printers?", "expected": "sales | low"}
+{"id": "h5", "input": "I must sign my new contract today before my start date tomorrow. Where do I find it?", "expected": "hr | high"}
+{"id": "h6", "input": "THIS IS THE THIRD TIME I'M ASKING. What is the price of the premium plan?", "expected": "sales | low"}
+{"id": "h7", "input": "The scanner makes a strange noise but still works fine.", "expected": "support | low"}
+{"id": "h8", "input": "My salary payment is missing this month, can you check when you have time?", "expected": "hr | low"}

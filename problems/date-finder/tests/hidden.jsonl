@@ -1,0 +1,14 @@
+{"id":"h1","input":"The concert is on March 5, 2025 at 8pm.","expected":"2025-03-05"}
+{"id":"h2","input":"Can we push the review to the 14th of February 2026?","expected":"2026-02-14"}
+{"id":"h3","input":"Thanks for your order! It ships soon.","expected":"none"}
+{"id":"h4","input":"Deadline: 2024-11-30. No extensions.","expected":"2024-11-30"}
+{"id":"h5","input":"My flight lands at 6:45 on December 1st, 2025.","expected":"2025-12-01"}
+{"id":"h6","input":"Payment of $1,200 received for invoice #2024-118.","expected":"none"}
+{"id":"h7","input":"Born on 9 August 1998 in Ulaanbaatar.","expected":"1998-08-09"}
+{"id":"h8","input":"The workshop runs from 10am until noon on Jan 7 2026.","expected":"2026-01-07"}
+{"id":"h9","input":"Please reply by 03/04/2025.","expected":"2025-04-03"}
+{"id":"h10","input":"See you next Tuesday!","expected":"none"}
+{"id":"h11","input":"Our office reopens on the first of September, 2025.","expected":"2025-09-01"}
+{"id":"h12","input":"Version 2.5 was released in May.","expected":"none"}
+{"id":"h13","input":"Wedding: Saturday, 21 June 2025, 3 PM.","expected":"2025-06-21"}
+{"id":"h14","input":"The lease ends 31.12.2026.","expected":"2026-12-31"}

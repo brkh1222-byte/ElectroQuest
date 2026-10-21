@@ -32,7 +32,8 @@ async function queryBoard(slug: string, kind: BoardKind, opts: { limit: number; 
         userId: lb.userId,
         score: lb.bestScore,
         tokens: lb.bestTokens,
-        achievedAt: sql<Date>`${board.achievedAt}`.as("achieved_at"),
+        // mapWith(column) parses the timestamp as UTC, like the column itself does.
+        achievedAt: sql<Date>`${board.achievedAt}`.mapWith(board.achievedAt).as("achieved_at"),
         rank: board.rank.mapWith(Number).as("rank"),
       })
       .from(lb)

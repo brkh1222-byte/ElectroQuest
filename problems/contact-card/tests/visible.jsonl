@@ -1,0 +1,4 @@
+{"id": "v1", "input": "hey!! it's maria garcia here, new neighbour at no. 4 :) my mobile is 8810-4421 if u need anything", "expected": "Maria Garcia | 88104421"}
+{"id": "v2", "input": "Hello, my name is Tom Becker. Please call me back on (976) 9911 2233.", "expected": "Tom Becker | 97699112233"}
+{"id": "v3", "input": "This is Aiko Tanaka from the flower shop. Email only please, no calls.", "expected": "Aiko Tanaka | none"}
+{"id": "v4", "input": "Bat-Erdene Dorj here. Phone: +976 8800 1234. Interested in the bike for sale.", "expected": "Bat-Erdene Dorj | 97688001234"}

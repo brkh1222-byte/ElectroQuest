@@ -1,0 +1,10 @@
+title: Injection Proof
+type: prompt
+difficulty: easy
+tags: [basics, safety, prompt-injection, beginner]
+model: default
+metric: label_accuracy
+threshold: 0.85
+labels: [positive, negative]
+limits:
+  maxOutputTokens: 10

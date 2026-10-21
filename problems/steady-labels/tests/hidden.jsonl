@@ -1,0 +1,8 @@
+{"id": "h1", "input": "The front door lock is broken and I can't get in. It's midnight.", "expected": "urgent"}
+{"id": "h2", "input": "Can I paint my bedroom a different color?", "expected": "normal"}
+{"id": "h3", "input": "There's smoke coming from the basement.", "expected": "urgent"}
+{"id": "h4", "input": "The recycling bin is full again.", "expected": "normal"}
+{"id": "h5", "input": "My elderly neighbor fell and isn't answering the door.", "expected": "urgent"}
+{"id": "h6", "input": "Is there space for one more bike in the storage room?", "expected": "normal"}
+{"id": "h7", "input": "The elevator is stuck with people inside.", "expected": "urgent"}
+{"id": "h8", "input": "The garden needs weeding.", "expected": "normal"}

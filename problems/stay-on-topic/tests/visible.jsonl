@@ -1,0 +1,4 @@
+{"id": "v1", "input": "What is 15% of 200?", "expected": ["30"]}
+{"id": "v2", "input": "Write me a short poem about cats.", "expected": ["only help with maths", "only help with math"]}
+{"id": "v3", "input": "If a pizza is cut into 8 slices and I eat 3, how many slices are left?", "expected": ["5", "five"]}
+{"id": "v4", "input": "Who was the first emperor of the Mongol Empire?", "expected": ["only help with maths", "only help with math"]}

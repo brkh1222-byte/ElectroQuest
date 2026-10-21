@@ -1,0 +1,14 @@
+title: Prompting 201
+level: Beginner+ · no code
+summary: >-
+  Prompts for real jobs: apply rules, produce output a program can read, keep an assistant on
+  topic, protect private information, debug a broken prompt, and combine it all in a capstone.
+  Finish Prompting 101 first.
+order: 3
+problems:
+  - refund-check
+  - contact-card
+  - stay-on-topic
+  - redact-pii
+  - fix-the-prompt
+  - inbox-router

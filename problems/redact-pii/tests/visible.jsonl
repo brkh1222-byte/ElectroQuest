@@ -1,0 +1,4 @@
+{"id": "v1", "input": "Hi, I'm Sara Lee. Call me at 9911-2233.", "expected": "Hi, I'm [NAME]. Call me at [PHONE]."}
+{"id": "v2", "input": "Please send the invoice to tom.becker@shop.com today.", "expected": "Please send the invoice to [EMAIL] today."}
+{"id": "v3", "input": "Ask Oyun about the keys, her number is 8800 1234.", "expected": "Ask [NAME] about the keys, her number is [PHONE]."}
+{"id": "v4", "input": "The meeting is at 3pm in room 12.", "expected": "The meeting is at 3pm in room 12."}

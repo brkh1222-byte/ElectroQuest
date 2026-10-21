@@ -1,0 +1,10 @@
+title: Fact Check
+type: prompt
+difficulty: easy
+tags: [work, checking, hallucination, beginner]
+model: default
+metric: label_accuracy
+threshold: 0.85
+labels: [supported, unsupported]
+limits:
+  maxOutputTokens: 10

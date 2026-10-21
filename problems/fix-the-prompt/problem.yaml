@@ -1,0 +1,10 @@
+title: Fix the Prompt
+type: prompt
+difficulty: easy
+tags: [prompting, debugging, iteration, beginner]
+model: default
+metric: label_accuracy
+threshold: 0.85
+labels: [shipping, returns, account]
+limits:
+  maxOutputTokens: 20

@@ -26,6 +26,12 @@ export function scoreCase(metric: Metric, test: TestCase, actual: unknown): bool
   switch (metric) {
     case "label_accuracy":
       return normalize(actual) === normalize(String(test.expected));
+    case "final_answer": {
+      // Lets the model reason first: only the last non-empty line must equal the answer.
+      const lines = actual.split("\n").filter((l) => l.trim());
+      const last = (lines.at(-1) ?? "").replace(/\*/g, "");
+      return normalize(last) === normalize(String(test.expected));
+    }
     case "contains_any": {
       const options = Array.isArray(test.expected) ? test.expected : [test.expected];
       return options.some((o) => containsPhrase(actual, String(o)));

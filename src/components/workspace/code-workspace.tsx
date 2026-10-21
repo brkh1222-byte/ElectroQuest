@@ -43,7 +43,7 @@ export function CodeWorkspace({ problem }: { problem: PublicProblem }) {
   const [state, setState] = useState<RunState>({ status: "idle" });
   const dark = useDarkMode();
   const busy = state.status === "running";
-  useOnLoadDraft(setCode);
+  useOnLoadDraft((content) => setCode(content));
 
   useEffect(() => {
     getRunner().warmUp(config.packages);

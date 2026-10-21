@@ -10,6 +10,7 @@ export async function recordSubmission(s: {
   slug: string;
   kind: "run" | "submit";
   content: string;
+  settings?: { temperature?: number; maxOutputTokens?: number; model?: string };
   score: number;
   tokens: number;
   accepted: boolean;
@@ -24,6 +25,7 @@ export async function recordSubmission(s: {
     problemSlug: s.slug,
     kind: s.kind,
     content: s.content,
+    settings: s.settings,
     score: s.score,
     tokens: s.tokens,
     accepted: s.accepted,
@@ -72,6 +74,7 @@ export async function listSubmissions(userId: string, slug: string, limit = 20) 
     .select({
       id: submissions.id,
       content: submissions.content,
+      settings: submissions.settings,
       score: submissions.score,
       tokens: submissions.tokens,
       accepted: submissions.accepted,

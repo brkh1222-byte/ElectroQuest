@@ -1,0 +1,11 @@
+title: Reply with Facts
+type: prompt
+difficulty: easy
+tags: [work, writing, grounding, beginner]
+model: default
+metric: contains_any
+threshold: 0.85
+# Drafts must be short: long emails cost tokens and leave room for made-up promises.
+tokenBudget: 50
+limits:
+  maxOutputTokens: 250

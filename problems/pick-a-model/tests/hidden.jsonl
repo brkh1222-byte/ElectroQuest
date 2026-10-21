@@ -1,0 +1,8 @@
+{"id": "h1", "input": "Word: mississippi\nLetter: s", "expected": "4"}
+{"id": "h2", "input": "Word: bookkeeper\nLetter: e", "expected": "3"}
+{"id": "h3", "input": "Word: abracadabra\nLetter: a", "expected": "5"}
+{"id": "h4", "input": "Word: nevertheless\nLetter: e", "expected": "4"}
+{"id": "h5", "input": "Word: successfully\nLetter: s", "expected": "3"}
+{"id": "h6", "input": "Word: onomatopoeia\nLetter: o", "expected": "4"}
+{"id": "h7", "input": "Word: balloon\nLetter: o", "expected": "2"}
+{"id": "h8", "input": "Word: pepper\nLetter: p", "expected": "3"}

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { CaseView, RunState } from "./types";
 
 function show(value: unknown) {
@@ -23,11 +24,20 @@ function CaseRow({ c }: { c: CaseView }) {
             <dd className="break-words whitespace-pre-wrap">{show(c.expected)}</dd>
           </>
         )}
-        {c.actual !== undefined && (
-          <>
-            <dt className="text-muted">Output</dt>
-            <dd className="break-words whitespace-pre-wrap">{show(c.actual)}</dd>
-          </>
+        {c.replies ? (
+          c.replies.map((r, i) => (
+            <div key={i} className="contents">
+              <dt className="text-muted">Run {i + 1}</dt>
+              <dd className="break-words whitespace-pre-wrap">{r}</dd>
+            </div>
+          ))
+        ) : (
+          c.actual !== undefined && (
+            <>
+              <dt className="text-muted">Output</dt>
+              <dd className="break-words whitespace-pre-wrap">{show(c.actual)}</dd>
+            </>
+          )
         )}
         {c.error && (
           <>
@@ -61,7 +71,7 @@ export function ResultsPanel({ state }: { state: RunState }) {
     report.mode === "submit"
       ? report.accepted
         ? { text: "Accepted", className: "text-success" }
-        : { text: "Not accepted", className: "text-danger" }
+        : { text: report.overBudget ? "Over token budget" : "Not accepted", className: "text-danger" }
       : { text: "Run finished", className: "text-foreground" };
 
   return (
@@ -74,7 +84,21 @@ export function ResultsPanel({ state }: { state: RunState }) {
         {report.tokens !== undefined && report.tokens > 0 && (
           <span className="text-sm text-muted">{report.tokens.toLocaleString()} tokens</span>
         )}
+        {report.tokenBudget !== undefined && (
+          <span className={`text-sm ${report.overBudget ? "text-danger" : "text-muted"}`}>
+            avg {report.avgOutputTokens} / {report.tokenBudget} output tokens per reply
+          </span>
+        )}
       </div>
+      {report.contest && (
+        <p className="text-sm text-success">
+          Counted for{" "}
+          <Link href={`/contests/${report.contest.slug}`} className="font-medium underline underline-offset-2">
+            {report.contest.title}
+          </Link>
+          .
+        </p>
+      )}
       <div className="space-y-2">
         {report.cases.map((c) => (
           <CaseRow key={c.id} c={c} />

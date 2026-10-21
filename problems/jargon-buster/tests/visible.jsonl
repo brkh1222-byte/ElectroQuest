@@ -1,0 +1,4 @@
+{"id": "v1", "input": "What is a computer virus?", "expected": ["it's like", "it’s like", "it is like"]}
+{"id": "v2", "input": "What is Wi-Fi?", "expected": ["it's like", "it’s like", "it is like"]}
+{"id": "v3", "input": "What is a password manager?", "expected": ["it's like", "it’s like", "it is like"]}
+{"id": "v4", "input": "What is cloud storage?", "expected": ["it's like", "it’s like", "it is like"]}

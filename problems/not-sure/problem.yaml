@@ -1,0 +1,9 @@
+title: Not Sure
+type: prompt
+difficulty: easy
+tags: [basics, hallucination, honesty, beginner]
+model: default
+metric: contains_any
+threshold: 0.85
+limits:
+  maxOutputTokens: 60

@@ -1,0 +1,9 @@
+title: Fill the Blank
+type: prompt
+difficulty: easy
+tags: [basics, next-word, beginner]
+model: default
+metric: label_accuracy
+threshold: 0.85
+limits:
+  maxOutputTokens: 10

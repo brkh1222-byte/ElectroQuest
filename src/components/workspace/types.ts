@@ -6,6 +6,8 @@ export type CaseView = {
   actual?: unknown;
   error?: string;
   stdout?: string;
+  /** Every reply when the problem runs each case several times. */
+  replies?: string[];
 };
 
 export type RunReport = {
@@ -15,6 +17,11 @@ export type RunReport = {
   score: number;
   accepted?: boolean;
   tokens?: number;
+  avgOutputTokens?: number;
+  tokenBudget?: number;
+  overBudget?: boolean;
+  /** Set when an Accepted submit counted for a running contest the learner joined. */
+  contest?: { slug: string; title: string } | null;
   cases: CaseView[];
 };
 

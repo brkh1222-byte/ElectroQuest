@@ -1,0 +1,4 @@
+{"id": "v1", "input": "Source: The museum is open Tuesday to Sunday, 10am to 5pm. Entry is free for children under 12.\nClaim: Children under 12 can visit the museum for free.", "expected": "supported"}
+{"id": "v2", "input": "Source: Our café opens at 8am on weekdays and at 9am on weekends.\nClaim: The café opens at 8am every day.", "expected": "unsupported"}
+{"id": "v3", "input": "Source: The report says sales grew by 12% in March.\nClaim: Sales grew by 12% in March because of the new advert.", "expected": "unsupported"}
+{"id": "v4", "input": "Source: Mr. Diaz teaches the Monday and Wednesday classes. Ms. Kim teaches on Friday.\nClaim: Ms. Kim teaches the Friday class.", "expected": "supported"}

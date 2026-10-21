@@ -1,0 +1,10 @@
+title: Study Quiz
+type: prompt
+difficulty: easy
+tags: [school, formatting, studying, beginner]
+model: default
+# Only the last line (the answer line) is graded.
+metric: final_answer
+threshold: 0.85
+limits:
+  maxOutputTokens: 120

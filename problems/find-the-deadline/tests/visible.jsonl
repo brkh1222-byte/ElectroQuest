@@ -1,0 +1,4 @@
+{"id": "v1", "input": "Sent: Monday\n\nHi Alex, the client visit is on Friday. Please send me your slides by Wednesday so I can check them. Thanks, Jo", "expected": "wednesday"}
+{"id": "v2", "input": "Sent: Sunday\n\nHi everyone, the training day is on Friday. Please send me your lunch choice by tomorrow. Thanks, Ravi", "expected": "monday"}
+{"id": "v3", "input": "Sent: Monday\n\nHi Sam, the report was due on Thursday, but the manager gave us one extra day. Please send it to me then. Lee", "expected": "friday"}
+{"id": "v4", "input": "Sent: Tuesday\n\nHello Ms. Ortiz, the parents' evening is next Monday. Could you send me the class list the day after tomorrow? Thank you, Mr. Brown", "expected": "thursday"}

@@ -1,0 +1,10 @@
+title: Compare Options
+type: prompt
+difficulty: easy
+tags: [work, decisions, reasoning, beginner]
+model: default
+# Only the last line is graded, so the model may check every option first.
+metric: final_answer
+threshold: 0.85
+limits:
+  maxOutputTokens: 400

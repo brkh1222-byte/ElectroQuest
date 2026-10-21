@@ -1,0 +1,4 @@
+{"id":"v1","input":"Let's meet on April 2, 2025.","expected":"2025-04-02"}
+{"id":"v2","input":"Your appointment is confirmed for 15 October 2025.","expected":"2025-10-15"}
+{"id":"v3","input":"Call me when you're free.","expected":"none"}
+{"id":"v4","input":"Submit the form by 05/06/2025.","expected":"2025-06-05"}

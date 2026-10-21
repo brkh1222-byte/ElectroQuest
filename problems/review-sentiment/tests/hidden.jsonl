@@ -1,0 +1,16 @@
+{"id":"h1","input":"Arrived two days early and fits perfectly. Would buy again.","expected":"positive"}
+{"id":"h2","input":"Broke the first time I dropped it. Waste of money.","expected":"negative"}
+{"id":"h3","input":"Not bad at all for the price, honestly impressed.","expected":"positive"}
+{"id":"h4","input":"The color looks nothing like the photos and it smells like plastic.","expected":"negative"}
+{"id":"h5","input":"Customer service replaced my cracked case within a week. Lovely people.","expected":"positive"}
+{"id":"h6","input":"Oh great, another case that yellows after a month. Just what I wanted.","expected":"negative"}
+{"id":"h7","input":"I was skeptical, but it survived a fall down the stairs.","expected":"positive"}
+{"id":"h8","input":"Buttons are so stiff I can barely change the volume.","expected":"negative"}
+{"id":"h9","input":"Slim, grippy, and the cutouts line up perfectly.","expected":"positive"}
+{"id":"h10","input":"Returned it. The magnet doesn't hold the phone to my car mount.","expected":"negative"}
+{"id":"h11","input":"My daughter loves the glitter design!","expected":"positive"}
+{"id":"h12","input":"It's fine I guess, but the edges started peeling after two weeks.","expected":"negative"}
+{"id":"h13","input":"Never thought I'd write a review for a phone case, but this one is that good.","expected":"positive"}
+{"id":"h14","input":"Took three weeks to arrive and the box was crushed.","expected":"negative"}
+{"id":"h15","input":"Five stars. Protects without adding bulk.","expected":"positive"}
+{"id":"h16","input":"Would give zero stars if I could.","expected":"negative"}

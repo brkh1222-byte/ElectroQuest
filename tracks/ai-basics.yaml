@@ -1,0 +1,15 @@
+title: AI Basics
+level: Beginner · no code · start here
+summary: >-
+  What is an AI model, and how does it behave? Seven short lessons on next-word prediction, tokens,
+  temperature, made-up answers, choosing a model, staying safe, and why the model has no memory.
+  Each lesson ends with an easy problem. No programming and no AI experience needed.
+order: 1
+problems:
+  - fill-the-blank
+  - headline-writer
+  - steady-labels
+  - not-sure
+  - pick-a-model
+  - injection-proof
+  - chat-memory

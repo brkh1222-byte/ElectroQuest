@@ -1,0 +1,4 @@
+{"id": "v1", "input": "Water is pouring through my ceiling right now!", "expected": "urgent"}
+{"id": "v2", "input": "Could you replace the light bulb in the hallway sometime?", "expected": "normal"}
+{"id": "v3", "input": "I smell gas in the kitchen.", "expected": "urgent"}
+{"id": "v4", "input": "When is the next residents' meeting?", "expected": "normal"}

@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import type { PublicProblem } from "@/lib/problems/schema";
-import { notifySubmitted, useOnLoadDraft } from "./events";
+import { notifySubmitted, useOnLoadDraft, type DraftSettings } from "./events";
 import { ResultsPanel } from "./results-panel";
+import { hasSettings, SettingsBar } from "./settings-bar";
 import type { RunState } from "./types";
 import { useDraft } from "./use-draft";
 
@@ -20,8 +21,20 @@ async function postJson(url: string, body: unknown) {
   return data;
 }
 
+function parseSettings(json: string): DraftSettings {
+  try {
+    return JSON.parse(json) ?? {};
+  } catch {
+    return {};
+  }
+}
+
 export function PromptWorkspace({ problem }: { problem: PublicProblem }) {
   const [prompt, setPrompt, resetPrompt] = useDraft(`draft:${problem.slug}`, problem.starter);
+  const [settingsJson, setSettingsJson, resetSettings] = useDraft(`settings:${problem.slug}`, "{}");
+  const settings = parseSettings(settingsJson);
+  const setSettings = (next: DraftSettings) => setSettingsJson(JSON.stringify(next));
+  const { model, ...generation } = settings;
   const [tab, setTab] = useState<"editor" | "chat">("editor");
   const [state, setState] = useState<RunState>({ status: "idle" });
 
@@ -31,15 +44,16 @@ export function PromptWorkspace({ problem }: { problem: PublicProblem }) {
   const [chatError, setChatError] = useState<string | null>(null);
 
   const busy = state.status === "running";
-  useOnLoadDraft((content) => {
+  useOnLoadDraft((content, loaded) => {
     setPrompt(content);
+    if (loaded) setSettings(loaded);
     setTab("editor");
   });
 
   async function evaluate(mode: "run" | "submit") {
     setState({ status: "running", label: mode === "run" ? "Running examples…" : "Grading hidden tests…" });
     try {
-      const report = await postJson(`/api/problems/${problem.slug}/prompt`, { mode, prompt });
+      const report = await postJson(`/api/problems/${problem.slug}/prompt`, { mode, prompt, model, settings: generation });
       setState({ status: "done", report });
       if (mode === "submit") notifySubmitted();
     } catch (err) {
@@ -56,7 +70,7 @@ export function PromptWorkspace({ problem }: { problem: PublicProblem }) {
     setChatPending(true);
     setChatError(null);
     try {
-      const reply = await postJson(`/api/problems/${problem.slug}/chat`, { prompt, messages: next });
+      const reply = await postJson(`/api/problems/${problem.slug}/chat`, { prompt, model, settings: generation, messages: next });
       setMessages([...next, { role: "assistant", content: reply.text }]);
     } catch (err) {
       setChatError((err as Error).message);
@@ -79,7 +93,12 @@ export function PromptWorkspace({ problem }: { problem: PublicProblem }) {
             {t === "editor" ? "System prompt" : "Try it (chat)"}
           </button>
         ))}
-        <button onClick={resetPrompt} className="ml-auto text-xs text-muted hover:text-foreground">
+        <button
+          onClick={() => {
+            resetPrompt();
+            resetSettings();
+          }}
+          className="ml-auto text-xs text-muted hover:text-foreground">
           Reset
         </button>
       </div>
@@ -134,6 +153,7 @@ export function PromptWorkspace({ problem }: { problem: PublicProblem }) {
         </div>
       )}
 
+      {hasSettings(problem) && <SettingsBar problem={problem} value={settings} onChange={setSettings} />}
       <div className="flex items-center justify-end gap-2 border-y border-border px-3 py-2">
         <button
           onClick={() => evaluate("run")}

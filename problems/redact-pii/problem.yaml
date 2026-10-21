@@ -1,0 +1,9 @@
+title: Redact Private Info
+type: prompt
+difficulty: easy
+tags: [prompting, privacy, safety, beginner]
+model: default
+metric: label_accuracy
+threshold: 0.85
+limits:
+  maxOutputTokens: 150

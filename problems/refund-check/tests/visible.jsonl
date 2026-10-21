@@ -1,0 +1,4 @@
+{"id": "v1", "input": "I bought a kettle 10 days ago and I have the receipt. It's too small for us.", "expected": "eligible"}
+{"id": "v2", "input": "I bought headphones 2 weeks ago in the summer sale. I have my receipt.", "expected": "not eligible"}
+{"id": "v3", "input": "My order number is 55812. I bought the shoes 3 weeks ago and they hurt my feet.", "expected": "eligible"}
+{"id": "v4", "input": "I bought this lamp about two months ago. I still have the receipt.", "expected": "not eligible"}

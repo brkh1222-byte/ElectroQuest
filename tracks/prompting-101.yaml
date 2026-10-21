@@ -1,0 +1,15 @@
+title: Prompting 101
+level: Beginner · no code
+summary: >-
+  Learn to steer AI models with plain English. Seven short lessons, each followed by a problem
+  graded on hidden tests: clear instructions, exact output formats, examples, facts,
+  step-by-step reasoning, roles, and keeping instructions apart from data. No programming needed.
+order: 2
+problems:
+  - review-sentiment
+  - date-finder
+  - ticket-triage
+  - bakery-helpdesk
+  - word-problems
+  - jargon-buster
+  - meeting-owner

@@ -1,0 +1,10 @@
+{"id": "h1", "input": "Email: Hello, I was charged twice for my order. Please help! Omar\nMy notes: sorry, refund of $18.50 sent today, arrives in 3 to 5 days", "expected": ["$18.50", "18.50"]}
+{"id": "h2", "input": "Email: Hi, can I change the delivery address for my order? Grace\nMy notes: yes, she can change it online until Wednesday noon", "expected": ["wednesday"]}
+{"id": "h3", "input": "Email: Do you offer gift wrapping? It's for my mum's birthday. Leo\nMy notes: gift wrap costs $3, choose it at checkout", "expected": ["$3", "3 dollars", "three dollars"]}
+{"id": "h4", "input": "Email: Hi, the mug I received is broken. What should I do? Hana\nMy notes: so sorry, a new mug ships tomorrow, no need to return the broken one", "expected": ["tomorrow"]}
+{"id": "h5", "input": "Email: Hello, is there a discount for students? Pablo\nMy notes: yes, 15% off with code STUDENT15", "expected": ["student15"]}
+{"id": "h6", "input": "Email: Hi, how long does delivery to Canada take? Chloe\nMy notes: Canada delivery takes 7 to 10 days and costs $12", "expected": ["7 to 10", "7-10", "7–10", "$12"]}
+{"id": "h7", "input": "Email: Hi, I forgot the password for my account. Can you help? Ivan\nMy notes: reset link sent to his email, the link works for 24 hours", "expected": ["24 hours", "24-hour", "24 hrs", "one day"]}
+{"id": "h8", "input": "Email: Can I pick up my order at the shop instead? Zara\nMy notes: yes, pickup at 5 Hill Road, ready after 2pm on Friday", "expected": ["5 hill road", "2pm", "2 pm", "2:00", "2:00pm", "2:00 pm", "2 p.m"]}
+{"id": "h9", "input": "Email: Hi, do you sell the red umbrella in a bigger size? Tom\nMy notes: large size available for $25, ships in 2 days", "expected": ["$25", "25 dollars"]}
+{"id": "h10", "input": "Email: Hello, my package says delivered but I can't find it. Mei\nMy notes: please check with neighbors first; if it's not found by Monday we send a new one for free; case number C-7781", "expected": ["c-7781", "monday"]}

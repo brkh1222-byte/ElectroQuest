@@ -1,0 +1,4 @@
+{"id": "v1", "input": "Plants use sunlight, water and air to make their own food. This process is called **photosynthesis**. It happens mostly in the leaves.", "expected": "A: photosynthesis"}
+{"id": "v2", "input": "When water is heated, it turns into vapor. This is called **evaporation**. When vapor cools down, it turns back into drops of water, which is called condensation.", "expected": "A: evaporation"}
+{"id": "v3", "input": "A **metaphor** says that one thing is another thing, like 'time is money'. A simile compares two things using 'like' or 'as'.", "expected": "A: metaphor"}
+{"id": "v4", "input": "The **equator** is an imaginary line around the middle of the Earth. Countries near it are usually hot all year.", "expected": "A: equator"}

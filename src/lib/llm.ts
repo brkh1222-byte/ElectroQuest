@@ -25,6 +25,8 @@ export async function chat(opts: {
   model: string;
   messages: ChatMessage[];
   maxOutputTokens: number;
+  /** Fixed at 0 unless the problem lets the learner change it. */
+  temperature?: number;
 }) {
   // AI SDK 7 takes system text as `instructions`; learner-supplied system messages are moved there.
   const instructions = opts.messages
@@ -39,7 +41,7 @@ export async function chat(opts: {
     model: opts.model,
     instructions: instructions || undefined,
     messages,
-    temperature: 0,
+    temperature: opts.temperature ?? 0,
     maxOutputTokens: opts.maxOutputTokens,
   });
   return {

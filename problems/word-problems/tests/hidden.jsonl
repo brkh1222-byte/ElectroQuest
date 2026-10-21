@@ -1,0 +1,12 @@
+{"id":"h1","input":"There are 5 boxes with 24 apples each. 18 apples are rotten and thrown away, and the rest are shared equally among 6 families. How many apples does each family get?","expected":"17"}
+{"id":"h2","input":"A shirt costs $40. It is discounted by 25%, and then the discounted price is reduced by another $5. What is the final price in dollars?","expected":"25"}
+{"id":"h3","input":"Anna reads 15 pages a day. Her book has 340 pages and she has already read 70. How many more days does she need to finish it?","expected":"18"}
+{"id":"h4","input":"A rectangle has a perimeter of 50 cm and a length of 15 cm. What is its area in square centimeters?","expected":"150"}
+{"id":"h5","input":"Sam has twice as many marbles as Lee. Together they have 36 marbles. How many marbles does Sam have?","expected":"24"}
+{"id":"h6","input":"A car uses 6 liters of fuel per 100 km. How many liters does it need for a 450 km trip?","expected":"27"}
+{"id":"h7","input":"A class has 32 students. Three quarters of them passed the test, and half of those who passed got an A. How many students got an A?","expected":"12"}
+{"id":"h8","input":"Mia saves $15 every week and already has $40. After how many weeks will she first have at least $200?","expected":"11"}
+{"id":"h9","input":"A pizza is cut into 8 slices. Three friends each eat 2 slices, and then one more slice is eaten. How many slices are left?","expected":"1"}
+{"id":"h10","input":"4 workers can paint a fence in 6 hours. How many hours would 3 workers take, working at the same rate?","expected":"8"}
+{"id":"h11","input":"An empty bus has 45 seats. At the first stop 18 people get on. At the second stop 12 more get on and 5 get off. Everyone on the bus is seated. How many seats are empty?","expected":"20"}
+{"id":"h12","input":"The sum of three consecutive whole numbers is 72. What is the largest of the three?","expected":"25"}

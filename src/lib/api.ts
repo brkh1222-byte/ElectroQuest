@@ -8,6 +8,11 @@ export function jsonError(status: number, error: string) {
   return Response.json({ error }, { status });
 }
 
+/** Learner-chosen generation settings; the server clamps them to what the problem allows. */
+export const settingsSchema = z
+  .object({ temperature: z.number().optional(), maxOutputTokens: z.number().optional() })
+  .optional();
+
 export async function parseBody<T extends z.ZodType>(req: Request, schema: T) {
   const parsed = schema.safeParse(await req.json().catch(() => null));
   return parsed.success ? parsed.data : null;

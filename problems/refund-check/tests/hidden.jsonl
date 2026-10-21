@@ -1,0 +1,10 @@
+{"id": "h1", "input": "I bought a jacket 5 days ago but I lost the receipt and I don't know the order number.", "expected": "not eligible"}
+{"id": "h2", "input": "I want to return a $50 gift card I bought yesterday. I have the receipt.", "expected": "not eligible"}
+{"id": "h3", "input": "Order #99120, a backpack bought 29 days ago at full price. The zip is broken.", "expected": "eligible"}
+{"id": "h4", "input": "I bought a blender 45 days ago with my receipt. It never worked properly.", "expected": "not eligible"}
+{"id": "h5", "input": "Bought a phone case last week at the normal price, here's my order number: 77301.", "expected": "eligible"}
+{"id": "h6", "input": "This sweater was on sale for half price when I bought it 3 days ago. Receipt attached.", "expected": "not eligible"}
+{"id": "h7", "input": "I bought a toaster today and I have the receipt. It doesn't match my kitchen.", "expected": "eligible"}
+{"id": "h8", "input": "I don't have a receipt but I bought these jeans at full price 10 days ago, I promise.", "expected": "not eligible"}
+{"id": "h9", "input": "Here is my receipt for a desk chair I bought 30 days ago at full price.", "expected": "eligible"}
+{"id": "h10", "input": "My order number is 41002. It's a gift card for my brother that I bought 2 days ago.", "expected": "not eligible"}

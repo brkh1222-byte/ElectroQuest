@@ -87,3 +87,45 @@ body {
 .prose-content strong {
   font-weight: 600;
 }
+
+/* Lessons */
+.prose-content h1 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+}
+.prose-content h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 1.75rem 0 0.6rem;
+}
+.prose-content h3 {
+  font-weight: 600;
+  margin: 1.25rem 0 0.4rem;
+}
+.prose-content blockquote {
+  border-left: 3px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border-radius: 0 8px 8px 0;
+  padding: 0.6rem 1rem;
+  margin-bottom: 0.85rem;
+}
+.prose-content blockquote p:last-child {
+  margin-bottom: 0;
+}
+.prose-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+  margin-bottom: 0.85rem;
+}
+.prose-content th,
+.prose-content td {
+  border: 1px solid var(--border);
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+}
+.prose-content li {
+  margin-bottom: 0.25rem;
+}

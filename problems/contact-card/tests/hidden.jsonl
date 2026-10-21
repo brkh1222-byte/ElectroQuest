@@ -1,0 +1,8 @@
+{"id": "h1", "input": "hi, sam okafor. text me at 555-0142 about the room", "expected": "Sam Okafor | 5550142"}
+{"id": "h2", "input": "Good morning! I'm Lucia Rossi and I'd like to book a table for four. You can reach me on 0612 345 678.", "expected": "Lucia Rossi | 0612345678"}
+{"id": "h3", "input": "From: Ahmed Hassan. I don't have a phone at the moment, sorry.", "expected": "Ahmed Hassan | none"}
+{"id": "h4", "input": "call me!! 9900-7788. - jenny park", "expected": "Jenny Park | 99007788"}
+{"id": "h5", "input": "Dear team, my name is Oyun Ganbold. Phone (8899) 12-34. Thank you.", "expected": "Oyun Ganbold | 88991234"}
+{"id": "h6", "input": "It's Pierre Dubois. My number changed, the new one is +33 6 12 34 56 78.", "expected": "Pierre Dubois | 33612345678"}
+{"id": "h7", "input": "hello this is kofi mensah, please reply by email", "expected": "Kofi Mensah | none"}
+{"id": "h8", "input": "Anna Kowalski, phone 7001 9900, asking about the yoga class.", "expected": "Anna Kowalski | 70019900"}

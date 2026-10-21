@@ -1,0 +1,10 @@
+title: Word Problems
+type: prompt
+difficulty: easy
+tags: [prompting, reasoning, chain-of-thought, beginner]
+model: default
+# Only the last line is graded, so the model may reason before answering.
+metric: final_answer
+threshold: 0.85
+limits:
+  maxOutputTokens: 400

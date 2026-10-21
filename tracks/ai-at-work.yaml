@@ -1,0 +1,15 @@
+title: AI for Everyday Work
+level: Beginner · no code
+summary: >-
+  Use AI for real tasks at school and in the office. Six short lessons: summarize an email, find
+  what you need to do and by when, draft a reply with the right facts, turn notes into a quiz,
+  check the AI's work, and compare options against clear criteria. Each lesson ends with an easy
+  problem. No programming needed.
+order: 4
+problems:
+  - email-summary
+  - find-the-deadline
+  - reply-with-facts
+  - study-quiz
+  - fact-check
+  - compare-options

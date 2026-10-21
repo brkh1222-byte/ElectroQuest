@@ -1,0 +1,10 @@
+{"id": "h1", "input": "Cows give us ___.", "expected": "milk"}
+{"id": "h2", "input": "The opposite of hot is ___.", "expected": "cold"}
+{"id": "h3", "input": "Ice is frozen ___.", "expected": "water"}
+{"id": "h4", "input": "We see with our ___.", "expected": "eyes"}
+{"id": "h5", "input": "A triangle has three ___.", "expected": "sides"}
+{"id": "h6", "input": "Grass is usually the color ___.", "expected": "green"}
+{"id": "h7", "input": "Paris is the capital of ___.", "expected": "france"}
+{"id": "h8", "input": "A year has twelve ___.", "expected": "months"}
+{"id": "h9", "input": "The Earth goes around the ___.", "expected": "sun"}
+{"id": "h10", "input": "Tuesday comes after ___.", "expected": "monday"}

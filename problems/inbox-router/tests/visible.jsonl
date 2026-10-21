@@ -1,0 +1,4 @@
+{"id": "v1", "input": "Our whole office can't print since this morning and we have a client presentation in an hour!", "expected": "support | high"}
+{"id": "v2", "input": "Hi, could you send me a price list for your office chairs? No rush.", "expected": "sales | low"}
+{"id": "v3", "input": "I'd like to take holiday from 3 to 10 August, who should I tell?", "expected": "hr | low"}
+{"id": "v4", "input": "We need a quote for 50 laptops by 5pm today or we lose the project budget.", "expected": "sales | high"}

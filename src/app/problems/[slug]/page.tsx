@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ProblemInfo } from "@/components/workspace/problem-info";
 import { Workspace } from "@/components/workspace/workspace";
+import { getProblemContest } from "@/lib/contests";
 import { getPublicProblem, listProblems } from "@/lib/problems/loader";
+import { findTrackPosition } from "@/lib/tracks";
 
 export async function generateStaticParams() {
   const problems = await listProblems();
@@ -18,12 +20,14 @@ export async function generateMetadata(props: PageProps<"/problems/[slug]">): Pr
 
 async function ProblemContent({ params }: { params: PageProps<"/problems/[slug]">["params"] }) {
   const { slug } = await params;
-  const problem = await getPublicProblem(slug);
+  const [problem, position] = await Promise.all([getPublicProblem(slug), findTrackPosition(slug)]);
   if (!problem) notFound();
+  // Not awaited: it reads the session, so the contest bar streams in without holding up the page.
+  const contest = getProblemContest(slug);
 
   return (
     <>
-      <ProblemInfo problem={problem} />
+      <ProblemInfo problem={problem} position={position} contest={contest} />
       <Workspace problem={problem} />
     </>
   );

@@ -1,0 +1,9 @@
+title: Bakery Helpdesk
+type: prompt
+difficulty: easy
+tags: [prompting, grounding, hallucination, beginner]
+model: default
+metric: contains_any
+threshold: 0.85
+limits:
+  maxOutputTokens: 80

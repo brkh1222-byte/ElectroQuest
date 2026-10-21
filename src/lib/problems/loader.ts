@@ -4,10 +4,12 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { cacheLife } from "next/cache";
 import { parse as parseYaml } from "yaml";
+import { allowedModels } from "../llm";
 import {
   problemConfigSchema,
   testCaseSchema,
   type Hint,
+  type LearnerSettings,
   type Problem,
   type ProblemSummary,
   type PublicProblem,
@@ -49,6 +51,9 @@ async function loadProblem(slug: string): Promise<Problem | null> {
   if (!yaml) return null;
 
   const config = problemConfigSchema.parse(parseYaml(yaml));
+  // The Editorial is the answer: it is split from the hints and only served behind a warning.
+  const allHints = parseHints(await readOptional(path.join(dir, "hints.md")));
+  const editorial = allHints.find((h) => h.title === "Editorial")?.body ?? "";
   const starterFile = config.type === "prompt" ? "starter_prompt.md" : "starter.py";
 
   const fixtures: Record<string, unknown> = {};
@@ -60,7 +65,9 @@ async function loadProblem(slug: string): Promise<Problem | null> {
     slug,
     config,
     statement: await readOptional(path.join(dir, "statement.md")),
-    hints: parseHints(await readOptional(path.join(dir, "hints.md"))),
+    lesson: await readOptional(path.join(dir, "lesson.md")),
+    hints: allHints.filter((h) => h.title !== "Editorial"),
+    editorial,
     starter: await readOptional(path.join(dir, starterFile)),
     fixtures,
     visibleTests: parseJsonl(await readOptional(path.join(dir, "tests/visible.jsonl"))),
@@ -78,8 +85,10 @@ export async function getProblem(slug: string) {
 export async function getPublicProblem(slug: string): Promise<PublicProblem | null> {
   const problem = await getProblem(slug);
   if (!problem) return null;
-  const { hiddenTests, ...rest } = problem;
-  return problem.config.type === "scratch" ? { ...rest, hiddenTests } : rest;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- the editorial is the answer; never ship it
+  const { hiddenTests, editorial, ...rest } = problem;
+  const pub = { ...rest, models: allowedModels(problem.config) };
+  return problem.config.type === "scratch" ? { ...pub, hiddenTests } : pub;
 }
 
 export async function listProblems(): Promise<ProblemSummary[]> {
@@ -98,4 +107,18 @@ export async function listProblems(): Promise<ProblemSummary[]> {
       difficulty: p.config.difficulty,
       tags: p.config.tags,
     }));
+}
+
+/** The reference solution and its explanation: what "Show answer" reveals. */
+export async function getAnswer(slug: string) {
+  const problem = await getProblem(slug);
+  if (!problem) return null;
+  const file = problem.config.type === "prompt" ? "reference/prompt.md" : "reference/solution.py";
+  const reference = await readOptional(path.join(PROBLEMS_DIR, slug, file));
+  const settings = problem.config.type === "prompt" ? await readOptional(path.join(PROBLEMS_DIR, slug, "reference/settings.yaml")) : "";
+  return {
+    editorial: problem.editorial,
+    reference: reference.trim(),
+    settings: settings ? (parseYaml(settings) as LearnerSettings) : null,
+  };
 }

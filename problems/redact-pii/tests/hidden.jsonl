@@ -1,0 +1,8 @@
+{"id": "h1", "input": "My name is Pierre Dubois and my email is pierre@mail.fr.", "expected": "My name is [NAME] and my email is [EMAIL]."}
+{"id": "h2", "input": "Text Jenny on 555-0142 when you arrive.", "expected": "Text [NAME] on [PHONE] when you arrive."}
+{"id": "h3", "input": "The parcel for Ahmed Hassan is at the front desk.", "expected": "The parcel for [NAME] is at the front desk."}
+{"id": "h4", "input": "Contact support@bakery.mn or call 7011 2233 for orders.", "expected": "Contact [EMAIL] or call [PHONE] for orders."}
+{"id": "h5", "input": "Lucia said she will bring the cake.", "expected": "[NAME] said she will bring the cake."}
+{"id": "h6", "input": "Our office opens at 9am on weekdays.", "expected": "Our office opens at 9am on weekdays."}
+{"id": "h7", "input": "Please call Kofi Mensah back at +233 20 123 4567, he asked about the refund.", "expected": "Please call [NAME] back at [PHONE], he asked about the refund."}
+{"id": "h8", "input": "Email anna.k@school.edu and copy in Mark.", "expected": "Email [EMAIL] and copy in [NAME]."}

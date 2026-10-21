@@ -1,0 +1,3 @@
+{"id":"v1","input":"A baker makes 12 muffins per tray and bakes 7 trays. She sells 60 muffins. How many muffins are left?","expected":"24"}
+{"id":"v2","input":"Tom is 3 times as old as his son. In 10 years, Tom will be twice as old as his son. How old is Tom now?","expected":"30"}
+{"id":"v3","input":"A notebook costs $4 and a pen costs $1.50. How much do 3 notebooks and 4 pens cost, in dollars?","expected":"18"}

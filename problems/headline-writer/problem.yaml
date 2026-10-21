@@ -1,0 +1,13 @@
+title: Headline Writer
+type: prompt
+difficulty: easy
+tags: [basics, tokens, cost, beginner]
+model: default
+metric: contains_any
+threshold: 0.85
+# The learner can cap the reply length; the budget rewards short headlines.
+settings:
+  maxOutputTokens: { default: 100, min: 5, max: 150 }
+tokenBudget: 14
+limits:
+  maxOutputTokens: 100

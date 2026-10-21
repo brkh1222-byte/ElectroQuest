@@ -1,0 +1,4 @@
+{"id": "v1", "input": "The city library will stay open until 10pm on weekdays starting next month, because many students asked for more study time.", "expected": ["library"]}
+{"id": "v2", "input": "Heavy snow closed all schools in the northern district on Tuesday. Classes will restart on Thursday.", "expected": ["snow", "school", "schools"]}
+{"id": "v3", "input": "Our cafe now sells a vegan breakfast menu, including oat pancakes and tofu scramble.", "expected": ["vegan"]}
+{"id": "v4", "input": "The football team won the regional cup 3-1 after a late goal by their youngest player.", "expected": ["cup", "win", "wins", "won", "victory"]}

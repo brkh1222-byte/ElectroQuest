@@ -1,0 +1,4 @@
+{"id": "v1", "input": "Sara will book the room. Tom said he'll send the follow-up email to the client. Lee is on holiday.", "expected": "tom"}
+{"id": "v2", "input": "We agreed Priya sends the follow-up email by Friday. Ben will update the slides.", "expected": "priya"}
+{"id": "v3", "input": "Ana asked who would send the follow-up email. Marco volunteered. Ana will order lunch.", "expected": "marco"}
+{"id": "v4", "input": "Follow-up email: Kim (not Joe, he's out). Joe will check the budget next week.", "expected": "kim"}

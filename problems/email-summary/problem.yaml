@@ -1,0 +1,11 @@
+title: Email Summary
+type: prompt
+difficulty: easy
+tags: [work, summarizing, email, beginner]
+model: default
+metric: contains_any
+threshold: 0.85
+# Brevity is the point: the average summary must stay short.
+tokenBudget: 20
+limits:
+  maxOutputTokens: 150

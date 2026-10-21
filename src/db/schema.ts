@@ -2,6 +2,7 @@ import {
   boolean,
   date,
   index,
+  jsonb,
   integer,
   pgEnum,
   pgTable,
@@ -13,7 +14,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 // Core tables from spec §12. Problem content lives in the repo (problems/<slug>/); the DB
-// stores everything users generate. Discussions, contests, certificates and authoring come next.
+// stores everything users generate. Discussions, certificates and authoring come next.
 
 export const submissionKind = pgEnum("submission_kind", ["run", "submit"]);
 
@@ -33,6 +34,8 @@ export const submissions = pgTable(
     problemSlug: text("problem_slug").notNull(),
     kind: submissionKind("kind").notNull(),
     content: text("content").notNull(), // prompt or code
+    // Generation settings and model for prompt problems with learner-controlled settings.
+    settings: jsonb("settings").$type<{ temperature?: number; maxOutputTokens?: number; model?: string }>(),
     score: real("score").notNull(),
     tokens: integer("tokens").notNull().default(0),
     accepted: boolean("accepted").notNull(),
@@ -69,4 +72,29 @@ export const streakDays = pgTable(
     day: date("day").notNull(),
   },
   (t) => [primaryKey({ columns: [t.userId, t.day] })],
+);
+
+// "Show answer" reveals (beginner curriculum spec §4.4). A reveal keeps solves but drops the
+// learner from that problem's leaderboard.
+export const answerReveals = pgTable(
+  "answer_reveals",
+  {
+    userId: text("user_id").notNull(),
+    problemSlug: text("problem_slug").notNull(),
+    revealedAt: timestamp("revealed_at").defaultNow().notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.problemSlug] })],
+);
+
+// Contest sign-ups. Contests themselves live in the repo (contests/<slug>.yaml), and scores are
+// computed from Accepted Submits inside the contest window, so this is all contests store.
+export const contestEntries = pgTable(
+  "contest_entries",
+  {
+    contestSlug: text("contest_slug").notNull(),
+    userId: text("user_id").notNull(),
+    // Only Submits made after this count toward the contest.
+    joinedAt: timestamp("joined_at").defaultNow().notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.contestSlug, t.userId] })],
 );

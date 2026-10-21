@@ -1,0 +1,10 @@
+title: Find the Deadline
+type: prompt
+difficulty: easy
+tags: [work, extraction, deadlines, beginner]
+model: default
+# Only the last line is graded, so the model may count the days first.
+metric: final_answer
+threshold: 0.85
+limits:
+  maxOutputTokens: 300

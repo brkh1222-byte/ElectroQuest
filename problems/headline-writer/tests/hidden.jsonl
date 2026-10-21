@@ -1,0 +1,8 @@
+{"id": "h1", "input": "The bus fare will go up from $1 to $1.50 in January to pay for new electric buses.", "expected": ["fare", "fares", "bus", "buses"]}
+{"id": "h2", "input": "A lost dog was found safe after three days in the forest, thanks to a drone search team.", "expected": ["dog"]}
+{"id": "h3", "input": "The museum is free for all visitors every first Sunday of the month.", "expected": ["museum"]}
+{"id": "h4", "input": "Scientists found a new species of frog in the rainforest that is smaller than a coin.", "expected": ["frog"]}
+{"id": "h5", "input": "The town will plant 5,000 new trees along its main roads this spring.", "expected": ["tree", "trees"]}
+{"id": "h6", "input": "Our online shop has a 40% discount on all winter jackets this weekend only.", "expected": ["jacket", "jackets", "40%", "sale", "discount"]}
+{"id": "h7", "input": "The water will be turned off on Maple Street from 9am to noon on Friday for pipe repairs.", "expected": ["water"]}
+{"id": "h8", "input": "A 12-year-old student won the national spelling contest with the word 'onomatopoeia'.", "expected": ["spelling"]}

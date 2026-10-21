@@ -1,0 +1,9 @@
+title: Inbox Router
+type: prompt
+difficulty: easy
+tags: [prompting, capstone, classification, formatting, beginner]
+model: default
+metric: label_accuracy
+threshold: 0.85
+limits:
+  maxOutputTokens: 20

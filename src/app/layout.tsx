@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: { default: "EvalQuest", template: "%s · EvalQuest" },
-  description: "Learn to build with AI by solving problems. Free, no API keys, no GPUs.",
+  description: "Learn to use and build with AI from zero: short lessons, then easy practice problems. Free, no API keys.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -35,20 +35,27 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <Link href="/" className="font-semibold tracking-tight">
               EvalQuest
             </Link>
+            <Link href="/tracks" className="text-muted hover:text-foreground">
+              Learn
+            </Link>
+            <Link href="/glossary" className="hidden text-muted hover:text-foreground sm:inline">
+              Glossary
+            </Link>
             <Link href="/problems" className="text-muted hover:text-foreground">
               Problems
             </Link>
-            <span className="text-muted/60" title="Coming soon">
-              Tracks
-            </span>
-            <span className="text-muted/60" title="Coming soon">
+            <Link href="/contests" className="text-muted hover:text-foreground">
               Contests
-            </span>
+            </Link>
             <div className="ml-auto flex items-center">
               {/* Auth state is request data; keep it out of the prerendered shell. */}
               <Suspense>
                 <Show when="signed-in" fallback={<SignInButton mode="modal" />}>
-                  <UserButton />
+                  <UserButton>
+                    <UserButton.MenuItems>
+                      <UserButton.Link label="My learning" labelIcon={<span aria-hidden>★</span>} href="/me" />
+                    </UserButton.MenuItems>
+                  </UserButton>
                 </Show>
               </Suspense>
             </div>

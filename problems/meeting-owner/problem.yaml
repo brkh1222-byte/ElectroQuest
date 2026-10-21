@@ -1,0 +1,9 @@
+title: Meeting Owner
+type: prompt
+difficulty: easy
+tags: [prompting, delimiters, extraction, beginner]
+model: default
+metric: label_accuracy
+threshold: 0.85
+limits:
+  maxOutputTokens: 10

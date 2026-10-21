@@ -1,0 +1,4 @@
+{"id": "v1", "input": "Needs: costs at most $600, weighs under 1.5 kg, battery at least 10 hours.\nOptions:\nA: $550, 1.2 kg, 8 hours\nB: $580, 1.4 kg, 11 hours\nC: $650, 1.1 kg, 12 hours", "expected": "B"}
+{"id": "v2", "input": "Needs: rent at most $900 a month, at least 2 bedrooms, pets allowed.\nOptions:\nA: $850 a month, 1 bedroom, pets allowed\nB: $950 a month, 2 bedrooms, pets allowed\nC: $880 a month, 2 bedrooms, pets allowed", "expected": "C"}
+{"id": "v3", "input": "Needs: open on Sundays, costs less than $40 a month, has a swimming pool.\nOptions:\nA: closed on Sundays, $30 a month, swimming pool\nB: open every day, $38 a month, swimming pool\nC: open every day, $35 a month, no pool", "expected": "B"}
+{"id": "v4", "input": "Needs: room for 50 guests, costs at most $1,000, has parking.\nOptions:\nA: room for 60 guests, $900, parking\nB: room for 40 guests, $700, parking\nC: room for 80 guests, $1,200, no parking", "expected": "A"}

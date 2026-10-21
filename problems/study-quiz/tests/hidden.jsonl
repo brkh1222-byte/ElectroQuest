@@ -1,0 +1,10 @@
+{"id": "h1", "input": "When prices keep going up over time, money buys less. Economists call this **inflation**. When prices fall, it is called deflation.", "expected": "A: inflation"}
+{"id": "h2", "input": "The force that pulls objects toward the Earth is **gravity**. It is the reason a dropped ball falls down.", "expected": "A: gravity"}
+{"id": "h3", "input": "In a **democracy**, citizens choose their leaders by voting. In a monarchy, a king or queen rules.", "expected": "A: democracy"}
+{"id": "h4", "input": "An animal that eats only plants is called a **herbivore**. An animal that eats only meat is a carnivore.", "expected": "A: herbivore"}
+{"id": "h5", "input": "**Mitochondria** are small parts of a cell that turn food into energy.", "expected": "A: mitochondria"}
+{"id": "h6", "input": "A **noun** is a word for a person, place or thing, like 'teacher' or 'city'. A verb is an action word.", "expected": "A: noun"}
+{"id": "h7", "input": "A shape with three straight sides is a **triangle**. A shape with four equal sides and four right angles is a square.", "expected": "A: triangle"}
+{"id": "h8", "input": "A **budget** is a plan for how you will spend and save your money each month.", "expected": "A: budget"}
+{"id": "h9", "input": "A **fossil** is the remains of a plant or animal that lived a very long time ago, kept in rock.", "expected": "A: fossil"}
+{"id": "h10", "input": "The **water cycle** is the journey water takes from the sea to the sky and back again.", "expected": "A: water cycle"}

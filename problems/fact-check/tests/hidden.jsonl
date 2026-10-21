@@ -1,0 +1,10 @@
+{"id": "h1", "input": "Source: The train to Oxford leaves at 9:15 from platform 3.\nClaim: The Oxford train leaves from platform 3.", "expected": "supported"}
+{"id": "h2", "input": "Source: The new phone has a 6.1-inch screen and comes in black and white.\nClaim: The new phone comes in black, white and blue.", "expected": "unsupported"}
+{"id": "h3", "input": "Source: Paris is the capital of France. The city has about 2 million people.\nClaim: The Eiffel Tower is in Paris.", "expected": "unsupported"}
+{"id": "h4", "input": "Source: The meeting was moved from Thursday to Friday at 2pm.\nClaim: The meeting is now on Friday at 2pm.", "expected": "supported"}
+{"id": "h5", "input": "Source: Our shop does not give refunds on sale items, but you can exchange them within 14 days.\nClaim: Sale items can be refunded within 14 days.", "expected": "unsupported"}
+{"id": "h6", "input": "Source: About 70% of the Earth's surface is covered by water.\nClaim: Most of the Earth's surface is covered by water.", "expected": "supported"}
+{"id": "h7", "input": "Source: The library has 3 study rooms. Each room can be booked for up to 2 hours.\nClaim: Study rooms can be booked for up to 3 hours.", "expected": "unsupported"}
+{"id": "h8", "input": "Source: Leila finished the city marathon in 4 hours. It was her first race.\nClaim: Leila won the city marathon.", "expected": "unsupported"}
+{"id": "h9", "input": "Source: The recipe needs 2 eggs, 200g of flour and a cup of milk. Bake it for 25 minutes.\nClaim: You bake it for 25 minutes.", "expected": "supported"}
+{"id": "h10", "input": "Source: The company hired 5 new engineers this year.\nClaim: The company hired 5 new engineers this year, all from the same university.", "expected": "unsupported"}

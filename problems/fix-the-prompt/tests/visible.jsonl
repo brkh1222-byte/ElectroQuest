@@ -1,0 +1,4 @@
+{"id": "v1", "input": "Where is my parcel? It was supposed to arrive on Monday.", "expected": "shipping"}
+{"id": "v2", "input": "I want to send back the shoes, they're too big.", "expected": "returns"}
+{"id": "v3", "input": "I forgot my password and can't log in.", "expected": "account"}
+{"id": "v4", "input": "The mug arrived broken. What can I do?", "expected": "returns"}

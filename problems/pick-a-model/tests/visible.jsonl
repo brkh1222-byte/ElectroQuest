@@ -1,0 +1,4 @@
+{"id": "v1", "input": "Word: banana\nLetter: a", "expected": "3"}
+{"id": "v2", "input": "Word: strawberry\nLetter: r", "expected": "3"}
+{"id": "v3", "input": "Word: committee\nLetter: t", "expected": "2"}
+{"id": "v4", "input": "Word: parallel\nLetter: l", "expected": "3"}

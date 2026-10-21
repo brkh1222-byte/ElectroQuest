@@ -40,6 +40,7 @@ Create `problems/<slug>/` with:
 ```
 problem.yaml          # type, difficulty, tags, model, metric, threshold, entrypoint, limits
 statement.md
+lesson.md             # optional beginner lesson shown before the problem (starts with "# Title")
 hints.md              # "## Hint 1" … "## Editorial"
 starter.py | starter_prompt.md
 tests/visible.jsonl   # {"id","input"|"args","expected"}
@@ -48,11 +49,28 @@ reference/            # reference solution (must pass before publishing)
 fixtures/*.json       # optional data exposed as evalquest.fixtures
 ```
 
+Prompt problem metrics: `label_accuracy` (whole reply equals the label), `contains_any` (reply contains one of
+the expected phrases), `final_answer` (last line equals the answer, so the model can reason first).
+
+Before publishing a prompt problem, check that the reference passes and the starter doesn't:
+
+```bash
+npm run check:prompt -- <slug> --starter
+```
+
+### Lessons and tracks
+
+A track is `tracks/<slug>.yaml`: `title`, `level`, `summary`, `order`, and an ordered `problems` list. Each problem
+with a `lesson.md` gets a lesson page at `/tracks/<track>/<problem>` and a Lesson tab on the problem page.
+
+In a prompt problem's lesson, a ` ```try ` block becomes a live playground (system prompt, a `---` line, then the
+message). It calls the problem's model and counts as one Run.
+
 ## Infrastructure
 
 - **Auth**: Clerk (`src/proxy.ts`, `src/lib/auth.ts`). Users are copied into `users` on their first recorded submission
   (`src/db/users.ts`); Clerk webhooks to keep them fresh are still TODO.
 - **Quota + pipeline sessions**: Upstash Redis (`src/lib/quota.ts`, `src/lib/sessions.ts`).
 - **Database**: Neon Postgres via Drizzle; migrations in `drizzle/`.
-- Not built yet: tracks, lessons, leaderboard/discussion UI, profiles, streak UI, contests, certificates, authoring pipeline,
+- Not built yet: discussion UI, profiles, streak UI, contests, certificates, authoring pipeline,
   OpenAI-compatible endpoint, failure explanations.

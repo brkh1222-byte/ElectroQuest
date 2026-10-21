@@ -1,0 +1,10 @@
+title: Jargon Buster
+type: prompt
+difficulty: easy
+tags: [prompting, role, audience, beginner]
+model: default
+metric: contains_any
+threshold: 0.85
+tokenBudget: 40
+limits:
+  maxOutputTokens: 150

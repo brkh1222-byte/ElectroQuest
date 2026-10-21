@@ -1,0 +1,8 @@
+{"id": "h1", "input": "What is a search engine?", "expected": ["it's like", "it’s like", "it is like"]}
+{"id": "h2", "input": "What is an app?", "expected": ["it's like", "it’s like", "it is like"]}
+{"id": "h3", "input": "What is a firewall?", "expected": ["it's like", "it’s like", "it is like"]}
+{"id": "h4", "input": "What is a QR code?", "expected": ["it's like", "it’s like", "it is like"]}
+{"id": "h5", "input": "What is an email attachment?", "expected": ["it's like", "it’s like", "it is like"]}
+{"id": "h6", "input": "What is a web browser?", "expected": ["it's like", "it’s like", "it is like"]}
+{"id": "h7", "input": "What is an AI chatbot?", "expected": ["it's like", "it’s like", "it is like"]}
+{"id": "h8", "input": "What is a software update?", "expected": ["it's like", "it’s like", "it is like"]}
