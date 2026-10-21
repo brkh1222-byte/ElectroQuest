@@ -4,6 +4,7 @@ import Editor from "@monaco-editor/react";
 import { useEffect, useState } from "react";
 import type { PublicProblem, TestCase } from "@/lib/problems/schema";
 import { allclose, getRunner, type CaseOutput } from "@/lib/runner/python-runner";
+import { notifySubmitted, useOnLoadDraft } from "./events";
 import { ResultsPanel } from "./results-panel";
 import type { CaseView, RunState } from "./types";
 import { useDraft } from "./use-draft";
@@ -42,6 +43,7 @@ export function CodeWorkspace({ problem }: { problem: PublicProblem }) {
   const [state, setState] = useState<RunState>({ status: "idle" });
   const dark = useDarkMode();
   const busy = state.status === "running";
+  useOnLoadDraft(setCode);
 
   useEffect(() => {
     getRunner().warmUp(config.packages);
@@ -74,6 +76,12 @@ export function CodeWorkspace({ problem }: { problem: PublicProblem }) {
         : { id: t.id, passed, input: t.args, expected: t.expected, actual: out?.value, error: out?.error, stdout: out?.stdout };
     });
     const passed = cases.filter((c) => c.passed).length;
+    if (mode === "submit") {
+      // Saves history for signed-in learners; anonymous visitors get a 401, which is fine to ignore.
+      postJson(`/api/problems/${problem.slug}/submissions`, { code, passed, total: cases.length })
+        .then(notifySubmitted)
+        .catch(() => {});
+    }
     setState({
       status: "done",
       report: {
@@ -116,6 +124,7 @@ export function CodeWorkspace({ problem }: { problem: PublicProblem }) {
       // Attach local stdout to visible cases for debugging.
       report.cases = report.cases.map((c: CaseView) => ({ ...c, stdout: result.outputs[c.id]?.stdout }));
       setState({ status: "done", report });
+      if (mode === "submit") notifySubmitted();
     } catch (err) {
       setState({ status: "error", error: (err as Error).message });
     }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { PublicProblem } from "@/lib/problems/schema";
+import { notifySubmitted, useOnLoadDraft } from "./events";
 import { ResultsPanel } from "./results-panel";
 import type { RunState } from "./types";
 import { useDraft } from "./use-draft";
@@ -30,12 +31,17 @@ export function PromptWorkspace({ problem }: { problem: PublicProblem }) {
   const [chatError, setChatError] = useState<string | null>(null);
 
   const busy = state.status === "running";
+  useOnLoadDraft((content) => {
+    setPrompt(content);
+    setTab("editor");
+  });
 
   async function evaluate(mode: "run" | "submit") {
     setState({ status: "running", label: mode === "run" ? "Running examples…" : "Grading hidden tests…" });
     try {
       const report = await postJson(`/api/problems/${problem.slug}/prompt`, { mode, prompt });
       setState({ status: "done", report });
+      if (mode === "submit") notifySubmitted();
     } catch (err) {
       setState({ status: "error", error: (err as Error).message });
     }
