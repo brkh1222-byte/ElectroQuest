@@ -4,12 +4,16 @@ import { useState } from "react";
 import { DifficultyBadge, TypeBadge } from "@/components/badges";
 import { Markdown } from "@/components/markdown";
 import type { PublicProblem } from "@/lib/problems/schema";
+import { LeaderboardTab } from "./leaderboard-tab";
+import { SubmissionsTab } from "./submissions-tab";
 
-const tabs = ["Description", "Hints", "Discussion", "Leaderboard"] as const;
-type Tab = (typeof tabs)[number];
+const allTabs = ["Description", "Hints", "Submissions", "Leaderboard", "Discussion"] as const;
+type Tab = (typeof allTabs)[number];
 
 export function ProblemInfo({ problem }: { problem: PublicProblem }) {
   const [tab, setTab] = useState<Tab>("Description");
+  // From-scratch tests are public, so those problems have no leaderboard (spec §3.3).
+  const tabs = allTabs.filter((t) => t !== "Leaderboard" || problem.config.type !== "scratch");
   // Tiered hints (spec §9): reveal one at a time; the last one is the editorial.
   const [revealed, setRevealed] = useState(0);
 
@@ -67,9 +71,9 @@ export function ProblemInfo({ problem }: { problem: PublicProblem }) {
           </div>
         )}
 
-        {(tab === "Discussion" || tab === "Leaderboard") && (
-          <p className="text-sm text-muted">Coming soon.</p>
-        )}
+        {tab === "Submissions" && <SubmissionsTab problem={problem} />}
+        {tab === "Leaderboard" && <LeaderboardTab problem={problem} />}
+        {tab === "Discussion" && <p className="text-sm text-muted">Coming soon.</p>}
       </div>
     </section>
   );

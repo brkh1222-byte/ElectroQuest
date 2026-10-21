@@ -13,10 +13,10 @@ export async function parseBody<T extends z.ZodType>(req: Request, schema: T) {
   return parsed.success ? parsed.data : null;
 }
 
-/** Loads the problem and signed-in user for an LLM-backed problem route. */
-export async function requireUserAndProblem(slug: string, types: string[]) {
+/** Loads the problem and signed-in user for a problem route that needs an account. */
+export async function requireUserAndProblem(slug: string, types: string[], signInMessage = "Sign in to run AI problems.") {
   const user = await getCurrentUser();
-  if (!user) return { error: jsonError(401, "Sign in to run AI problems.") } as const;
+  if (!user) return { error: jsonError(401, signInMessage) } as const;
   const problem = await getProblem(slug);
   if (!problem || !types.includes(problem.config.type)) {
     return { error: jsonError(404, "Problem not found.") } as const;

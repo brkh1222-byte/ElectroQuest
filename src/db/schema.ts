@@ -38,7 +38,7 @@ export const submissions = pgTable(
     accepted: boolean("accepted").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
-  (t) => [index("submissions_user_problem_idx").on(t.userId, t.problemSlug)],
+  (t) => [index("submissions_user_problem_idx").on(t.userId, t.problemSlug, t.createdAt)],
 );
 
 // Best result per (problem, user), feeding the two leaderboards (spec §4).
@@ -48,8 +48,11 @@ export const leaderboardEntries = pgTable(
     problemSlug: text("problem_slug").notNull(),
     userId: text("user_id").notNull(),
     bestScore: real("best_score").notNull(),
+    // When best_score was first reached; earlier wins ties.
+    bestScoreAt: timestamp("best_score_at").defaultNow().notNull(),
     // Fewest tokens among Accepted submissions; null until accepted.
     bestTokens: integer("best_tokens"),
+    bestTokensAt: timestamp("best_tokens_at"),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
   (t) => [
