@@ -74,3 +74,4 @@ message). It calls the problem's model and counts as one Run.
 - **Database**: Neon Postgres via Drizzle; migrations in `drizzle/`.
 - Not built yet: discussion UI, profiles, streak UI, contests, certificates, authoring pipeline,
   OpenAI-compatible endpoint, failure explanations.
+# EvalQuest
