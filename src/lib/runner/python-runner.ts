@@ -15,6 +15,9 @@ type RunOptions = {
   onCase?: (out: CaseOutput) => void;
 };
 
+/** Result of a lesson snippet: printed output, the repr of a final bare expression, or an error. */
+export type SnippetResult = { stdout: string; value: string | null; error: string | null };
+
 export type RunResult =
   | { ok: true; outputs: Record<string, CaseOutput> }
   | { ok: false; error: string };
@@ -85,6 +88,42 @@ class PythonRunner {
         token: opts.token,
         arrayArgs: opts.arrayArgs ?? false,
       });
+    });
+  }
+
+  /**
+   * Runs a whole snippet with no entrypoint and no model access (lesson "python-try" blocks).
+   * The time limit starts once Python is loaded, so the first ~10MB download doesn't count.
+   */
+  runSnippet(code: string, timeoutMs = 10_000): Promise<SnippetResult> {
+    const worker = this.getWorker();
+    const id = this.nextId++;
+    return new Promise((resolve) => {
+      const fail = (error: string) => {
+        cleanup();
+        this.reset();
+        resolve({ stdout: "", value: null, error });
+      };
+      let timer = setTimeout(() => fail("Python took too long to load. Check your connection and try again."), 120_000);
+      const onMessage = ({ data }: MessageEvent) => {
+        if (data.id !== id) return;
+        if (data.type === "snippet-started") {
+          clearTimeout(timer);
+          timer = setTimeout(() => fail(`Time limit exceeded (${timeoutMs / 1000}s). Does a loop run forever?`), timeoutMs);
+        } else if (data.type === "snippet-done") {
+          cleanup();
+          resolve({ stdout: data.stdout ?? "", value: data.value ?? null, error: data.error ?? null });
+        } else if (data.type === "error") {
+          cleanup();
+          resolve({ stdout: "", value: null, error: data.error });
+        }
+      };
+      const cleanup = () => {
+        clearTimeout(timer);
+        worker.removeEventListener("message", onMessage);
+      };
+      worker.addEventListener("message", onMessage);
+      worker.postMessage({ id, type: "snippet", code });
     });
   }
 }

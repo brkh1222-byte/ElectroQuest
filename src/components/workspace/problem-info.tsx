@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowRight, Lightbulb } from "lucide-react";
 import Link from "next/link";
 import { Suspense, useState } from "react";
 import { DifficultyBadge, TypeBadge } from "@/components/badges";
@@ -12,6 +13,8 @@ import type { TrackPosition } from "@/lib/tracks";
 import { LeaderboardTab } from "./leaderboard-tab";
 import { ShowAnswer } from "./show-answer";
 import { SubmissionsTab } from "./submissions-tab";
+import { buttonClass } from "../ui/button";
+import { tabId, tabPanelId, Tabs } from "../ui/tabs";
 
 const allTabs = ["Description", "Lesson", "Hints", "Submissions", "Leaderboard", "Discussion"] as const;
 type Tab = (typeof allTabs)[number];
@@ -20,21 +23,23 @@ type Tab = (typeof allTabs)[number];
 function TrackBar({ position }: { position: TrackPosition }) {
   const { track, index, total, next, nextTrack } = position;
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-border bg-surface px-5 py-2 text-xs text-muted">
-      <Link href={`/tracks/${track.slug}`} className="font-medium text-foreground hover:text-accent">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-border bg-surface-2/60 px-5 py-2 text-xs text-muted">
+      <Link href={`/tracks/${track.slug}`} className="rounded-sm font-medium text-foreground transition-colors duration-150 hover:text-accent">
         {track.title}
       </Link>
-      <span>
+      <span className="tabular-nums">
         Step {index + 1} of {total}
       </span>
       {next && (
-        <Link href={stepHref(track.slug, next)} className="ml-auto hover:text-foreground">
-          Next: {next.lessonTitle ?? next.title} →
+        <Link href={stepHref(track.slug, next)} className="ml-auto inline-flex items-center gap-1 rounded-sm transition-colors duration-150 hover:text-foreground">
+          Next: {next.lessonTitle ?? next.title}
+          <ArrowRight aria-hidden className="size-3.5" strokeWidth={2} />
         </Link>
       )}
       {!next && nextTrack && (
-        <Link href={`/tracks/${nextTrack.slug}`} className="ml-auto hover:text-foreground">
-          Next track: {nextTrack.title} →
+        <Link href={`/tracks/${nextTrack.slug}`} className="ml-auto inline-flex items-center gap-1 rounded-sm transition-colors duration-150 hover:text-foreground">
+          Next track: {nextTrack.title}
+          <ArrowRight aria-hidden className="size-3.5" strokeWidth={2} />
         </Link>
       )}
     </div>
@@ -67,29 +72,30 @@ export function ProblemInfo({
         </Suspense>
       )}
       {position && <TrackBar position={position} />}
-      <div className="flex shrink-0 gap-1 overflow-x-auto border-b border-border px-3">
-        {tabs.map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`-mb-px shrink-0 border-b-2 px-3 py-2.5 text-sm ${
-              tab === t ? "border-accent font-medium" : "border-transparent text-muted hover:text-foreground"
-            }`}
-          >
-            {t}
-          </button>
-        ))}
+      <div className="shrink-0 overflow-x-auto border-b border-border px-2 [scrollbar-width:none]">
+        <Tabs
+          id={`info-${problem.slug}`}
+          label="Problem"
+          items={tabs.map((t) => ({ value: t, label: t }))}
+          value={tab}
+          onChange={setTab}
+        />
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
+      <div
+        role="tabpanel"
+        id={tabPanelId(`info-${problem.slug}`)}
+        aria-labelledby={tabId(`info-${problem.slug}`, tab)}
+        className="min-h-0 flex-1 overflow-y-auto px-5 py-5"
+      >
         {tab === "Description" && (
           <>
-            <h1 className="text-xl font-semibold tracking-tight">{problem.config.title}</h1>
+            <h1 className="text-xl font-semibold tracking-tight text-balance">{problem.config.title}</h1>
             <div className="mt-2 mb-5 flex flex-wrap items-center gap-2">
               <DifficultyBadge difficulty={problem.config.difficulty} />
               <TypeBadge type={problem.config.type} />
               {problem.config.tags.map((tag) => (
-                <span key={tag} className="text-xs text-muted">
+                <span key={tag} className="font-mono text-xs text-muted">
                   #{tag}
                 </span>
               ))}
@@ -105,16 +111,17 @@ export function ProblemInfo({
         {tab === "Hints" && (
           <div className="space-y-3">
             {problem.hints.slice(0, revealed).map((hint) => (
-              <div key={hint.title} className="rounded-lg border border-border bg-surface p-4">
-                <p className="mb-2 text-sm font-medium">{hint.title}</p>
+              <div key={hint.title} className="animate-enter rounded-xl border border-warning/30 bg-warning/5 p-4">
+                <p className="mb-2 flex items-center gap-2 text-sm font-medium">
+                  <Lightbulb aria-hidden className="size-4 text-warning" strokeWidth={2} />
+                  {hint.title}
+                </p>
                 <Markdown>{hint.body}</Markdown>
               </div>
             ))}
             {revealed < problem.hints.length ? (
-              <button
-                onClick={() => setRevealed((n) => n + 1)}
-                className="rounded-lg border border-border px-3 py-2 text-sm hover:bg-surface"
-              >
+              <button onClick={() => setRevealed((n) => n + 1)} className={buttonClass({ variant: "secondary" })}>
+                <Lightbulb aria-hidden className="size-4 text-warning" strokeWidth={2} />
                 Reveal {problem.hints[revealed].title}
               </button>
             ) : (
@@ -130,7 +137,9 @@ export function ProblemInfo({
 
         {tab === "Submissions" && <SubmissionsTab problem={problem} />}
         {tab === "Leaderboard" && <LeaderboardTab problem={problem} />}
-        {tab === "Discussion" && <p className="text-sm text-muted">Coming soon.</p>}
+        {tab === "Discussion" && (
+          <p className="rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted">Coming soon.</p>
+        )}
       </div>
     </section>
   );

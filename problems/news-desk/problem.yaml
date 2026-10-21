@@ -1,0 +1,12 @@
+title: News Desk
+type: prompt
+difficulty: easy
+tags: [classification, real-data, beginner]
+# Contest-only until Data Detective Day ends, then a normal bank problem.
+contest: data-detective-day
+model: default
+metric: label_accuracy
+threshold: 0.8
+labels: [world, sports, business, tech]
+limits:
+  maxOutputTokens: 10

@@ -46,18 +46,21 @@ export default async function GlossaryPage() {
 
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-10">
-      <h1 className="text-2xl font-semibold tracking-tight">Glossary</h1>
-      <p className="mt-1 text-muted text-pretty">
+      <h1 className="text-3xl font-semibold tracking-tight">Glossary</h1>
+      <p className="mt-2 leading-relaxed text-muted text-pretty">
         Every AI word used in the lessons, in simple English, with an everyday example. Each entry links to the
         lesson that teaches it.
       </p>
 
-      <nav aria-label="Jump to a letter" className="mt-6 flex flex-wrap gap-1.5">
+      <nav
+        aria-label="Jump to a letter"
+        className="z-10 -mx-4 mt-6 sm:sticky sm:top-0 flex flex-wrap gap-1.5 bg-background/85 px-4 py-2 backdrop-blur-md"
+      >
         {groups.map(([letter]) => (
           <a
             key={letter}
             href={`#letter-${letter}`}
-            className="flex size-8 items-center justify-center rounded-lg border border-border bg-surface text-sm font-medium hover:border-accent hover:text-accent"
+            className="flex size-8 items-center justify-center rounded-lg bg-surface text-sm font-medium shadow-card transition-[color,box-shadow] duration-150 hover:text-accent hover:shadow-card-hover"
           >
             {letter}
           </a>
@@ -67,7 +70,7 @@ export default async function GlossaryPage() {
       <div className="mt-8 space-y-10">
         {groups.map(([letter, entries]) => (
           <section key={letter} aria-labelledby={`letter-${letter}`}>
-            <h2 id={`letter-${letter}`} className="scroll-mt-4 text-sm font-semibold tracking-wide text-muted">
+            <h2 id={`letter-${letter}`} className="scroll-mt-4 text-sm font-semibold tracking-wide text-accent sm:scroll-mt-24">
               {letter}
             </h2>
             <div className="mt-3 space-y-3">
@@ -91,13 +94,13 @@ function Entry({ entry, lessons }: { entry: GlossaryEntry; lessons: Map<string, 
   return (
     <article
       id={entry.id}
-      className="scroll-mt-4 rounded-xl border border-border bg-surface p-5 target:border-accent target:ring-2 target:ring-accent/30"
+      className="scroll-mt-4 rounded-xl border border-transparent bg-surface p-5 shadow-card transition-[border-color,box-shadow] duration-300 target:border-accent target:ring-3 target:ring-accent/20 sm:scroll-mt-24"
     >
       <h3 className="text-lg font-semibold">{entry.term}</h3>
-      <p className="mt-1.5 text-pretty">
+      <p className="mt-1.5 leading-relaxed text-pretty">
         <GlossaryText text={entry.definition} />
       </p>
-      <p className="mt-2 text-sm text-muted text-pretty">
+      <p className="mt-3 rounded-lg bg-surface-2 px-3 py-2 text-sm leading-relaxed text-muted text-pretty">
         <span className="font-medium text-foreground">Example: </span>
         <GlossaryText text={entry.example} />
       </p>
@@ -106,7 +109,7 @@ function Entry({ entry, lessons }: { entry: GlossaryEntry; lessons: Map<string, 
           <span className="text-muted">Used in:</span>
           {usedIn.map((lesson, i) => (
             <span key={lesson.href}>
-              <Link href={lesson.href} className="text-accent hover:underline">
+              <Link href={lesson.href} className="rounded-sm font-medium text-accent hover:underline">
                 {lesson.title}
               </Link>
               <span className="text-muted">
@@ -122,7 +125,7 @@ function Entry({ entry, lessons }: { entry: GlossaryEntry; lessons: Map<string, 
           See also:{" "}
           {related.map((r, i) => (
             <span key={r.id}>
-              <a href={`#${r.id}`} className="hover:text-foreground hover:underline">
+              <a href={`#${r.id}`} className="rounded-sm hover:text-foreground hover:underline">
                 {r.term}
               </a>
               {i < related.length - 1 && ", "}

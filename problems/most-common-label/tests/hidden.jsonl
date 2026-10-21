@@ -1,0 +1,7 @@
+{"id":"h1","args":[["ham","spam","spam","spam","ham"]],"expected":"spam"}
+{"id":"h2","args":[["negative","positive","positive"]],"expected":"positive"}
+{"id":"h3","args":[["a","b","c","c"]],"expected":"c"}
+{"id":"h4","args":[["refund","delivery","refund","delivery","delivery","other"]],"expected":"delivery"}
+{"id":"h5","args":[["cat","cat","dog"]],"expected":"cat"}
+{"id":"h6","args":[["billing","tech","tech","account","tech","billing","tech"]],"expected":"tech"}
+{"id":"h7","args":[["no","no","yes","yes","yes"]],"expected":"yes"}

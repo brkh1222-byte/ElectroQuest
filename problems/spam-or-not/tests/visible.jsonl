@@ -1,0 +1,4 @@
+{"id": "v1", "input": "HMV BONUS SPECIAL 500 pounds of genuine HMV vouchers to be won. Just answer 4 easy questions. Play Now! Send HMV to 86688 More info:www.100percent-real.com", "expected": "spam"}
+{"id": "v2", "input": "No I'm good for the movie, is it ok if I leave in an hourish?", "expected": "ham"}
+{"id": "v3", "input": "Camera - You are awarded a SiPix Digital Camera! call 09061221066 fromm landline. Delivery within 28 days.", "expected": "spam"}
+{"id": "v4", "input": "Yeah I should be able to, I'll text you when I'm ready to meet up", "expected": "ham"}

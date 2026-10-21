@@ -1,3 +1,4 @@
+import { ArrowRight, Check, PartyPopper } from "lucide-react";
 import Link from "next/link";
 import { DifficultyBadge } from "@/components/badges";
 import { getRevealedSlugs } from "@/db/answers";
@@ -5,6 +6,8 @@ import { getSolvedSlugs } from "@/db/progress";
 import { getCurrentUser } from "@/lib/auth";
 import { stepHref } from "@/lib/step-href";
 import type { Track } from "@/lib/tracks";
+import { buttonClass } from "../ui/button";
+import { cardClass } from "../ui/card";
 
 export type Progress = { solved: Set<string>; helped: Set<string> };
 
@@ -25,33 +28,40 @@ export async function getProgressForViewer(): Promise<Progress> {
 /** Ordered steps of a track. Each step is a lesson (when there is one) followed by its problem. */
 export function StepList({ track, progress = noProgress }: { track: Track; progress?: Progress }) {
   return (
-    <ol className="space-y-3">
+    <ol className="relative space-y-3">
       {track.steps.map((step, i) => {
         const done = progress.solved.has(step.slug);
         const helped = progress.helped.has(step.slug);
         return (
-          <li key={step.slug} className="flex gap-4 rounded-xl border border-border bg-surface p-4">
+          <li
+            key={step.slug}
+            className={cardClass({ className: "relative flex gap-4 p-4 transition-shadow duration-200 hover:shadow-raised" })}
+          >
             <span
-              className={`flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-medium ${
-                done ? (helped ? "bg-warning text-background" : "bg-success text-background") : "border border-border text-muted"
+              className={`flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-medium tabular-nums ${
+                done
+                  ? helped
+                    ? "bg-warning text-background"
+                    : "bg-success text-background"
+                  : "bg-surface-2 text-muted ring-1 ring-border ring-inset"
               }`}
               aria-label={done ? (helped ? "Solved with help" : "Solved") : `Step ${i + 1}`}
               title={helped ? "Solved with help" : undefined}
             >
-              {done ? "✓" : i + 1}
+              {done ? <Check aria-hidden className="size-4" strokeWidth={2.5} /> : i + 1}
             </span>
             <div className="min-w-0 flex-1">
-              <Link href={stepHref(track.slug, step)} className="font-medium hover:text-accent">
+              <Link href={stepHref(track.slug, step)} className="rounded-sm font-medium transition-colors duration-150 hover:text-accent">
                 {step.lessonTitle ?? step.title}
               </Link>
               <p className="mt-1 flex flex-wrap items-center gap-x-2 text-sm text-muted">
                 {step.lessonTitle && <span>Lesson, then practice:</span>}
-                <Link href={`/problems/${step.slug}`} className="underline-offset-2 hover:text-foreground hover:underline">
+                <Link href={`/problems/${step.slug}`} className="rounded-sm underline-offset-2 hover:text-foreground hover:underline">
                   {step.title}
                 </Link>
                 <span aria-hidden>·</span>
                 <DifficultyBadge difficulty={step.difficulty} />
-                {helped && <span className="text-xs text-warning">solved with help</span>}
+                {helped && <span className="text-xs font-medium text-warning">solved with help</span>}
               </p>
             </div>
           </li>
@@ -70,14 +80,24 @@ export async function TrackProgress({ track }: { track: Track }) {
   const done = track.steps.filter((s) => solved.has(s.slug)).length;
   if (done === 0) return null;
   return (
-    <span className="text-xs text-muted">
+    <span className="inline-flex items-center gap-1 text-xs font-medium text-success tabular-nums">
+      <Check aria-hidden className="size-3.5" strokeWidth={2.5} />
       {done}/{track.steps.length} solved
     </span>
   );
 }
 
-const startClass =
-  "inline-flex h-10 items-center rounded-lg bg-accent px-4 text-sm font-medium text-accent-foreground hover:opacity-90";
+const startClass = buttonClass({ size: "lg", className: "group max-w-full pr-4 text-sm" });
+
+function StartArrow() {
+  return (
+    <ArrowRight
+      aria-hidden
+      className="size-4 shrink-0 transition-transform duration-200 ease-out motion-safe:group-hover:translate-x-0.5"
+      strokeWidth={2}
+    />
+  );
+}
 
 type NextTrack = { slug: string; title: string } | null;
 
@@ -98,6 +118,7 @@ export function ContinueButton({
   return (
     <Link href={stepHref(track.slug, step)} className={startClass}>
       {index === 0 ? "Start with step 1" : `Continue: step ${index + 1}`}
+      <StartArrow />
     </Link>
   );
 }
@@ -111,16 +132,16 @@ function TrackComplete({ track, progress, nextTrack }: { track: Track; progress:
   const total = track.steps.length;
   const helped = track.steps.filter((s) => progress.helped.has(s.slug)).length;
   return (
-    <div className="rounded-xl border border-success/40 bg-success/10 p-5" role="status">
+    <div className="animate-enter rounded-2xl border border-success/30 bg-success/10 p-5" role="status">
       <div className="flex items-start gap-4">
         <span
           aria-hidden
-          className="flex size-10 shrink-0 items-center justify-center rounded-full bg-success text-lg text-background"
+          className="flex size-10 shrink-0 items-center justify-center rounded-full bg-success text-background"
         >
-          ✓
+          <PartyPopper className="size-5" strokeWidth={2} />
         </span>
         <div className="min-w-0">
-          <p className="text-xs font-medium tracking-wide text-success uppercase">Track complete</p>
+          <p className="text-xs font-semibold tracking-wide text-success uppercase">Track complete</p>
           <p className="mt-1 text-lg font-semibold">You finished {track.title}. Well done!</p>
           <p className="mt-1 text-sm text-muted text-pretty">
             {helped === 0
@@ -132,14 +153,16 @@ function TrackComplete({ track, progress, nextTrack }: { track: Track; progress:
       <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
         {nextTrack ? (
           <Link href={`/tracks/${nextTrack.slug}`} className={startClass}>
-            Next track: {nextTrack.title} →
+            <span className="truncate">Next track: {nextTrack.title}</span>
+            <StartArrow />
           </Link>
         ) : (
           <Link href="/problems" className={startClass}>
-            Practice more: browse all problems →
+            <span className="truncate">Practice more: browse all problems</span>
+            <StartArrow />
           </Link>
         )}
-        <Link href="/me" className="text-sm text-muted underline-offset-4 hover:text-foreground hover:underline">
+        <Link href="/me" className="rounded-sm text-sm text-muted underline-offset-4 hover:text-foreground hover:underline">
           See all my progress
         </Link>
       </div>

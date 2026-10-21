@@ -1,0 +1,4 @@
+{"id":"v1","args":[["spam","ham","ham"]],"expected":"ham"}
+{"id":"v2","args":[["positive"]],"expected":"positive"}
+{"id":"v3","args":[["sports","world","sports","business","sports"]],"expected":"sports"}
+{"id":"v4","args":[["urgent","normal","normal","urgent","normal"]],"expected":"normal"}

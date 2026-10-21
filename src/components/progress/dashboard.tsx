@@ -1,3 +1,4 @@
+import { ArrowRight, Check, Flame, HandHelping, Trophy, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { computeStreak, getPracticeCounts, getStreakDays, type Streak } from "@/db/progress";
 import { getProgressForUser, type Progress } from "@/components/tracks/step-list";
@@ -6,11 +7,23 @@ import { stepHref } from "@/lib/step-href";
 import { listTracks, type Track, type TrackStep } from "@/lib/tracks";
 import { ActivityGrid, gridStart } from "./activity-grid";
 import { SignInPrompt } from "./sign-in-prompt";
+import { buttonClass as button } from "../ui/button";
+import { cardClass } from "../ui/card";
 
 const WEEKS = 8;
 
-const buttonClass =
-  "inline-flex h-10 items-center rounded-lg bg-accent px-4 text-sm font-medium text-accent-foreground hover:opacity-90";
+const buttonClass = button({ className: "group h-10 pr-3.5" });
+const card = cardClass({ className: "p-5" });
+
+function GoArrow() {
+  return (
+    <ArrowRight
+      aria-hidden
+      className="size-4 shrink-0 transition-transform duration-200 ease-out motion-safe:group-hover:translate-x-0.5"
+      strokeWidth={2}
+    />
+  );
+}
 
 type NextUp = { track: Track; step: TrackStep; index: number };
 
@@ -54,18 +67,21 @@ export async function LearningDashboard() {
 
       <dl className="grid gap-4 sm:grid-cols-3">
         <StatTile
+          Icon={Flame}
           label="Day streak"
           value={streak.current}
           unit={streak.current === 1 ? "day" : "days"}
           note={streak.longest > 0 ? `Your best: ${streak.longest} ${streak.longest === 1 ? "day" : "days"}` : "Solve a problem to start one"}
         />
         <StatTile
+          Icon={Trophy}
           label="Solved on your own"
           value={solvedCount - helpedCount}
           unit={solvedCount - helpedCount === 1 ? "problem" : "problems"}
           note={`${solvedCount} solved in total`}
         />
         <StatTile
+          Icon={HandHelping}
           label="Solved with help"
           value={helpedCount}
           unit={helpedCount === 1 ? "problem" : "problems"}
@@ -74,7 +90,7 @@ export async function LearningDashboard() {
       </dl>
 
       <div className="grid gap-6 lg:grid-cols-[auto_1fr]">
-        <section className="rounded-xl border border-border bg-surface p-5" aria-labelledby="activity-heading">
+        <section className={card} aria-labelledby="activity-heading">
           <h2 id="activity-heading" className="font-semibold">
             Your activity
           </h2>
@@ -87,7 +103,7 @@ export async function LearningDashboard() {
           />
         </section>
 
-        <section className="rounded-xl border border-border bg-surface p-5" aria-labelledby="tracks-heading">
+        <section className={card} aria-labelledby="tracks-heading">
           <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
             <h2 id="tracks-heading" className="font-semibold">
               Your tracks
@@ -127,15 +143,30 @@ function streakMessage(streak: Streak) {
   return "Each day you solve a problem adds one day to your streak.";
 }
 
-function StatTile({ label, value, unit, note }: { label: string; value: number; unit: string; note: string }) {
+function StatTile({
+  Icon,
+  label,
+  value,
+  unit,
+  note,
+}: {
+  Icon: LucideIcon;
+  label: string;
+  value: number;
+  unit: string;
+  note: string;
+}) {
   return (
-    <div className="rounded-xl border border-border bg-surface p-5">
-      <dt className="text-sm text-muted">{label}</dt>
-      <dd className="mt-1">
-        <span className="text-3xl font-semibold tracking-tight">{value}</span>
+    <div className={card}>
+      <dt className="flex items-center gap-2 text-sm text-muted">
+        <Icon aria-hidden className="size-4 text-accent" strokeWidth={1.75} />
+        {label}
+      </dt>
+      <dd className="mt-2">
+        <span className="text-3xl font-semibold tracking-tight tabular-nums">{value}</span>
         <span className="ml-1.5 text-sm text-muted">{unit}</span>
       </dd>
-      <dd className="mt-2 text-xs text-muted">{note}</dd>
+      <dd className="mt-2 text-xs leading-relaxed text-muted text-pretty">{note}</dd>
     </div>
   );
 }
@@ -143,22 +174,23 @@ function StatTile({ label, value, unit, note }: { label: string; value: number; 
 function NextUpCard({ next, started }: { next: NextUp | null; started: boolean }) {
   if (!next) {
     return (
-      <section className="rounded-xl border border-success/40 bg-success/10 p-5">
-        <p className="text-xs font-medium tracking-wide text-success uppercase">All tracks complete</p>
+      <section className="rounded-2xl border border-success/30 bg-success/10 p-5">
+        <p className="text-xs font-semibold tracking-wide text-success uppercase">All tracks complete</p>
         <p className="mt-1 text-lg font-semibold">You finished every track. Amazing work!</p>
         <p className="mt-1 text-sm text-muted">Keep your skills sharp with more problems from the problem bank.</p>
         <Link href="/problems" className={`mt-4 ${buttonClass}`}>
-          Browse all problems →
+          Browse all problems
+          <GoArrow />
         </Link>
       </section>
     );
   }
   const { track, step, index } = next;
   return (
-    <section className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-accent bg-surface p-5">
+    <section className={cardClass({ tone: "accent", className: "flex flex-wrap items-center justify-between gap-4 p-5" })}>
       <div className="min-w-0">
-        <p className="text-xs font-medium tracking-wide text-accent uppercase">{started ? "Next up" : "Start here"}</p>
-        <p className="mt-1 text-lg font-semibold">
+        <p className="text-xs font-semibold tracking-wide text-accent uppercase">{started ? "Next up" : "Start here"}</p>
+        <p className="mt-1 text-lg font-semibold text-balance">
           Lesson {index + 1} · {step.lessonTitle ?? step.title}
         </p>
         <p className="mt-0.5 text-sm text-muted">
@@ -167,7 +199,8 @@ function NextUpCard({ next, started }: { next: NextUp | null; started: boolean }
         </p>
       </div>
       <Link href={stepHref(track.slug, step)} className={buttonClass}>
-        {started ? "Continue" : "Start lesson 1"} →
+        {started ? "Continue" : "Start lesson 1"}
+        <GoArrow />
       </Link>
     </section>
   );
@@ -185,16 +218,16 @@ function TrackRow({ track, number, progress }: { track: Track; number: number; p
   return (
     <li>
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <Link href={`/tracks/${track.slug}`} className="font-medium hover:text-accent">
+        <Link href={`/tracks/${track.slug}`} className="rounded-sm font-medium transition-colors duration-150 hover:text-accent">
           {number}. {track.title}
         </Link>
-        <span className="text-sm text-muted">
+        <span className="text-sm text-muted tabular-nums">
           {solved} of {total} solved
           {helped > 0 && ` · ${helped} with help`}
         </span>
       </div>
       <div
-        className="mt-2 flex h-2 gap-0.5 overflow-hidden rounded-full bg-border"
+        className="mt-2 flex h-2 gap-0.5 overflow-hidden rounded-full bg-surface-2 ring-1 ring-border ring-inset"
         role="progressbar"
         aria-label={`${track.title} progress`}
         aria-valuemin={0}
@@ -202,15 +235,26 @@ function TrackRow({ track, number, progress }: { track: Track; number: number; p
         aria-valuenow={solved}
         aria-valuetext={`${solved} of ${total} problems solved${helped > 0 ? `, ${helped} with help` : ""}`}
       >
-        {own > 0 && <span className="h-full rounded-full bg-success" style={{ width: pct(own) }} />}
-        {helped > 0 && <span className="h-full rounded-full bg-warning" style={{ width: pct(helped) }} />}
+        {own > 0 && (
+          <span className="h-full rounded-full bg-success transition-[width] duration-300 ease-out" style={{ width: pct(own) }} />
+        )}
+        {helped > 0 && (
+          <span className="h-full rounded-full bg-warning transition-[width] duration-300 ease-out" style={{ width: pct(helped) }} />
+        )}
       </div>
       <div className="mt-2 text-sm">
         {index === -1 ? (
-          <span className="font-medium text-success">✓ Track complete</span>
+          <span className="inline-flex items-center gap-1.5 font-medium text-success">
+            <Check aria-hidden className="size-4" strokeWidth={2.5} />
+            Track complete
+          </span>
         ) : (
-          <Link href={stepHref(track.slug, track.steps[index])} className="text-accent hover:underline">
-            {solved === 0 ? "Start" : "Continue"}: lesson {index + 1} · {track.steps[index].lessonTitle ?? track.steps[index].title} →
+          <Link
+            href={stepHref(track.slug, track.steps[index])}
+            className="group inline-flex items-center gap-1 rounded-sm font-medium text-accent hover:underline"
+          >
+            {solved === 0 ? "Start" : "Continue"}: lesson {index + 1} · {track.steps[index].lessonTitle ?? track.steps[index].title}
+            <GoArrow />
           </Link>
         )}
       </div>

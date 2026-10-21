@@ -1,0 +1,12 @@
+title: Classify a Review from Python
+type: pipeline
+difficulty: easy
+tags: [python, classification, beginner]
+entrypoint: classify
+model: default
+metric: label_accuracy
+threshold: 0.85
+labels: [positive, negative]
+limits:
+  maxOutputTokens: 10
+  maxCallsPerCase: 2

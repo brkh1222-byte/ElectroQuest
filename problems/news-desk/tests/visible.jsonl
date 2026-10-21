@@ -1,0 +1,4 @@
+{"id": "v1", "input": "Merkel's Fourth Term In Doubt\nEfforts to form a coalition have failed.", "expected": "world"}
+{"id": "v2", "input": "Las Vegas Aces Win First WNBA Title, Chelsea Gray Named MVP\nLas Vegas never had a professional sports champion — until Sunday.", "expected": "sports"}
+{"id": "v3", "input": "Federal Reserve Raises Interest Rates For The 3rd Time This Year\nThree more rate hikes are slated for 2019.", "expected": "business"}
+{"id": "v4", "input": "The New iPhone's Coolest Photo Feature Just Got A Lot Cooler\n\"Live Photos\" are coming to Facebook soon.", "expected": "tech"}

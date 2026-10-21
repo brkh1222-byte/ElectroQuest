@@ -4,6 +4,7 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { cacheLife } from "next/cache";
 import { parse as parseYaml } from "yaml";
+import { contestNow, reservedContestPhase } from "../contest-config";
 import { allowedModels } from "../llm";
 import {
   problemConfigSchema,
@@ -91,7 +92,8 @@ export async function getPublicProblem(slug: string): Promise<PublicProblem | nu
   return problem.config.type === "scratch" ? { ...pub, hiddenTests } : pub;
 }
 
-export async function listProblems(): Promise<ProblemSummary[]> {
+/** Every problem on disk, contest-only ones included. Cached, so it must not depend on the time. */
+async function listAllProblems(): Promise<ProblemSummary[]> {
   "use cache";
   cacheLife("hours");
   const entries = await readdir(PROBLEMS_DIR, { withFileTypes: true });
@@ -106,7 +108,20 @@ export async function listProblems(): Promise<ProblemSummary[]> {
       type: p.config.type,
       difficulty: p.config.difficulty,
       tags: p.config.tags,
+      ...(p.config.contest && { contest: p.config.contest }),
     }));
+}
+
+/**
+ * The problem bank: every problem except contest-only ones whose contest is upcoming or running.
+ * When any problem is contest-only this reads the clock (io()), so call it inside <Suspense>.
+ */
+export async function listProblems(): Promise<ProblemSummary[]> {
+  const all = await listAllProblems();
+  if (!all.some((p) => p.contest)) return all;
+  const now = await contestNow();
+  const phases = await Promise.all(all.map((p) => reservedContestPhase(p, now)));
+  return all.filter((_, i) => phases[i] === null || phases[i] === "ended");
 }
 
 /** The reference solution and its explanation: what "Show answer" reveals. */

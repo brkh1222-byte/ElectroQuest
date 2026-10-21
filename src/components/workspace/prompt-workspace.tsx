@@ -1,5 +1,6 @@
 "use client";
 
+import { Loader2, MessageSquare, Play, RotateCcw, Send, SquarePen, Upload } from "lucide-react";
 import { useState } from "react";
 import type { PublicProblem } from "@/lib/problems/schema";
 import { notifySubmitted, useOnLoadDraft, type DraftSettings } from "./events";
@@ -7,6 +8,30 @@ import { ResultsPanel } from "./results-panel";
 import { hasSettings, SettingsBar } from "./settings-bar";
 import type { RunState } from "./types";
 import { useDraft } from "./use-draft";
+import { Button } from "../ui/button";
+import { inputClass } from "../ui/field";
+import { tabId, tabPanelId, Tabs } from "../ui/tabs";
+
+const tabs = [
+  {
+    value: "editor",
+    label: (
+      <>
+        <SquarePen aria-hidden className="size-4" strokeWidth={1.75} />
+        System prompt
+      </>
+    ),
+  },
+  {
+    value: "chat",
+    label: (
+      <>
+        <MessageSquare aria-hidden className="size-4" strokeWidth={1.75} />
+        Try it (chat)
+      </>
+    ),
+  },
+] as const;
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
@@ -81,53 +106,61 @@ export function PromptWorkspace({ problem }: { problem: PublicProblem }) {
 
   return (
     <section className="flex min-h-0 flex-col">
-      <div className="flex items-center gap-1 border-b border-border px-3">
-        {(["editor", "chat"] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`-mb-px border-b-2 px-3 py-2.5 text-sm ${
-              tab === t ? "border-accent font-medium" : "border-transparent text-muted hover:text-foreground"
-            }`}
-          >
-            {t === "editor" ? "System prompt" : "Try it (chat)"}
-          </button>
-        ))}
-        <button
+      <div className="flex items-center gap-2 border-b border-border px-2">
+        <Tabs id={`prompt-${problem.slug}`} label="Prompt editor" items={tabs} value={tab} onChange={setTab} className="min-w-0 overflow-x-auto" />
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => {
             resetPrompt();
             resetSettings();
           }}
-          className="ml-auto text-xs text-muted hover:text-foreground">
+          className="ml-auto"
+        >
+          <RotateCcw aria-hidden className="size-3.5" strokeWidth={2} />
           Reset
-        </button>
+        </Button>
       </div>
 
+      <div
+        role="tabpanel"
+        id={tabPanelId(`prompt-${problem.slug}`)}
+        aria-labelledby={tabId(`prompt-${problem.slug}`, tab)}
+        className="flex min-h-0 flex-1 flex-col"
+      >
       {tab === "editor" ? (
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           spellCheck={false}
           aria-label="System prompt"
-          className="min-h-64 flex-1 resize-none lg:min-h-0 bg-surface p-4 font-mono text-sm outline-none"
+          className="min-h-64 flex-1 resize-none bg-surface p-4 font-mono text-sm leading-relaxed outline-none focus-visible:outline-none lg:min-h-0"
         />
       ) : (
         <div className="flex min-h-64 flex-1 flex-col bg-surface">
           <div className="flex-1 space-y-3 overflow-y-auto p-4">
             {messages.length === 0 && (
-              <p className="text-sm text-muted">Chat with the model using your current system prompt.</p>
+              <p className="flex items-center gap-2 text-sm text-muted">
+                <MessageSquare aria-hidden className="size-4 shrink-0" strokeWidth={1.75} />
+                Chat with the model using your current system prompt.
+              </p>
             )}
             {messages.map((m, i) => (
               <div
                 key={i}
-                className={`max-w-[85%] rounded-lg px-3 py-2 text-sm whitespace-pre-wrap ${
-                  m.role === "user" ? "ml-auto bg-accent text-accent-foreground" : "border border-border"
+                className={`max-w-[85%] animate-enter rounded-2xl px-3.5 py-2 text-sm leading-relaxed whitespace-pre-wrap ${
+                  m.role === "user" ? "ml-auto rounded-br-md bg-accent text-accent-foreground" : "rounded-bl-md bg-surface-2"
                 }`}
               >
                 {m.content}
               </div>
             ))}
-            {chatPending && <p className="text-sm text-muted">Thinking…</p>}
+            {chatPending && (
+              <p className="flex items-center gap-2 text-sm text-muted">
+                <Loader2 aria-hidden className="size-4 motion-safe:animate-spin" strokeWidth={2} />
+                Thinking…
+              </p>
+            )}
             {chatError && <p className="text-sm text-danger">{chatError}</p>}
           </div>
           <form
@@ -141,34 +174,28 @@ export function PromptWorkspace({ problem }: { problem: PublicProblem }) {
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
               placeholder="Type a test ticket…"
-              className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-accent"
+              aria-label="Test message"
+              className={`${inputClass} min-w-0 flex-1`}
             />
-            <button
-              disabled={chatPending}
-              className="rounded-lg border border-border px-3 text-sm hover:bg-background disabled:opacity-50"
-            >
+            <Button type="submit" variant="secondary" disabled={chatPending}>
+              <Send aria-hidden className="size-4" strokeWidth={2} />
               Send
-            </button>
+            </Button>
           </form>
         </div>
       )}
+      </div>
 
       {hasSettings(problem) && <SettingsBar problem={problem} value={settings} onChange={setSettings} />}
-      <div className="flex items-center justify-end gap-2 border-y border-border px-3 py-2">
-        <button
-          onClick={() => evaluate("run")}
-          disabled={busy}
-          className="rounded-lg border border-border px-4 py-1.5 text-sm hover:bg-surface disabled:opacity-50"
-        >
+      <div className="flex items-center justify-end gap-2 border-y border-border bg-surface px-3 py-2">
+        <Button variant="secondary" onClick={() => evaluate("run")} disabled={busy}>
+          <Play aria-hidden className="size-3.5" strokeWidth={2} />
           Run
-        </button>
-        <button
-          onClick={() => evaluate("submit")}
-          disabled={busy}
-          className="rounded-lg bg-accent px-4 py-1.5 text-sm font-medium text-accent-foreground hover:opacity-90 disabled:opacity-50"
-        >
+        </Button>
+        <Button onClick={() => evaluate("submit")} disabled={busy}>
+          <Upload aria-hidden className="size-3.5" strokeWidth={2} />
           Submit
-        </button>
+        </Button>
       </div>
       <div className="h-[40%] min-h-48 shrink-0 overflow-y-auto p-4">
         <ResultsPanel state={state} />

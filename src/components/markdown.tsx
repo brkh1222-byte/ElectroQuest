@@ -5,13 +5,14 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import { getGlossaryEntry } from "@/lib/glossary";
 import { GlossaryTerm, remarkGlossary } from "./glossary-term";
+import { PythonTry } from "./python-try";
 import { TokenViewer } from "./token-viewer";
 import { TryIt, type TryItOptions } from "./try-it";
 
 /** The language and text of a fenced code block, or null for other <pre> content. */
 function codeBlock(children: ReactNode) {
   const code = isValidElement(children) ? (children as ReactElement<{ className?: string; children?: ReactNode }>) : null;
-  const lang = code?.props.className?.match(/language-(\w+)/)?.[1];
+  const lang = code?.props.className?.match(/language-([\w-]+)/)?.[1];
   return lang ? { lang, text: String(code.props.children ?? "") } : null;
 }
 
@@ -54,6 +55,7 @@ export function Markdown({
     pre({ children: inner, ...props }) {
       const block = codeBlock(inner);
       if (block?.lang === "tokens") return <TokenViewer initial={block.text.trim()} />;
+      if (block?.lang === "python-try") return <PythonTry initial={block.text.replace(/\s+$/, "")} />;
       if (block?.lang === "try" && tryItSlug) {
         const { system, user, options } = parseTryBlock(block.text);
         return <TryIt slug={tryItSlug} system={system} user={user} options={options} />;

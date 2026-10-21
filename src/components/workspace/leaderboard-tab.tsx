@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { Badge } from "../ui/badge";
+import { Tabs } from "../ui/tabs";
 import type { PublicProblem } from "@/lib/problems/schema";
 import { useOnSubmitted } from "./events";
 import { useJson } from "./use-json";
@@ -28,23 +30,27 @@ const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
 function LeaderboardRow({ row, kind }: { row: Row; kind: BoardKind }) {
   return (
     <tr className={row.isMe ? "bg-accent/10" : undefined}>
-      <td className="px-3 py-2 text-muted tabular-nums">{row.rank}</td>
-      <td className="px-3 py-2">
-        <span className="flex items-center gap-2">
+      <td className="px-3 py-2.5 text-muted tabular-nums">{row.rank}</td>
+      <td className="max-w-0 px-3 py-2.5">
+        <span className="flex min-w-0 items-center gap-2">
           {row.imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element -- tiny Clerk avatar; next/image adds nothing here
-            <img src={row.imageUrl} alt="" className="size-5 rounded-full" />
+            <img src={row.imageUrl} alt="" className="size-6 shrink-0 rounded-full outline-1 -outline-offset-1 outline-black/10 dark:outline-white/10" />
           ) : (
-            <span className="size-5 rounded-full bg-border" />
+            <span className="size-6 shrink-0 rounded-full bg-surface-2 ring-1 ring-border ring-inset" />
           )}
           <span className="truncate">{row.name}</span>
-          {row.isMe && <span className="text-xs text-accent">you</span>}
+          {row.isMe && (
+            <Badge tone="accent" className="h-5 px-2">
+              you
+            </Badge>
+          )}
         </span>
       </td>
-      <td className="px-3 py-2 text-right font-medium tabular-nums">
+      <td className="px-3 py-2.5 text-right font-medium tabular-nums">
         {kind === "accuracy" ? `${Math.round(row.score * 100)}%` : row.tokens?.toLocaleString()}
       </td>
-      <td className="hidden px-3 py-2 text-right text-xs text-muted sm:table-cell">
+      <td className="hidden px-3 py-2.5 text-right text-xs text-muted sm:table-cell">
         {dateFormat.format(new Date(row.achievedAt))}
       </td>
     </tr>
@@ -58,19 +64,14 @@ export function LeaderboardTab({ problem }: { problem: PublicProblem }) {
 
   return (
     <div className="space-y-4">
-      <div className="inline-flex rounded-lg border border-border p-0.5 text-sm" role="tablist">
-        {(Object.keys(boards) as BoardKind[]).map((k) => (
-          <button
-            key={k}
-            role="tab"
-            aria-selected={kind === k}
-            onClick={() => setKind(k)}
-            className={`rounded-md px-3 py-1 ${kind === k ? "bg-surface font-medium shadow-sm" : "text-muted hover:text-foreground"}`}
-          >
-            {boards[k].label}
-          </button>
-        ))}
-      </div>
+      <Tabs
+        id={`board-${problem.slug}`}
+        variant="pill"
+        label="Leaderboard"
+        items={(Object.keys(boards) as BoardKind[]).map((k) => ({ value: k, label: boards[k].label }))}
+        value={kind}
+        onChange={setKind}
+      />
       <p className="text-xs text-muted">
         {kind === "accuracy"
           ? "Best score on the hidden tests. Ties go to whoever reached it first."
@@ -81,15 +82,16 @@ export function LeaderboardTab({ problem }: { problem: PublicProblem }) {
       {state.status === "error" && <p className="text-sm text-danger">{state.error}</p>}
       {state.status === "ok" &&
         (state.data[kind].top.length === 0 ? (
-          <p className="text-sm text-muted">{boards[kind].empty}</p>
+          <p className="rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted">{boards[kind].empty}</p>
         ) : (
-          <table className="w-full overflow-hidden rounded-lg border border-border bg-surface text-sm">
-            <thead className="border-b border-border text-xs text-muted">
-              <tr>
-                <th className="w-12 px-3 py-2 text-left font-normal">#</th>
-                <th className="px-3 py-2 text-left font-normal">Learner</th>
-                <th className="px-3 py-2 text-right font-normal">{kind === "accuracy" ? "Score" : "Tokens"}</th>
-                <th className="hidden px-3 py-2 text-right font-normal sm:table-cell">Reached</th>
+          <div className="animate-enter overflow-hidden rounded-xl border border-border bg-surface">
+          <table className="w-full table-fixed text-sm">
+            <thead className="bg-surface-2 text-xs text-muted">
+              <tr className="border-b border-border">
+                <th className="w-12 px-3 py-2 text-left font-medium">#</th>
+                <th className="px-3 py-2 text-left font-medium">Learner</th>
+                <th className="w-24 px-3 py-2 text-right font-medium">{kind === "accuracy" ? "Score" : "Tokens"}</th>
+                <th className="hidden w-32 px-3 py-2 text-right font-medium sm:table-cell">Reached</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -100,7 +102,7 @@ export function LeaderboardTab({ problem }: { problem: PublicProblem }) {
                 <>
                   <tr aria-hidden>
                     <td colSpan={4} className="px-3 py-1 text-center text-xs text-muted">
-                      ⋯
+                      &hellip;
                     </td>
                   </tr>
                   <LeaderboardRow row={state.data[kind].me} kind={kind} />
@@ -108,6 +110,7 @@ export function LeaderboardTab({ problem }: { problem: PublicProblem }) {
               )}
             </tbody>
           </table>
+          </div>
         ))}
     </div>
   );

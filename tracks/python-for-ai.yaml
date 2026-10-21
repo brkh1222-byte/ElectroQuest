@@ -1,0 +1,14 @@
+title: Python for AI
+level: Beginner · first code
+summary: >-
+  Write your first lines of code, then use them to work with AI. This track assumes zero coding
+  experience. Five short lessons: values and functions, loops and counting, reading a dataset,
+  calling the model from Python, and measuring accuracy on a whole dataset. The first three run
+  free in your browser. Each lesson ends with an easy problem.
+order: 5
+problems:
+  - count-words
+  - most-common-label
+  - filter-reviews
+  - classify-review
+  - review-accuracy

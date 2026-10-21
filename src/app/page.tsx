@@ -1,7 +1,10 @@
+import { ArrowRight, BookOpen, FlaskConical, Target } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Countdown, PhaseBadge } from "@/components/contests/clock";
 import { TrackProgress } from "@/components/tracks/step-list";
+import { buttonClass } from "@/components/ui/button";
+import { cardClass } from "@/components/ui/card";
 import { contestPhase } from "@/lib/contest-time";
 import { contestNow, listContests } from "@/lib/contests";
 import { listTracks } from "@/lib/tracks";
@@ -16,22 +19,32 @@ async function ContestTeaser() {
   return (
     <Link
       href={`/contests/${contest.slug}`}
-      className="mt-10 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-border bg-surface px-5 py-4 hover:border-accent"
+      className={cardClass({
+        interactive: true,
+        className: "group mt-10 flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4",
+      })}
     >
       <PhaseBadge startsAt={contest.startsAt} endsAt={contest.endsAt} />
       <span className="font-medium">{contest.title}</span>
-      <span className="text-sm text-muted">
+      <span className="text-sm text-muted tabular-nums">
         {contest.problems.length} easy problems · <Countdown startsAt={contest.startsAt} endsAt={contest.endsAt} />
       </span>
-      <span className="ml-auto text-sm text-accent">Join the contest →</span>
+      <span className="ml-auto inline-flex items-center gap-1 text-sm font-medium text-accent">
+        Join the contest
+        <ArrowRight
+          aria-hidden
+          className="size-4 transition-transform duration-200 ease-out motion-safe:group-hover:translate-x-0.5"
+          strokeWidth={2}
+        />
+      </span>
     </Link>
   );
 }
 
 const howItWorks = [
-  { title: "Read a short lesson", body: "Three to five minutes, in plain English. Every new word is explained." },
-  { title: "Try it live", body: "Change a prompt inside the lesson and see what a real AI model replies." },
-  { title: "Solve an easy problem", body: "Write a prompt that passes hidden tests. Hints and answers are there if you get stuck." },
+  { Icon: BookOpen, title: "Read a short lesson", body: "Three to five minutes, in plain English. Every new word is explained." },
+  { Icon: FlaskConical, title: "Try it live", body: "Change a prompt inside the lesson and see what a real AI model replies." },
+  { Icon: Target, title: "Solve an easy problem", body: "Write a prompt that passes hidden tests. Hints and answers are there if you get stuck." },
 ];
 
 export default async function Home() {
@@ -39,8 +52,10 @@ export default async function Home() {
 
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-16 sm:py-24">
-      <p className="text-sm font-medium text-accent">Free · no AI experience needed · no code</p>
-      <h1 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
+      <p className="inline-flex h-7 items-center rounded-full bg-accent/10 px-3 text-sm font-medium text-accent ring-1 ring-accent/20 ring-inset">
+        Free · no AI experience needed · no code
+      </p>
+      <h1 className="mt-5 max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
         Learn to use and build with AI, from zero.
       </h1>
       <p className="mt-5 max-w-2xl text-lg text-muted text-pretty">
@@ -50,11 +65,16 @@ export default async function Home() {
       <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
         <Link
           href={tracks[0] ? `/tracks/${tracks[0].slug}` : "/tracks"}
-          className="inline-flex h-11 items-center rounded-lg bg-accent px-5 font-medium text-accent-foreground hover:opacity-90"
+          className={buttonClass({ size: "lg", className: "group max-w-full pr-4" })}
         >
-          Start learning: {tracks[0]?.title ?? "Tracks"}
+          <span className="truncate">Start learning: {tracks[0]?.title ?? "Tracks"}</span>
+          <ArrowRight
+            aria-hidden
+            className="size-4 shrink-0 transition-transform duration-200 ease-out motion-safe:group-hover:translate-x-0.5"
+            strokeWidth={2}
+          />
         </Link>
-        <Link href="/problems" className="text-sm text-muted underline-offset-4 hover:text-foreground hover:underline">
+        <Link href="/problems" className="rounded-sm text-sm text-muted underline-offset-4 transition-colors duration-150 hover:text-foreground hover:underline">
           Already know the basics? Browse all problems
         </Link>
       </div>
@@ -65,10 +85,15 @@ export default async function Home() {
 
       <section className="mt-20 grid gap-4 sm:grid-cols-3">
         {howItWorks.map((step, i) => (
-          <div key={step.title} className="rounded-xl border border-border bg-surface p-5">
-            <p className="text-xs font-medium uppercase tracking-wide text-muted">Step {i + 1}</p>
-            <h2 className="mt-2 font-semibold">{step.title}</h2>
-            <p className="mt-2 text-sm text-muted">{step.body}</p>
+          <div key={step.title} className={cardClass({ className: "p-5" })}>
+            <div className="flex items-center gap-3">
+              <span aria-hidden className="grid size-9 place-items-center rounded-lg bg-accent/10 text-accent">
+                <step.Icon className="size-[18px]" strokeWidth={2} />
+              </span>
+              <p className="text-xs font-medium tracking-wide text-muted uppercase">Step {i + 1}</p>
+            </div>
+            <h2 className="mt-4 font-semibold">{step.title}</h2>
+            <p className="mt-1.5 text-sm leading-relaxed text-muted text-pretty">{step.body}</p>
           </div>
         ))}
       </section>
@@ -81,21 +106,24 @@ export default async function Home() {
             <li key={track.slug}>
               <Link
                 href={`/tracks/${track.slug}`}
-                className="group flex gap-4 rounded-xl border border-border bg-surface p-5 hover:border-accent"
+                className={cardClass({ interactive: true, className: "group flex gap-4 p-5" })}
               >
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border text-sm font-medium text-muted group-hover:border-accent group-hover:text-accent">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surface-2 text-sm font-medium text-muted tabular-nums ring-1 ring-border ring-inset transition-colors duration-150 group-hover:bg-accent/10 group-hover:text-accent group-hover:ring-accent/30">
                   {i + 1}
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="font-semibold group-hover:text-accent">{track.title}</span>
+                    <span className="font-semibold transition-colors duration-150 group-hover:text-accent">{track.title}</span>
                     <Suspense>
                       <TrackProgress track={track} />
                     </Suspense>
                   </span>
                   <span className="mt-0.5 block text-xs font-medium tracking-wide text-accent uppercase">{track.level}</span>
-                  <span className="mt-2 block text-sm text-muted">{track.summary}</span>
-                  <span className="mt-3 block text-xs text-muted">{track.steps.length} lessons</span>
+                  <span className="mt-2 block text-sm leading-relaxed text-muted text-pretty">{track.summary}</span>
+                  <span className="mt-3 flex items-center gap-1.5 text-xs text-muted">
+                    <BookOpen aria-hidden className="size-3.5" strokeWidth={1.75} />
+                    {track.steps.length} lessons
+                  </span>
                 </span>
               </Link>
             </li>

@@ -1,0 +1,11 @@
+title: Measure the Model's Accuracy
+type: pipeline
+difficulty: easy
+tags: [python, evaluation, accuracy, beginner]
+entrypoint: accuracy
+model: default
+metric: label_accuracy
+threshold: 0.8
+limits:
+  maxOutputTokens: 10
+  maxCallsPerCase: 4

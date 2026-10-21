@@ -2,6 +2,8 @@
 
 import type { PublicProblem, RangeSetting } from "@/lib/problems/schema";
 import type { DraftSettings } from "./events";
+import { labelClass, Select } from "../ui/field";
+import { Slider as RangeSlider } from "../ui/slider";
 
 const labels = {
   temperature: { name: "Temperature", help: "0 = always the same reply. Higher = more random." },
@@ -32,16 +34,15 @@ function Slider({
 }) {
   const step = name === "temperature" ? 0.1 : 1;
   return (
-    <label className="flex items-center gap-2 text-xs" title={labels[name].help}>
-      <span className="text-muted">{labels[name].name}</span>
-      <input
-        type="range"
+    <label className="flex items-center gap-2.5 text-xs" title={labels[name].help}>
+      <span className={labelClass}>{labels[name].name}</span>
+      <RangeSlider
         min={range.min}
         max={range.max}
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-24 accent-[var(--accent)]"
+        className="w-24 sm:w-28"
       />
       <span className="w-8 font-mono tabular-nums">{name === "temperature" ? value.toFixed(1) : value}</span>
     </label>
@@ -59,7 +60,7 @@ export function SettingsBar({
 }) {
   const { temperature, maxOutputTokens } = problem.config.settings;
   return (
-    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border px-3 py-2">
+    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-border bg-surface-2/60 px-3 py-2">
       {temperature && (
         <Slider
           name="temperature"
@@ -77,19 +78,15 @@ export function SettingsBar({
         />
       )}
       {problem.models.length > 1 && (
-        <label className="flex items-center gap-2 text-xs">
-          <span className="text-muted">Model</span>
-          <select
-            value={value.model ?? problem.models[0]}
-            onChange={(e) => onChange({ ...value, model: e.target.value })}
-            className="rounded-md border border-border bg-background px-2 py-1 font-mono text-xs"
-          >
+        <label className="flex items-center gap-2.5 text-xs">
+          <span className={labelClass}>Model</span>
+          <Select value={value.model ?? problem.models[0]} onChange={(e) => onChange({ ...value, model: e.target.value })}>
             {problem.models.map((m) => (
               <option key={m} value={m}>
                 {modelLabel(m)}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
       )}
     </div>

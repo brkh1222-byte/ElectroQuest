@@ -1,5 +1,6 @@
 import { SignInButton } from "@clerk/nextjs";
 import type { Metadata } from "next";
+import { ArrowLeft, ArrowRight, CalendarClock, Check } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache, Suspense } from "react";
@@ -7,6 +8,8 @@ import { DifficultyBadge } from "@/components/badges";
 import { Countdown, LiveRefresh, LocalTime, PhaseBadge } from "@/components/contests/clock";
 import { JoinButton } from "@/components/contests/join-button";
 import { Standings } from "@/components/contests/standings";
+import { buttonClass } from "@/components/ui/button";
+import { cardClass } from "@/components/ui/card";
 import { getStandings, type StandingRow } from "@/db/contests";
 import { getCurrentUser } from "@/lib/auth";
 import { contestPhase } from "@/lib/contest-time";
@@ -34,7 +37,7 @@ const loadStandings = cache(async (slug: string) => {
 export default function ContestPage(props: PageProps<"/contests/[slug]">) {
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-10">
-      <Suspense fallback={<div className="h-64 animate-pulse rounded-xl bg-border/60" />}>
+      <Suspense fallback={<div className="h-64 rounded-xl bg-surface-2 motion-safe:animate-pulse" />}>
         <ContestContent params={props.params} />
       </Suspense>
     </main>
@@ -48,8 +51,12 @@ async function ContestContent({ params }: { params: PageProps<"/contests/[slug]"
 
   return (
     <>
-      <Link href="/contests" className="text-sm text-muted hover:text-foreground">
-        ← All contests
+      <Link
+        href="/contests"
+        className="inline-flex items-center gap-1.5 rounded-sm text-sm text-muted transition-colors duration-150 hover:text-foreground"
+      >
+        <ArrowLeft aria-hidden className="size-4" strokeWidth={2} />
+        All contests
       </Link>
       <div className="mt-6 flex flex-wrap items-center gap-3">
         <PhaseBadge {...times} />
@@ -57,22 +64,24 @@ async function ContestContent({ params }: { params: PageProps<"/contests/[slug]"
           <Countdown {...times} />
         </span>
       </div>
-      <h1 className="mt-3 text-3xl font-semibold tracking-tight">{contest.title}</h1>
-      <p className="mt-3 max-w-2xl text-muted text-pretty">{contest.description}</p>
-      <p className="mt-3 text-sm text-muted">
-        <LocalTime iso={contest.startsAt} /> → <LocalTime iso={contest.endsAt} /> · {contest.problems.length} problems ·{" "}
-        {contest.totalPoints} points
+      <h1 className="mt-3 text-3xl font-semibold tracking-tight text-balance">{contest.title}</h1>
+      <p className="mt-3 max-w-2xl text-lg leading-relaxed text-muted text-pretty">{contest.description}</p>
+      <p className="mt-3 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-muted tabular-nums">
+        <CalendarClock aria-hidden className="size-4" strokeWidth={1.75} />
+        <LocalTime iso={contest.startsAt} />
+        <ArrowRight aria-label="to" className="size-3.5" strokeWidth={2} />
+        <LocalTime iso={contest.endsAt} /> · {contest.problems.length} problems · {contest.totalPoints} points
       </p>
 
       <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <aside className="space-y-6 lg:col-start-2 lg:row-start-1">
-          <Suspense fallback={<div className="h-36 animate-pulse rounded-xl bg-border/60" />}>
+          <Suspense fallback={<div className="h-36 rounded-xl bg-surface-2 motion-safe:animate-pulse" />}>
             <YourEntry contest={contest} />
           </Suspense>
           <Rules />
         </aside>
         <div className="min-w-0 space-y-10 lg:col-start-1 lg:row-start-1">
-          <Suspense fallback={<div className="h-72 animate-pulse rounded-xl bg-border/60" />}>
+          <Suspense fallback={<div className="h-72 rounded-xl bg-surface-2 motion-safe:animate-pulse" />}>
             <ProblemsAndStandings contest={contest} />
           </Suspense>
         </div>
@@ -81,7 +90,7 @@ async function ContestContent({ params }: { params: PageProps<"/contests/[slug]"
   );
 }
 
-const card = "rounded-xl border border-border bg-surface p-5";
+const card = cardClass({ className: "p-5" });
 
 /** Join button, or the viewer's own score once they're in. */
 async function YourEntry({ contest }: { contest: Contest }) {
@@ -94,10 +103,10 @@ async function YourEntry({ contest }: { contest: Contest }) {
     const next = contest.problems.find((p) => !me.solved.includes(p.slug) && !me.helped.includes(p.slug));
     return (
       <div className={card}>
-        <p className="text-xs font-medium tracking-wide text-accent uppercase">
+        <p className="text-xs font-semibold tracking-wide text-accent uppercase">
           {phase === "ended" ? "Your final result" : "You're in"}
         </p>
-        <dl className="mt-3 grid grid-cols-3 gap-2 text-center">
+        <dl className="mt-3 grid grid-cols-3 gap-2 text-center [&>div]:rounded-lg [&>div]:bg-surface-2 [&>div]:py-2">
           <Stat label="Rank" value={me.points > 0 ? `#${me.rank}` : "–"} />
           <Stat label="Points" value={me.points} />
           <Stat label="Solved" value={`${me.solved.length}/${contest.problems.length}`} />
@@ -111,9 +120,14 @@ async function YourEntry({ contest }: { contest: Contest }) {
           (next ? (
             <Link
               href={`/problems/${next.slug}`}
-              className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-lg bg-accent px-4 text-sm font-medium text-accent-foreground hover:opacity-90"
+              className={buttonClass({ block: true, className: "group mt-4 h-10" })}
             >
-              Next: {next.title}
+              <span className="truncate">Next: {next.title}</span>
+              <ArrowRight
+                aria-hidden
+                className="size-4 shrink-0 transition-transform duration-200 ease-out motion-safe:group-hover:translate-x-0.5"
+                strokeWidth={2}
+              />
             </Link>
           ) : (
             <p className="mt-4 text-sm text-muted">
@@ -144,7 +158,7 @@ async function YourEntry({ contest }: { contest: Contest }) {
         <JoinButton slug={contest.slug} />
       ) : (
         <SignInButton mode="modal">
-          <button className="inline-flex h-10 w-full items-center justify-center rounded-lg bg-accent px-4 text-sm font-medium text-accent-foreground hover:opacity-90">
+          <button className={buttonClass({ block: true, className: "h-10" })}>
             Sign in to join
           </button>
         </SignInButton>
@@ -212,7 +226,7 @@ async function ProblemsAndStandings({ contest }: { contest: Contest }) {
             The {contest.problems.length} problems appear here when the contest starts.
           </p>
         ) : (
-          <ol className="mt-3 divide-y divide-border rounded-xl border border-border bg-surface">
+          <ol className="mt-3 divide-y divide-border overflow-hidden rounded-xl border border-border bg-surface">
             {contest.problems.map((p, i) => (
               <ProblemRow key={p.slug} problem={p} index={i} me={me} />
             ))}
@@ -237,23 +251,26 @@ function ProblemRow({ problem, index, me }: { problem: Contest["problems"][numbe
   const solved = me?.solved.includes(problem.slug);
   const helped = me?.helped.includes(problem.slug);
   return (
-    <li className="flex items-center gap-4 px-4 py-3">
+    <li className="relative flex items-center gap-4 px-4 py-3 transition-colors duration-150 hover:bg-surface-2">
       <span
-        className={`flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-medium ${
-          solved ? "bg-success text-background" : "border border-border text-muted"
+        className={`flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-medium tabular-nums ${
+          solved ? "bg-success text-background" : "bg-surface-2 text-muted ring-1 ring-border ring-inset"
         }`}
         aria-label={solved ? "Solved" : `Problem ${index + 1}`}
       >
-        {solved ? "✓" : index + 1}
+        {solved ? <Check aria-hidden className="size-4" strokeWidth={2.5} /> : index + 1}
       </span>
       <div className="min-w-0 flex-1">
-        <Link href={`/problems/${problem.slug}`} className="font-medium hover:text-accent">
+        <Link
+          href={`/problems/${problem.slug}`}
+          className="rounded-sm font-medium transition-colors duration-150 after:absolute after:inset-0 hover:text-accent"
+        >
           {problem.title}
         </Link>
         <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-sm text-muted">
           <DifficultyBadge difficulty={problem.difficulty} />
-          {solved && <span className="text-success">· Solved</span>}
-          {helped && <span className="text-warning">· Answer seen, no points</span>}
+          {solved && <span className="font-medium text-success">Solved</span>}
+          {helped && <span className="font-medium text-warning">Answer seen, no points</span>}
         </p>
       </div>
       <span className="shrink-0 text-sm font-medium tabular-nums">{problem.points} pts</span>

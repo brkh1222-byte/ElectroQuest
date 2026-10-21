@@ -2,6 +2,7 @@ import "server-only";
 
 import { z } from "zod";
 import { getCurrentUser } from "./auth";
+import { opensLater } from "./contest-config";
 import { getProblem } from "./problems/loader";
 
 export function jsonError(status: number, error: string) {
@@ -23,7 +24,8 @@ export async function requireUserAndProblem(slug: string, types: string[], signI
   const user = await getCurrentUser();
   if (!user) return { error: jsonError(401, signInMessage) } as const;
   const problem = await getProblem(slug);
-  if (!problem || !types.includes(problem.config.type)) {
+  // A contest-only problem doesn't exist for anyone until its contest starts (run, submit, chat, answer).
+  if (!problem || !types.includes(problem.config.type) || (await opensLater(problem.config))) {
     return { error: jsonError(404, "Problem not found.") } as const;
   }
   return { user, problem } as const;

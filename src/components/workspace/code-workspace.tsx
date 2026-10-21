@@ -1,6 +1,7 @@
 "use client";
 
 import Editor from "@monaco-editor/react";
+import { Play, RotateCcw, Upload } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { PublicProblem, TestCase } from "@/lib/problems/schema";
 import { allclose, getRunner, type CaseOutput } from "@/lib/runner/python-runner";
@@ -8,6 +9,7 @@ import { notifySubmitted, useOnLoadDraft } from "./events";
 import { ResultsPanel } from "./results-panel";
 import type { CaseView, RunState } from "./types";
 import { useDraft } from "./use-draft";
+import { Button } from "../ui/button";
 
 function toRunCases(tests: TestCase[]) {
   return tests.map((t) => ({ id: t.id, args: t.args ?? [] }));
@@ -134,12 +136,13 @@ export function CodeWorkspace({ problem }: { problem: PublicProblem }) {
 
   return (
     <section className="flex min-h-0 flex-col">
-      <div className="flex items-center border-b border-border px-4 py-2 text-sm">
+      <div className="flex h-11 items-center gap-2 border-b border-border px-4 text-sm">
         <span className="font-medium">Python</span>
-        <span className="ml-2 text-xs text-muted">runs in your browser</span>
-        <button onClick={resetCode} className="ml-auto text-xs text-muted hover:text-foreground">
+        <span className="truncate text-xs text-muted">runs in your browser</span>
+        <Button variant="ghost" size="sm" onClick={resetCode} className="-mr-2 ml-auto">
+          <RotateCcw aria-hidden className="size-3.5" strokeWidth={2} />
           Reset
-        </button>
+        </Button>
       </div>
       <div className="min-h-72 flex-1 lg:min-h-0">
         <Editor
@@ -150,21 +153,15 @@ export function CodeWorkspace({ problem }: { problem: PublicProblem }) {
           options={{ minimap: { enabled: false }, fontSize: 14, scrollBeyondLastLine: false, tabSize: 4 }}
         />
       </div>
-      <div className="flex items-center justify-end gap-2 border-y border-border px-3 py-2">
-        <button
-          onClick={() => evaluate("run")}
-          disabled={busy}
-          className="rounded-lg border border-border px-4 py-1.5 text-sm hover:bg-surface disabled:opacity-50"
-        >
+      <div className="flex items-center justify-end gap-2 border-y border-border bg-surface px-3 py-2">
+        <Button variant="secondary" onClick={() => evaluate("run")} disabled={busy}>
+          <Play aria-hidden className="size-3.5" strokeWidth={2} />
           Run
-        </button>
-        <button
-          onClick={() => evaluate("submit")}
-          disabled={busy}
-          className="rounded-lg bg-accent px-4 py-1.5 text-sm font-medium text-accent-foreground hover:opacity-90 disabled:opacity-50"
-        >
+        </Button>
+        <Button onClick={() => evaluate("submit")} disabled={busy}>
+          <Upload aria-hidden className="size-3.5" strokeWidth={2} />
           Submit
-        </button>
+        </Button>
       </div>
       <div className="h-[40%] min-h-48 shrink-0 overflow-y-auto p-4">
         <ResultsPanel state={state} />

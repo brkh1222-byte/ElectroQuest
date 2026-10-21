@@ -1,0 +1,17 @@
+title: Data Detective Day
+description: >-
+  Real data, real mess. Four puzzles built from public datasets: text messages, news stories,
+  bank questions and customer reviews. Three need a prompt, and one needs a little Python.
+# ISO times with a time zone. The contest runs from startsAt until endsAt.
+# For now it starts early so the team can test it. Change the dates for the real event.
+startsAt: "2026-10-21T00:00:00Z"
+endsAt: "2026-10-28T00:00:00Z"
+# Problem slugs in display order. Each is worth 100 points unless it sets its own.
+# Each problem's problem.yaml has `contest: data-detective-day`, which keeps it out of the
+# problem bank until the contest ends.
+problems:
+  - spam-or-not
+  - news-desk
+  - bank-helpdesk-intent
+  - slug: count-the-complaints
+    points: 150

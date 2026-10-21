@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useSyncExternalStore } from "react";
 import { contestPhase, formatDuration } from "@/lib/contest-time";
+import { Badge } from "../ui/badge";
 
 type Times = { startsAt: string; endsAt: string };
 
@@ -47,21 +48,20 @@ export function Countdown({ startsAt, endsAt }: Times) {
 }
 
 const phaseStyle = {
-  upcoming: { label: "Coming up", className: "border-border text-muted" },
-  running: { label: "Live now", className: "border-success/50 text-success" },
-  ended: { label: "Ended", className: "border-border text-muted" },
+  upcoming: { label: "Coming up", tone: "accent" },
+  running: { label: "Live now", tone: "success" },
+  ended: { label: "Ended", tone: "neutral" },
 } as const;
 
 export function PhaseBadge({ startsAt, endsAt }: Times) {
   const t = useNow();
-  if (t === null) return <span className="inline-block h-5 w-16 rounded-full border border-border" />;
+  if (t === null) return <span className="inline-block h-6 w-20 rounded-full bg-surface-2 ring-1 ring-border ring-inset" />;
   const phase = contestPhase({ startsAt, endsAt }, t);
-  const { label, className } = phaseStyle[phase];
+  const { label, tone } = phaseStyle[phase];
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium ${className}`}>
-      {phase === "running" && <span className="size-1.5 animate-pulse rounded-full bg-success" />}
+    <Badge tone={tone} dot={phase === "running"} pulse={phase === "running"}>
       {label}
-    </span>
+    </Badge>
   );
 }
 

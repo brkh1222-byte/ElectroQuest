@@ -1,0 +1,6 @@
+title: Find the Bad Reviews
+type: scratch
+difficulty: easy
+tags: [python, data, beginner]
+entrypoint: low_ratings
+compare: equal

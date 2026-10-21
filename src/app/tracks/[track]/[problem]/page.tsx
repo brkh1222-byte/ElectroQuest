@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { ArrowLeft, ArrowRight, ChevronRight, Dumbbell } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Markdown } from "@/components/markdown";
+import { cardClass } from "@/components/ui/card";
 import { getProblem } from "@/lib/problems/loader";
 import { stepHref } from "@/lib/step-href";
 import { getTrack, listTracks } from "@/lib/tracks";
@@ -30,9 +32,9 @@ export async function generateMetadata(props: PageProps<"/tracks/[track]/[proble
 function LessonSkeleton() {
   return (
     <div className="space-y-4">
-      <div className="h-4 w-40 animate-pulse rounded bg-border" />
-      <div className="mt-6 h-8 w-2/3 animate-pulse rounded bg-border" />
-      <div className="h-64 animate-pulse rounded bg-border/60" />
+      <div className="h-4 w-40 rounded-md bg-surface-2 motion-safe:animate-pulse" />
+      <div className="mt-6 h-9 w-2/3 rounded-lg bg-surface-2 motion-safe:animate-pulse" />
+      <div className="h-64 rounded-xl bg-surface-2 motion-safe:animate-pulse" />
     </div>
   );
 }
@@ -40,7 +42,7 @@ function LessonSkeleton() {
 /** A lesson page: read, try the ideas live, then go solve the paired problem. */
 export default function LessonPage(props: PageProps<"/tracks/[track]/[problem]">) {
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-10">
+    <main className="mx-auto w-full max-w-[46rem] flex-1 px-4 py-8 sm:py-12">
       <Suspense fallback={<LessonSkeleton />}>
         <LessonContent params={props.params} />
       </Suspense>
@@ -57,52 +59,70 @@ async function LessonContent({ params }: { params: PageProps<"/tracks/[track]/[p
 
   return (
     <>
-      <nav className="flex items-center gap-2 text-sm text-muted">
-        <Link href={`/tracks/${track.slug}`} className="hover:text-foreground">
+      <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1.5 text-sm text-muted">
+        <Link
+          href={`/tracks/${track.slug}`}
+          className="truncate rounded-sm transition-colors duration-150 hover:text-foreground"
+        >
           {track.title}
         </Link>
-        <span aria-hidden>/</span>
-        <span>
+        <ChevronRight aria-hidden className="size-3.5 shrink-0" strokeWidth={2} />
+        <span className="shrink-0 tabular-nums">
           Lesson {index + 1} of {track.steps.length}
         </span>
       </nav>
 
-      <article className="mt-6">
+      <article className="lesson-article mt-6">
         <Markdown tryItSlug={problem.config.type === "prompt" ? problem.slug : undefined}>{problem.lesson}</Markdown>
       </article>
 
       <Link
         href={`/problems/${problem.slug}`}
-        className="mt-10 flex items-center justify-between gap-4 rounded-xl border border-accent bg-surface p-5 hover:bg-background"
+        className={cardClass({
+          tone: "accent",
+          interactive: true,
+          className: "group mt-12 flex items-center gap-4 p-5 hover:border-accent",
+        })}
       >
-        <span>
-          <span className="block text-xs font-medium tracking-wide text-accent uppercase">Now practice it</span>
-          <span className="mt-1 block text-lg font-semibold">{problem.config.title}</span>
+        <span aria-hidden className="grid size-11 shrink-0 place-items-center rounded-lg bg-accent/10 text-accent">
+          <Dumbbell className="size-5" strokeWidth={2} />
         </span>
-        <span aria-hidden className="text-2xl text-accent">
-          →
+        <span className="min-w-0 flex-1">
+          <span className="block text-xs font-semibold tracking-wide text-accent uppercase">Now practice it</span>
+          <span className="mt-0.5 block text-lg font-semibold text-balance">{problem.config.title}</span>
         </span>
+        <ArrowRight
+          aria-hidden
+          className="size-5 shrink-0 text-accent transition-transform duration-200 ease-out motion-safe:group-hover:translate-x-0.5"
+          strokeWidth={2}
+        />
       </Link>
 
-      <div className="mt-8 flex justify-between gap-4 text-sm">
+      <nav aria-label="Lessons" className="mt-6 grid gap-3 text-sm sm:grid-cols-2">
         {prev ? (
-          <Link href={stepHref(track.slug, prev)} className="text-muted hover:text-foreground">
-            ← {prev.lessonTitle ?? prev.title}
+          <Link href={stepHref(track.slug, prev)} className={cardClass({ interactive: true, className: "group flex flex-col gap-1 p-4" })}>
+            <span className="flex items-center gap-1.5 text-xs text-muted">
+              <ArrowLeft aria-hidden className="size-3.5" strokeWidth={2} />
+              Previous
+            </span>
+            <span className="font-medium text-foreground">{prev.lessonTitle ?? prev.title}</span>
           </Link>
         ) : (
-          <span />
+          <span className="hidden sm:block" />
         )}
-        {next && (
-          <Link href={stepHref(track.slug, next)} className="text-right text-muted hover:text-foreground">
-            {next.lessonTitle ?? next.title} →
+        {(next || nextTrack) && (
+          <Link
+            href={next ? stepHref(track.slug, next) : `/tracks/${nextTrack!.slug}`}
+            className={cardClass({ interactive: true, className: "group flex flex-col items-end gap-1 p-4 text-right" })}
+          >
+            <span className="flex items-center gap-1.5 text-xs text-muted">
+              {next ? "Next" : "Next track"}
+              <ArrowRight aria-hidden className="size-3.5" strokeWidth={2} />
+            </span>
+            <span className="font-medium text-foreground">{next ? (next.lessonTitle ?? next.title) : nextTrack!.title}</span>
           </Link>
         )}
-        {!next && nextTrack && (
-          <Link href={`/tracks/${nextTrack.slug}`} className="text-right text-muted hover:text-foreground">
-            Next track: {nextTrack.title} →
-          </Link>
-        )}
-      </div>
+      </nav>
     </>
   );
 }

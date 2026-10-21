@@ -1,0 +1,7 @@
+{"id": "h1", "args": ["Best coffee I have had in years. I will order again."], "expected": "positive"}
+{"id": "h2", "args": ["Customer service never answered my emails."], "expected": "negative"}
+{"id": "h3", "args": ["Not bad at all. It does everything I need."], "expected": "positive"}
+{"id": "h4", "args": ["Looks great in the photos. In real life it feels cheap and flimsy."], "expected": "negative"}
+{"id": "h5", "args": ["My kids love it and it was easy to set up."], "expected": "positive"}
+{"id": "h6", "args": ["Too loud, too slow, and the battery barely lasts an hour."], "expected": "negative"}
+{"id": "h7", "args": ["I expected to hate it, but honestly it's wonderful."], "expected": "positive"}

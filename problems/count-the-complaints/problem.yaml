@@ -1,0 +1,15 @@
+title: Count the Complaints
+type: pipeline
+difficulty: easy
+tags: [python, classification, real-data, beginner]
+# Contest-only until Data Detective Day ends, then a normal bank problem.
+contest: data-detective-day
+entrypoint: count_complaints
+model: default
+metric: label_accuracy
+threshold: 0.8
+fixtures:
+  reviews: fixtures/reviews.json
+limits:
+  maxOutputTokens: 30
+  maxCallsPerCase: 8

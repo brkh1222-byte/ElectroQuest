@@ -1,0 +1,10 @@
+{"id": "h1", "input": "I'm still waiting for delivery of my new card, why is it taking so long?", "expected": "card_arrival"}
+{"id": "h2", "input": "What is the tracking number for the card you sent?", "expected": "card_arrival"}
+{"id": "h3", "input": "I lost my wallet today with all my credit cards. Will you please block the card and send a replacement?", "expected": "lost_or_stolen_card"}
+{"id": "h4", "input": "Someone stole my card. I need to report it stolen. I made a police report already, but how do I report it with you?", "expected": "lost_or_stolen_card"}
+{"id": "h5", "input": "Where do you get your exchange rates from?", "expected": "exchange_rate"}
+{"id": "h6", "input": "What kind of foreign exchange rate will I get when I exchange my money?", "expected": "exchange_rate"}
+{"id": "h7", "input": "What do I do if the bank machine won't accept my PIN attempts anymore?", "expected": "pin_blocked"}
+{"id": "h8", "input": "I'v exhausted all the of times I can try my PIN", "expected": "pin_blocked"}
+{"id": "h9", "input": "I bought something and returned it and the money from the return isn't in my account.", "expected": "refund_not_showing_up"}
+{"id": "h10", "input": "Did my refund go through? It's not on my statement.", "expected": "refund_not_showing_up"}

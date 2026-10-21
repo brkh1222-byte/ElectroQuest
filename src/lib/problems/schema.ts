@@ -15,6 +15,9 @@ export const problemConfigSchema = z.object({
   type: z.enum(problemTypes),
   difficulty: z.enum(["easy", "medium", "hard"]),
   tags: z.array(z.string()).default([]),
+  // Reserves the problem for a contest (a contests/<slug>.yaml): it stays out of the problem bank
+  // and tracks while that contest is upcoming or running, and can't be opened before it starts.
+  contest: z.string().regex(/^[a-z0-9-]+$/).optional(),
   // "default" resolves to the platform default model; a list makes the problem "open model".
   model: z.union([z.string(), z.array(z.string())]).optional(),
   metric: z.enum(metrics).optional(),
@@ -91,4 +94,6 @@ export type ProblemSummary = {
   type: ProblemType;
   difficulty: ProblemConfig["difficulty"];
   tags: string[];
+  /** Set for a contest-only problem: the contest it is reserved for. */
+  contest?: string;
 };

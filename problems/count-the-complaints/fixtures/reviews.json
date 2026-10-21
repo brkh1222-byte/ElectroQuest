@@ -1,0 +1,22 @@
+[
+  {"id": "r01", "source": "amazon", "text": "The battery runs down quickly."},
+  {"id": "r02", "source": "amazon", "text": "I've only had my bluetooth for a few weeks, but I really like it."},
+  {"id": "r03", "source": "amazon", "text": "Audio Quality is poor, very poor."},
+  {"id": "r04", "source": "amazon", "text": "Simple, lightweight and great fit."},
+  {"id": "r05", "source": "amazon", "text": "Really pleased with this product so far."},
+  {"id": "r06", "source": "amazon", "text": "Doesn't work at all.. I bougth it for my L7c and its not working."},
+  {"id": "r07", "source": "amazon", "text": "I especially love the long battery life."},
+  {"id": "r08", "source": "amazon", "text": "The case is a flimsy piece of plastic and has no front or side protection whatsoever."},
+  {"id": "r09", "source": "amazon", "text": "Linked to my phone without effort."},
+  {"id": "r10", "source": "amazon", "text": "So I basically threw my money out the window for nothing."},
+  {"id": "r11", "source": "yelp", "text": "Their chow mein is so good!"},
+  {"id": "r12", "source": "yelp", "text": "It took over 30 min to get their milkshake, which was nothing more than chocolate milk."},
+  {"id": "r13", "source": "yelp", "text": "We watched our waiter pay a lot more attention to other tables and ignore us."},
+  {"id": "r14", "source": "yelp", "text": "Food was great and so was the serivce!"},
+  {"id": "r15", "source": "yelp", "text": "She ordered a toasted English muffin that came out untoasted."},
+  {"id": "r16", "source": "yelp", "text": "Service is quick and friendly."},
+  {"id": "r17", "source": "yelp", "text": "Don't waste your time here."},
+  {"id": "r18", "source": "yelp", "text": "Delicious and I will absolutely be back!"},
+  {"id": "r19", "source": "yelp", "text": "The service here leaves a lot to be desired."},
+  {"id": "r20", "source": "yelp", "text": "Generous portions and great taste."}
+]

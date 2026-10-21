@@ -1,13 +1,18 @@
 import type { ProblemConfig, ProblemType } from "@/lib/problems/schema";
+import { Badge, type BadgeTone } from "./ui/badge";
 
-const difficultyClass: Record<ProblemConfig["difficulty"], string> = {
-  easy: "text-success",
-  medium: "text-warning",
-  hard: "text-danger",
+const difficultyTone: Record<ProblemConfig["difficulty"], BadgeTone> = {
+  easy: "success",
+  medium: "warning",
+  hard: "danger",
 };
 
 export function DifficultyBadge({ difficulty }: { difficulty: ProblemConfig["difficulty"] }) {
-  return <span className={`text-sm font-medium capitalize ${difficultyClass[difficulty]}`}>{difficulty}</span>;
+  return (
+    <Badge tone={difficultyTone[difficulty]} dot className="capitalize">
+      {difficulty}
+    </Badge>
+  );
 }
 
 export const typeLabel: Record<ProblemType, string> = {
@@ -17,7 +22,5 @@ export const typeLabel: Record<ProblemType, string> = {
 };
 
 export function TypeBadge({ type }: { type: ProblemType }) {
-  return (
-    <span className="rounded-full border border-border px-2 py-0.5 text-xs text-muted">{typeLabel[type]}</span>
-  );
+  return <Badge>{typeLabel[type]}</Badge>;
 }

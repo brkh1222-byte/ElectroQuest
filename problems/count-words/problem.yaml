@@ -1,0 +1,6 @@
+title: Count the Words
+type: scratch
+difficulty: easy
+tags: [python, beginner]
+entrypoint: count_words
+compare: equal

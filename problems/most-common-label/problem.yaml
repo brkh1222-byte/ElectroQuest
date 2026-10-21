@@ -1,0 +1,6 @@
+title: Most Common Label
+type: scratch
+difficulty: easy
+tags: [python, loops, beginner]
+entrypoint: most_common
+compare: equal

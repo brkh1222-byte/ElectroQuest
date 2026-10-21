@@ -1,0 +1,10 @@
+{"id": "h1", "input": "For taking part in our mobile survey yesterday! You can now have 500 texts 2 use however you wish. 2 get txts just send TXT to 80160 T&C www.txt43.com 1.50p", "expected": "spam"}
+{"id": "h2", "input": "Now am free call me pa.", "expected": "ham"}
+{"id": "h3", "input": "Had your mobile 10 mths? Update to the latest Camera/Video phones for FREE. KEEP UR SAME NUMBER, Get extra free mins/texts. Text YES for a call", "expected": "spam"}
+{"id": "h4", "input": "Ok, be careful ! Don't text and drive !", "expected": "ham"}
+{"id": "h5", "input": "Sunshine Quiz Wkly Q! Win a top Sony DVD player if u know which country the Algarve is in? Txt ansr to 82277. £1.50 SP:Tyrone", "expected": "spam"}
+{"id": "h6", "input": "I think the other two still need to get cash but we can def be ready by 9", "expected": "ham"}
+{"id": "h7", "input": "Thanks for your Ringtone Order, Reference T91. You will be charged GBP 4 per week. You can unsubscribe at anytime by calling customer services on 09057039994", "expected": "spam"}
+{"id": "h8", "input": "No dear i do have free messages without any recharge. Hi hi hi", "expected": "ham"}
+{"id": "h9", "input": "Congratulations ur awarded 500 of CD vouchers or 125gift guaranteed & Free entry 2 100 wkly draw txt MUSIC to 87066 TnCs www.Ldew.com1win150ppmx3age16", "expected": "spam"}
+{"id": "h10", "input": "Awesome, text me when you're restocked", "expected": "ham"}

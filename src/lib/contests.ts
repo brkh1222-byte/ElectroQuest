@@ -1,32 +1,18 @@
 import "server-only";
 
-import { readdir, readFile } from "node:fs/promises";
+import { readdir } from "node:fs/promises";
 import path from "node:path";
-import { cacheLife, io } from "next/cache";
+import { cacheLife } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
-import { parse as parseYaml } from "yaml";
-import { z } from "zod";
 import { hasJoined } from "@/db/contests";
 import { getCurrentUser } from "./auth";
+import { contestNow, readContestConfig } from "./contest-config";
 import { contestPhase } from "./contest-time";
 import { getProblem } from "./problems/loader";
 import type { ProblemSummary } from "./problems/schema";
 
 const CONTESTS_DIR = path.join(process.cwd(), "contests");
 const DEFAULT_POINTS = 100;
-
-// Shape of contests/<slug>.yaml. A problem is a slug, or { slug, points } to change its points.
-const contestConfigSchema = z
-  .object({
-    title: z.string(),
-    description: z.string(),
-    startsAt: z.iso.datetime({ offset: true }),
-    endsAt: z.iso.datetime({ offset: true }),
-    problems: z
-      .array(z.union([z.string(), z.object({ slug: z.string(), points: z.number().int().positive().optional() })]))
-      .min(1),
-  })
-  .refine((c) => Date.parse(c.endsAt) > Date.parse(c.startsAt), "endsAt must be after startsAt");
 
 export type ContestProblem = ProblemSummary & { points: number };
 export type Contest = {
@@ -41,14 +27,8 @@ export type Contest = {
 };
 
 async function loadContest(slug: string): Promise<Contest | null> {
-  if (!/^[a-z0-9-]+$/.test(slug)) return null;
-  let raw: string;
-  try {
-    raw = await readFile(path.join(CONTESTS_DIR, `${slug}.yaml`), "utf8");
-  } catch {
-    return null;
-  }
-  const config = contestConfigSchema.parse(parseYaml(raw));
+  const config = await readContestConfig(slug);
+  if (!config) return null;
   const problems = await Promise.all(
     config.problems.map(async (entry): Promise<ContestProblem> => {
       const { slug: problemSlug, points = DEFAULT_POINTS } = typeof entry === "string" ? { slug: entry } : entry;
@@ -56,6 +36,10 @@ async function loadContest(slug: string): Promise<Contest | null> {
       if (!p) throw new Error(`Contest "${slug}" lists unknown problem "${problemSlug}"`);
       // From-scratch problems are graded in the browser, so their results can't be trusted for ranking.
       if (p.config.type === "scratch") throw new Error(`Contest "${slug}" lists from-scratch problem "${problemSlug}"`);
+      // A contest-only problem is hidden until its own contest ends, so it can't serve another one.
+      if (p.config.contest && p.config.contest !== slug) {
+        throw new Error(`Contest "${slug}" lists "${problemSlug}", which is reserved for contest "${p.config.contest}"`);
+      }
       return { slug: p.slug, title: p.config.title, type: p.config.type, difficulty: p.config.difficulty, tags: p.config.tags, points };
     }),
   );
@@ -92,11 +76,7 @@ export async function listContests(): Promise<Contest[]> {
     .sort((a, b) => Date.parse(a.startsAt) - Date.parse(b.startsAt));
 }
 
-/** The current time. io() keeps anything that depends on it out of the prerendered shell. */
-export async function contestNow() {
-  await io();
-  return Date.now();
-}
+export { contestNow };
 
 /** Running contests that include a problem, ending soonest first. */
 async function runningContestsWith(problemSlug: string, now: number) {

@@ -51,6 +51,37 @@ def _run_case(fn, args_json, array_args=False):
     return json.dumps({"value": value, "stdout": buf.getvalue()}, default=str)
 `;
 
+// Lesson "python-try" blocks: run a whole snippet, capture print() output, and show the value of a
+// final bare expression (like a notebook). Errors are reduced to "Line N: Type: message".
+const RUN_SNIPPET = `
+import ast, contextlib, io, json, traceback
+def _run_snippet(src):
+    out = {"stdout": "", "value": None, "error": None}
+    try:
+        tree = ast.parse(src, "<snippet>", "exec")
+    except SyntaxError as e:
+        out["error"] = f"Line {e.lineno}: {type(e).__name__}: {e.msg}"
+        return json.dumps(out)
+    last = None
+    if tree.body and isinstance(tree.body[-1], ast.Expr):
+        last = ast.Expression(tree.body.pop().value)
+    ns = {"__name__": "__main__"}
+    buf = io.StringIO()
+    try:
+        with contextlib.redirect_stdout(buf):
+            exec(compile(tree, "<snippet>", "exec"), ns)
+            if last is not None:
+                value = eval(compile(last, "<snippet>", "eval"), ns)
+                if value is not None:
+                    out["value"] = repr(value)
+    except BaseException as e:
+        lines = [f.lineno for f in traceback.extract_tb(e.__traceback__) if f.filename == "<snippet>"]
+        where = f"Line {lines[-1]}: " if lines else ""
+        out["error"] = f"{where}{type(e).__name__}: {e}"
+    out["stdout"] = buf.getvalue()
+    return json.dumps(out)
+`;
+
 let pyodide = null;
 let pyodideLoading = null;
 const loadedPackages = new Set();
@@ -70,6 +101,7 @@ exec(_SDK_SRC, _sdk.__dict__)
 sys.modules["evalquest"] = _sdk
 `);
     pyodide.runPython(RUN_CASE);
+    pyodide.runPython(RUN_SNIPPET);
   }
   const missing = packages.filter((p) => !loadedPackages.has(p));
   if (missing.length) {
@@ -91,6 +123,15 @@ self.onmessage = async ({ data }) => {
     if (data.type === "init") {
       await init(data.packages || []);
       self.postMessage({ id, type: "ready" });
+      return;
+    }
+    if (data.type === "snippet") {
+      // No session token, so evalquest.llm calls fail: lesson snippets never reach the model.
+      await init([]);
+      pyodide.pyimport("evalquest")._state.set("token", null);
+      self.postMessage({ id, type: "snippet-started" });
+      const out = JSON.parse(pyodide.globals.get("_run_snippet")(data.code));
+      self.postMessage({ id, type: "snippet-done", stdout: out.stdout, value: out.value, error: out.error });
       return;
     }
     if (data.type === "run") {

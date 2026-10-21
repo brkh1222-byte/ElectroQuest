@@ -1,0 +1,4 @@
+{"id": "v1", "args": [[{"text": "Love it. Works perfectly.", "label": "positive"}, {"text": "Broke on the first day.", "label": "negative"}, {"text": "Terrible smell and it leaks.", "label": "positive"}]], "expected": "2/3"}
+{"id": "v2", "args": [[{"text": "Great value, fast shipping.", "label": "positive"}, {"text": "Rude staff and a long wait.", "label": "negative"}]], "expected": "2/2"}
+{"id": "v3", "args": [[{"text": "Absolutely wonderful, I use it every day.", "label": "negative"}, {"text": "Awful. I want my money back.", "label": "positive"}]], "expected": "0/2"}
+{"id": "v4", "args": [[{"text": "The best purchase I made this year.", "label": "positive"}, {"text": "Comfortable and stylish.", "label": "positive"}, {"text": "It fell apart in a week.", "label": "negative"}, {"text": "Cheap plastic, very disappointing.", "label": "positive"}]], "expected": "3/4"}

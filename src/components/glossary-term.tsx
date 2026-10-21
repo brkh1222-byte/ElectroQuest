@@ -9,7 +9,7 @@ export function GlossaryText({ text }: { text: string }) {
     <>
       {text.split(/(`[^`]+`)/).map((part, i) =>
         part.length > 2 && part.startsWith("`") && part.endsWith("`") ? (
-          <code key={i} className="rounded bg-muted/15 px-1 font-mono text-[0.875em]">
+          <code key={i} className="rounded-md bg-surface-2 px-1 font-mono text-[0.875em] ring-1 ring-border ring-inset">
             {part.slice(1, -1)}
           </code>
         ) : (
@@ -29,19 +29,19 @@ export function GlossaryTerm({ entry, children }: { entry: GlossaryEntry; childr
     <span className="group relative">
       <Link
         href={`/glossary#${entry.id}`}
-        className="underline decoration-muted decoration-dotted decoration-1 underline-offset-4 hover:text-accent hover:decoration-accent focus-visible:text-accent"
+        className="glossary-link rounded-sm underline decoration-muted decoration-dotted decoration-1 underline-offset-4 transition-colors duration-150 hover:text-accent hover:decoration-accent focus-visible:text-accent"
       >
         {children}
       </Link>
       <span
         role="tooltip"
-        className="pointer-events-none invisible absolute bottom-full left-0 z-20 mb-1.5 block w-72 max-w-[80vw] rounded-lg border border-border bg-surface p-3 text-left text-sm leading-snug font-normal text-foreground opacity-0 shadow-lg transition-opacity group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100"
+        className="pointer-events-none invisible absolute bottom-full left-0 z-20 mb-2 block w-72 max-w-[min(18rem,calc(100vw-2rem))] translate-y-1 rounded-xl border border-transparent bg-surface p-3.5 text-left text-sm leading-snug font-normal text-foreground opacity-0 shadow-overlay transition-[opacity,translate,visibility] duration-150 ease-out group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:translate-y-0"
       >
         <span className="block font-medium">{entry.term}</span>
         <span className="mt-1 block text-muted">
           <GlossaryText text={entry.definition} />
         </span>
-        <span className="mt-2 block text-xs text-accent">Click for an example and more →</span>
+        <span className="mt-2 block text-xs font-medium text-accent">Click for an example and more →</span>
       </span>
     </span>
   );

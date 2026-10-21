@@ -1,7 +1,11 @@
 "use client";
 
 import { SignInButton } from "@clerk/nextjs";
+import { FlaskConical, Loader2, RotateCcw, Send } from "lucide-react";
 import { useState } from "react";
+import { Button } from "./ui/button";
+import { labelClass, textareaClass } from "./ui/field";
+import { Slider } from "./ui/slider";
 
 export type TryItOptions = { temperature?: number; maxOutputTokens?: number; repeat?: number };
 
@@ -51,67 +55,76 @@ export function TryIt({ slug, system, user, options = {} }: { slug: string; syst
     setState({ status: "idle" });
   }
 
-  const field = "w-full resize-y rounded-md border border-border bg-background p-2.5 font-mono text-xs outline-none focus:border-accent";
-
   return (
-    <div className="not-prose my-5 space-y-3 rounded-xl border border-accent/40 bg-surface p-4">
-      <p className="text-xs font-semibold tracking-wide text-accent uppercase">Try it</p>
-      <label className="block space-y-1">
-        <span className="text-xs text-muted">System prompt</span>
-        <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} rows={3} className={field} />
-      </label>
-      <label className="block space-y-1">
-        <span className="text-xs text-muted">Message</span>
-        <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={2} className={field} />
-      </label>
-      {temperature !== undefined && (
-        <label className="flex items-center gap-2 text-xs">
-          <span className="text-muted">Temperature</span>
-          <input
-            type="range"
-            min={0}
-            max={1.5}
-            step={0.1}
-            value={temperature}
-            onChange={(e) => setTemperature(Number(e.target.value))}
-            className="w-32 accent-[var(--accent)]"
-          />
-          <span className="font-mono tabular-nums">{temperature.toFixed(1)}</span>
-        </label>
-      )}
-      <div className="flex items-center gap-3">
-        <button
-          onClick={run}
-          disabled={state.status === "running" || !message.trim()}
-          className="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-accent-foreground hover:opacity-90 disabled:opacity-50"
-        >
-          {state.status === "running" ? "Asking the model…" : repeat > 1 ? `Send ${repeat} times` : "Send to model"}
-        </button>
-        <button onClick={reset} className="text-xs text-muted hover:text-foreground">
-          Reset
-        </button>
+    <div className="not-prose my-6 rounded-2xl border border-accent/30 bg-surface shadow-card">
+      <div className="flex items-center gap-2 border-b border-border px-4 py-2.5">
+        <FlaskConical aria-hidden className="size-4 text-accent" strokeWidth={2} />
+        <p className="text-xs font-semibold tracking-wide text-accent uppercase">Try it</p>
       </div>
-      {state.status === "done" && (
-        <div className={repeat > 1 ? "grid gap-2 sm:grid-cols-3" : ""}>
-          {state.texts.map((text, i) => (
-            <div key={i} className="rounded-md border border-border bg-background p-3 text-sm whitespace-pre-wrap">
-              <span className="mb-1 block text-xs text-muted">{repeat > 1 ? `Reply ${i + 1}` : "Model reply"}</span>
-              {text}
-            </div>
-          ))}
+      <div className="space-y-3 p-4">
+        <label className="block space-y-1.5">
+          <span className={labelClass}>System prompt</span>
+          <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} rows={3} className={textareaClass} />
+        </label>
+        <label className="block space-y-1.5">
+          <span className={labelClass}>Message</span>
+          <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={2} className={textareaClass} />
+        </label>
+        {temperature !== undefined && (
+          <label className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+            <span className={labelClass}>Temperature</span>
+            <Slider
+              min={0}
+              max={1.5}
+              step={0.1}
+              value={temperature}
+              onChange={(e) => setTemperature(Number(e.target.value))}
+              className="w-40"
+            />
+            <span className="w-7 font-mono tabular-nums">{temperature.toFixed(1)}</span>
+          </label>
+        )}
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          <Button onClick={run} disabled={state.status === "running" || !message.trim()}>
+            {state.status === "running" ? (
+              <Loader2 aria-hidden className="size-4 motion-safe:animate-spin" strokeWidth={2} />
+            ) : (
+              <Send aria-hidden className="size-4" strokeWidth={2} />
+            )}
+            {state.status === "running" ? "Asking the model…" : repeat > 1 ? `Send ${repeat} times` : "Send to model"}
+          </Button>
+          <Button variant="ghost" size="sm" onClick={reset}>
+            <RotateCcw aria-hidden className="size-3.5" strokeWidth={2} />
+            Reset
+          </Button>
         </div>
-      )}
-      {state.status === "error" &&
-        (state.signIn ? (
-          <p className="text-sm text-muted">
-            <SignInButton mode="modal">
-              <button className="text-accent underline underline-offset-2">Sign in</button>
-            </SignInButton>{" "}
-            to talk to the model. It&apos;s free.
-          </p>
-        ) : (
-          <p className="text-sm text-danger">{state.error}</p>
-        ))}
+        <div aria-live="polite">
+          {state.status === "done" && (
+            <div className={repeat > 1 ? "stagger grid gap-2 sm:grid-cols-3" : "stagger"}>
+              {state.texts.map((text, i) => (
+                <div
+                  key={i}
+                  className="animate-enter rounded-xl border border-border bg-surface-2 p-3 text-sm leading-relaxed whitespace-pre-wrap"
+                >
+                  <span className="mb-1 block text-xs font-medium text-muted">{repeat > 1 ? `Reply ${i + 1}` : "Model reply"}</span>
+                  {text}
+                </div>
+              ))}
+            </div>
+          )}
+          {state.status === "error" &&
+            (state.signIn ? (
+              <p className="text-sm text-muted">
+                <SignInButton mode="modal">
+                  <button className="font-medium text-accent underline underline-offset-2">Sign in</button>
+                </SignInButton>{" "}
+                to talk to the model. It&apos;s free.
+              </p>
+            ) : (
+              <p className="text-sm text-danger">{state.error}</p>
+            ))}
+        </div>
+      </div>
     </div>
   );
 }

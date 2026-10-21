@@ -495,6 +495,221 @@ export const glossary: GlossaryEntry[] = [
     lessons: ["fill-the-blank", "not-sure"],
     related: ["language-model", "knowledge-cutoff"],
   },
+  {
+    id: "python",
+    term: "Python",
+    definition:
+      "A popular programming language with short, readable code. Many AI tools are built with it.",
+    example: "`print(\"Hello\")` is a whole Python program that shows Hello.",
+    lessons: ["count-words"],
+    related: ["code", "function"],
+  },
+  {
+    id: "code",
+    term: "Code",
+    aliases: ["source code"],
+    definition:
+      "Instructions for a computer, written in a programming language. The computer follows them exactly, one line at a time.",
+    example: "`total = 2 + 3` is one line of code.",
+    lessons: ["count-words"],
+    related: ["python"],
+  },
+  {
+    id: "value",
+    term: "Value",
+    definition:
+      "One piece of data, such as a number, a piece of text, or True/False.",
+    example: "`7`, `\"hello\"` and `True` are three values.",
+    lessons: ["count-words"],
+    related: ["variable", "string"],
+  },
+  {
+    id: "string",
+    term: "String",
+    aliases: ["strings"],
+    definition:
+      "A value made of text, written between quotes. Without quotes, Python thinks the word is a variable name.",
+    example: "`\"good morning\"` is a string. `good morning` without quotes is an error.",
+    lessons: ["count-words"],
+    related: ["value"],
+  },
+  {
+    id: "variable",
+    term: "Variable",
+    aliases: ["variables"],
+    definition:
+      "A name that holds a value so you can use it later. You give it a value with `=`.",
+    example: "`name = \"Sara\"` stores the text Sara under the name `name`.",
+    lessons: ["count-words"],
+    related: ["value"],
+  },
+  {
+    id: "list",
+    term: "List",
+    aliases: ["lists"],
+    definition:
+      "An ordered collection of values, written in square brackets.",
+    example: "`[\"spam\", \"ham\", \"spam\"]` is a list of three labels.",
+    lessons: ["count-words"],
+    related: ["loop"],
+  },
+  {
+    id: "function",
+    term: "Function",
+    aliases: ["functions"],
+    definition:
+      "A named, reusable block of code. It takes inputs, does some work, and gives back a result with `return`.",
+    example: "`def double(x): return x * 2` makes a function; `double(4)` gives 8.",
+    lessons: ["count-words", "classify-review"],
+    related: ["return"],
+  },
+  {
+    id: "return",
+    term: "Return",
+    aliases: ["returns", "return (vs print)"],
+    definition:
+      "How a function gives its result back to the code that called it. `print` only shows text on screen; it does not give anything back.",
+    example: "A grader checks what your function returns, so `print(answer)` alone fails.",
+    lessons: ["count-words", "filter-reviews", "review-accuracy"],
+    related: ["function"],
+  },
+  {
+    id: "indentation",
+    term: "Indentation",
+    aliases: ["indented", "wrong indentation"],
+    definition:
+      "The spaces at the start of a line. Python uses them to know which lines belong inside a function or loop. Use 4 spaces.",
+    example: "The line after `for word in words:` must start with 4 spaces.",
+    lessons: ["count-words", "most-common-label"],
+    related: ["loop", "function"],
+  },
+  {
+    id: "loop",
+    term: "Loop",
+    aliases: ["loops", "for loop"],
+    definition:
+      "Code that repeats the same steps for each item in a list.",
+    example: "`for label in labels:` runs the next lines once for every label.",
+    lessons: ["most-common-label"],
+    related: ["list", "counter"],
+  },
+  {
+    id: "counter",
+    term: "Counter",
+    definition:
+      "A variable that keeps a running count, usually starting at 0 and growing by 1.",
+    example: "`count = count + 1` each time you see the word spam.",
+    lessons: ["most-common-label"],
+    related: ["loop"],
+  },
+  {
+    id: "dictionary",
+    term: "Dictionary",
+    aliases: ["dict", "key"],
+    definition:
+      "A collection of key-value pairs: you look up a value by its key, like a word in a real dictionary.",
+    example: "`row[\"rating\"]` gets the rating from `{\"product\": \"lamp\", \"rating\": 2}`.",
+    lessons: ["most-common-label", "filter-reviews"],
+    related: ["dataset"],
+  },
+  {
+    id: "dataset",
+    term: "Dataset",
+    aliases: ["datasets", "data set"],
+    definition:
+      "A collection of examples, usually arranged as rows with the same fields. AI builders use datasets to test and train models.",
+    example: "A table of 1,000 product reviews, each with a text and a star rating.",
+    lessons: ["filter-reviews", "review-accuracy"],
+    related: ["row", "labeled-data"],
+  },
+  {
+    id: "row",
+    term: "Row (and field)",
+    aliases: ["row", "rows", "field", "fields"],
+    definition:
+      "One example in a dataset is a row. Each piece of information in it, such as the text or the rating, is a field.",
+    example: "In a reviews dataset, one row is one review; `rating` is one field.",
+    lessons: ["filter-reviews"],
+    related: ["dataset", "dictionary"],
+  },
+  {
+    id: "filtering",
+    term: "Filtering",
+    aliases: ["filter"],
+    definition:
+      "Keeping only the items that match a rule and skipping the rest.",
+    example: "Keep only reviews with a rating of 2 or less.",
+    lessons: ["filter-reviews"],
+    related: ["comparison"],
+  },
+  {
+    id: "comparison",
+    term: "Comparison",
+    aliases: ["comparisons"],
+    definition:
+      "A check that is True or False, such as `<`, `<=`, `==` (equal) and `!=` (not equal). Note: `=` stores a value, `==` compares.",
+    example: "`rating <= 2` is True for a 1-star review.",
+    lessons: ["filter-reviews", "review-accuracy"],
+    related: ["filtering"],
+  },
+  {
+    id: "import",
+    term: "Import",
+    definition:
+      "A line that loads ready-made code so you can use it in your program.",
+    example: "`from evalquest import llm` lets your code call the model with `llm.chat`.",
+    lessons: ["classify-review"],
+    related: ["method"],
+  },
+  {
+    id: "method",
+    term: "Method",
+    aliases: ["methods"],
+    definition:
+      "A function that belongs to a value or module, called with a dot.",
+    example: "`text.lower()` makes text lowercase; `llm.chat(...)` asks the model.",
+    lessons: ["classify-review"],
+    related: ["function", "import"],
+  },
+  {
+    id: "labeled-data",
+    term: "Labeled data",
+    aliases: ["labels", "label"],
+    definition:
+      "Examples that already have the correct answer attached, usually added by people. You compare the model's answers with them.",
+    example: "A review plus the label `negative` that a person chose.",
+    lessons: ["review-accuracy"],
+    related: ["accuracy", "dataset"],
+  },
+  {
+    id: "accuracy",
+    term: "Accuracy",
+    definition:
+      "The share of answers that are correct: correct answers divided by all answers.",
+    example: "The model labels 9 of 10 reviews correctly: accuracy is 9/10, or 90%.",
+    lessons: ["review-accuracy"],
+    related: ["evaluation", "labeled-data"],
+  },
+  {
+    id: "evaluation",
+    term: "Evaluation (eval)",
+    aliases: ["eval", "evals", "evaluation"],
+    definition:
+      "Testing a model or prompt on many examples with known answers to measure how well it works. EvalQuest's hidden tests are evaluations.",
+    example: "Run your prompt on 100 labeled reviews and count how many it gets right.",
+    lessons: ["review-accuracy"],
+    related: ["accuracy"],
+  },
+  {
+    id: "f-string",
+    term: "f-string",
+    aliases: ["f-strings"],
+    definition:
+      "A string with `f` before the quotes, which puts variable values inside the text with `{}`.",
+    example: "`f\"{correct}/{total}\"` makes text like `9/10`.",
+    lessons: ["review-accuracy"],
+    related: ["string"],
+  },
 ];
 
 /** Lowercase, without quotes, trailing punctuation or extra spaces, so bold text can be matched. */

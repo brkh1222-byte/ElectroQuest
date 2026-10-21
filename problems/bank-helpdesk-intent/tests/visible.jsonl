@@ -1,0 +1,5 @@
+{"id": "v1", "input": "My card has not arrived yet.", "expected": "card_arrival"}
+{"id": "v2", "input": "Help! Someone stole my card!", "expected": "lost_or_stolen_card"}
+{"id": "v3", "input": "What exchange rates do you offer?", "expected": "exchange_rate"}
+{"id": "v4", "input": "I entered the wrong pin too many times and now I am blocked.  Help me unblock!", "expected": "pin_blocked"}
+{"id": "v5", "input": "My refund is missing", "expected": "refund_not_showing_up"}

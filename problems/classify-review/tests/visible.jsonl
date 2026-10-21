@@ -1,0 +1,4 @@
+{"id": "v1", "args": ["Arrived quickly and works perfectly. Very happy!"], "expected": "positive"}
+{"id": "v2", "args": ["It stopped working after two days. Waste of money."], "expected": "negative"}
+{"id": "v3", "args": ["I was worried it would be too small, but it fits great."], "expected": "positive"}
+{"id": "v4", "args": ["The box looked nice, but the product inside was broken."], "expected": "negative"}

@@ -1,7 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { Loader2, Trophy } from "lucide-react";
 import { useState, useTransition } from "react";
+import { Button } from "../ui/button";
 
 /** Joins the contest, then re-renders the page so the viewer's entry and status appear. */
 export function JoinButton({ slug }: { slug: string }) {
@@ -26,13 +28,14 @@ export function JoinButton({ slug }: { slug: string }) {
   const busy = joining || refreshing;
   return (
     <div className="space-y-2">
-      <button
-        onClick={join}
-        disabled={busy}
-        className="inline-flex h-10 w-full items-center justify-center rounded-lg bg-accent px-4 text-sm font-medium text-accent-foreground hover:opacity-90 disabled:opacity-60"
-      >
+      <Button onClick={join} disabled={busy} block className="h-10">
+        {busy ? (
+          <Loader2 aria-hidden className="size-4 motion-safe:animate-spin" strokeWidth={2} />
+        ) : (
+          <Trophy aria-hidden className="size-4" strokeWidth={2} />
+        )}
         {busy ? "Joining…" : "Join the contest"}
-      </button>
+      </Button>
       {error && <p className="text-sm text-danger">{error}</p>}
     </div>
   );

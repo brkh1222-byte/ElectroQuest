@@ -1,6 +1,8 @@
 "use client";
 
+import { CircleCheck, CircleX, Info, Loader2, TriangleAlert } from "lucide-react";
 import Link from "next/link";
+import { Badge } from "../ui/badge";
 import type { CaseView, RunState } from "./types";
 
 function show(value: unknown) {
@@ -10,12 +12,16 @@ function show(value: unknown) {
 
 function CaseRow({ c }: { c: CaseView }) {
   return (
-    <details className="rounded-lg border border-border bg-surface" open={!c.passed && c.input !== undefined}>
-      <summary className="flex cursor-pointer items-center gap-2 px-3 py-2 text-sm">
-        <span className={c.passed ? "text-success" : "text-danger"}>{c.passed ? "✓" : "✗"}</span>
-        <span className="font-mono text-xs text-muted">{c.id}</span>
+    <details className="group rounded-xl border border-border bg-surface" open={!c.passed && c.input !== undefined}>
+      <summary className="flex cursor-pointer items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors duration-150 hover:bg-surface-2">
+        {c.passed ? (
+          <CircleCheck aria-label="Passed" className="size-4 shrink-0 text-success" strokeWidth={2} />
+        ) : (
+          <CircleX aria-label="Failed" className="size-4 shrink-0 text-danger" strokeWidth={2} />
+        )}
+        <span className="min-w-0 truncate font-mono text-xs text-muted">{c.id}</span>
       </summary>
-      <dl className="grid grid-cols-[5rem_1fr] gap-x-3 gap-y-1.5 border-t border-border px-3 py-2 font-mono text-xs">
+      <dl className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-x-3 gap-y-1.5 border-t border-border px-3 py-2.5 font-mono text-xs">
         {c.input !== undefined && (
           <>
             <dt className="text-muted">Input</dt>
@@ -59,39 +65,62 @@ function CaseRow({ c }: { c: CaseView }) {
 
 export function ResultsPanel({ state }: { state: RunState }) {
   if (state.status === "idle") {
-    return <p className="text-sm text-muted">Run checks the visible examples. Submit grades the hidden tests.</p>;
+    return (
+      <p className="flex items-start gap-2 text-sm text-muted">
+        <Info aria-hidden className="mt-0.5 size-4 shrink-0" strokeWidth={1.75} />
+        <span>
+          <strong className="font-medium text-foreground">Run</strong> checks the visible examples.{" "}
+          <strong className="font-medium text-foreground">Submit</strong> grades the hidden tests.
+        </span>
+      </p>
+    );
   }
-  if (state.status === "running") return <p className="text-sm text-muted">{state.label}</p>;
+  if (state.status === "running") {
+    return (
+      <p role="status" className="flex items-center gap-2 text-sm text-muted">
+        <Loader2 aria-hidden className="size-4 motion-safe:animate-spin" strokeWidth={2} />
+        {state.label}
+      </p>
+    );
+  }
   if (state.status === "error") {
-    return <pre className="text-sm whitespace-pre-wrap text-danger">{state.error}</pre>;
+    return (
+      <div className="flex animate-enter gap-2 rounded-xl border border-danger/30 bg-danger/5 p-3 text-danger">
+        <TriangleAlert aria-hidden className="mt-0.5 size-4 shrink-0" strokeWidth={2} />
+        <pre className="min-w-0 font-mono text-xs leading-relaxed whitespace-pre-wrap break-words">{state.error}</pre>
+      </div>
+    );
   }
 
   const { report } = state;
   const verdict =
     report.mode === "submit"
       ? report.accepted
-        ? { text: "Accepted", className: "text-success" }
-        : { text: report.overBudget ? "Over token budget" : "Not accepted", className: "text-danger" }
-      : { text: "Run finished", className: "text-foreground" };
+        ? { text: "Accepted", className: "text-success", Icon: CircleCheck }
+        : { text: report.overBudget ? "Over token budget" : "Not accepted", className: "text-danger", Icon: CircleX }
+      : { text: "Run finished", className: "text-foreground", Icon: null };
 
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-        <span className={`text-lg font-semibold ${verdict.className}`}>{verdict.text}</span>
-        <span className="text-sm text-muted">
-          {report.passed}/{report.total} passed · {Math.round(report.score * 100)}%
+    <div className="stagger space-y-3">
+      <div className="flex animate-enter flex-wrap items-center gap-x-3 gap-y-2">
+        <span className={`flex items-center gap-1.5 text-lg font-semibold ${verdict.className}`}>
+          {verdict.Icon && <verdict.Icon aria-hidden className="size-5" strokeWidth={2.25} />}
+          {verdict.text}
         </span>
+        <Badge tone={report.passed === report.total ? "success" : "neutral"} className="tabular-nums">
+          {report.passed}/{report.total} passed · {Math.round(report.score * 100)}%
+        </Badge>
         {report.tokens !== undefined && report.tokens > 0 && (
-          <span className="text-sm text-muted">{report.tokens.toLocaleString()} tokens</span>
+          <Badge className="tabular-nums">{report.tokens.toLocaleString()} tokens</Badge>
         )}
         {report.tokenBudget !== undefined && (
-          <span className={`text-sm ${report.overBudget ? "text-danger" : "text-muted"}`}>
+          <Badge tone={report.overBudget ? "danger" : "neutral"} className="tabular-nums">
             avg {report.avgOutputTokens} / {report.tokenBudget} output tokens per reply
-          </span>
+          </Badge>
         )}
       </div>
       {report.contest && (
-        <p className="text-sm text-success">
+        <p className="animate-enter text-sm text-success">
           Counted for{" "}
           <Link href={`/contests/${report.contest.slug}`} className="font-medium underline underline-offset-2">
             {report.contest.title}
@@ -99,7 +128,7 @@ export function ResultsPanel({ state }: { state: RunState }) {
           .
         </p>
       )}
-      <div className="space-y-2">
+      <div className="animate-enter space-y-2">
         {report.cases.map((c) => (
           <CaseRow key={c.id} c={c} />
         ))}

@@ -1,0 +1,7 @@
+{"id":"h1","args":["The battery lasts all day and the screen is bright"],"expected":10}
+{"id":"h2","args":["ok"],"expected":1}
+{"id":"h3","args":["     "],"expected":0}
+{"id":"h4","args":["line one\nline two"],"expected":4}
+{"id":"h5","args":["Fast delivery, good price!"],"expected":4}
+{"id":"h6","args":["a b c d e f g h"],"expected":8}
+{"id":"h7","args":["Tab\tseparated\twords"],"expected":3}

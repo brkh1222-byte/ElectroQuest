@@ -36,10 +36,13 @@ async function loadTrack(slug: string): Promise<Track | null> {
     return null;
   }
   const { problems, ...config } = trackConfigSchema.parse(parseYaml(raw));
-  const steps = await Promise.all(
-    problems.map(async (problemSlug): Promise<TrackStep> => {
+  const loaded = await Promise.all(
+    problems.map(async (problemSlug): Promise<TrackStep | null> => {
       const p = await getProblem(problemSlug);
       if (!p) throw new Error(`Track "${slug}" lists unknown problem "${problemSlug}"`);
+      // Contest-only problems are left out. Tracks are cached and must not depend on the time,
+      // so this holds even after the contest ends: delete the problem's `contest:` line to add it.
+      if (p.config.contest) return null;
       return {
         slug: p.slug,
         title: p.config.title,
@@ -50,6 +53,7 @@ async function loadTrack(slug: string): Promise<Track | null> {
       };
     }),
   );
+  const steps = loaded.filter((s): s is TrackStep => s !== null);
   return { slug, ...config, steps };
 }
 
