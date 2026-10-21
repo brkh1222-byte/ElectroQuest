@@ -1,11 +1,13 @@
 import "server-only";
 
 import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
+import { redis } from "./redis";
 
 /**
  * A run/submit session for a pipeline problem (spec §6).
  * The token authorizes LLM proxy calls from the learner's Pyodide worker
  * and ties token usage to one attempt. It is HMAC-signed, so it can't be forged.
+ * Claims live in the token; counters live in Redis so every server instance sees them.
  */
 export type SessionClaims = {
   sid: string;
@@ -17,13 +19,18 @@ export type SessionClaims = {
 
 export type SessionState = {
   claims: SessionClaims;
-  calls: Map<string, number>; // per-case LLM call counts
   inputTokens: number;
   outputTokens: number;
   scored: boolean;
 };
 
+type StoredSession = { inputTokens?: number; outputTokens?: number; scored?: number };
+
 const SESSION_TTL_MS = 15 * 60 * 1000;
+const TTL_SECONDS = SESSION_TTL_MS / 1000;
+
+const stateKey = (sid: string) => `session:${sid}`;
+const callsKey = (sid: string) => `session:${sid}:calls`; // per-case LLM call counts
 
 function secret() {
   const s = process.env.SESSION_SECRET;
@@ -36,17 +43,18 @@ function sign(payload: string) {
   return createHmac("sha256", secret()).update(payload).digest("base64url");
 }
 
-// TODO: move to Redis/Postgres (`submit_sessions` table) — in-memory state is per-instance only.
-const sessions = new Map<string, SessionState>();
-
-export function createSession(userId: string, slug: string, mode: SessionClaims["mode"]) {
+export async function createSession(userId: string, slug: string, mode: SessionClaims["mode"]) {
   const claims: SessionClaims = { sid: randomUUID(), userId, slug, mode, exp: Date.now() + SESSION_TTL_MS };
-  sessions.set(claims.sid, { claims, calls: new Map(), inputTokens: 0, outputTokens: 0, scored: false });
+  await redis()
+    .pipeline()
+    .hset(stateKey(claims.sid), { inputTokens: 0, outputTokens: 0 })
+    .expire(stateKey(claims.sid), TTL_SECONDS)
+    .exec();
   const payload = Buffer.from(JSON.stringify(claims)).toString("base64url");
   return { claims, token: `${payload}.${sign(payload)}` };
 }
 
-export function verifySession(token: string | null | undefined): SessionState | null {
+export async function verifySession(token: string | null | undefined): Promise<SessionState | null> {
   if (!token) return null;
   const [payload, sig] = token.split(".");
   if (!payload || !sig) return null;
@@ -55,7 +63,37 @@ export function verifySession(token: string | null | undefined): SessionState | 
   if (expected.length !== given.length || !timingSafeEqual(expected, given)) return null;
   const claims = JSON.parse(Buffer.from(payload, "base64url").toString()) as SessionClaims;
   if (claims.exp < Date.now()) return null;
-  return sessions.get(claims.sid) ?? null;
+  const stored = await redis().hgetall<StoredSession>(stateKey(claims.sid));
+  if (!stored) return null;
+  return {
+    claims,
+    inputTokens: Number(stored.inputTokens ?? 0),
+    outputTokens: Number(stored.outputTokens ?? 0),
+    scored: Boolean(Number(stored.scored ?? 0)),
+  };
+}
+
+/** Counts one LLM call for a test case; returns false once the case is over its cap. */
+export async function claimCall(sid: string, caseId: string, maxCalls: number) {
+  const [calls] = await redis()
+    .pipeline()
+    .hincrby(callsKey(sid), caseId, 1)
+    .expire(callsKey(sid), TTL_SECONDS)
+    .exec<[number, number]>();
+  return calls <= maxCalls;
+}
+
+export async function addUsage(sid: string, inputTokens: number, outputTokens: number) {
+  await redis()
+    .pipeline()
+    .hincrby(stateKey(sid), "inputTokens", inputTokens)
+    .hincrby(stateKey(sid), "outputTokens", outputTokens)
+    .exec();
+}
+
+/** Atomically marks the attempt scored; false if it already was (blocks double-scoring). */
+export async function markScored(sid: string) {
+  return (await redis().hsetnx(stateKey(sid), "scored", 1)) === 1;
 }
 
 export function bearerToken(req: Request) {

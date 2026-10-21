@@ -22,7 +22,7 @@ export async function POST(req: Request, ctx: RouteContext<"/api/problems/[slug]
   if (!body) return jsonError(400, "Invalid request.");
   const model = resolveModel(problem.config, body.model);
   if (!model) return jsonError(400, "That model isn't allowed for this problem.");
-  if (!consumeQuota(user.id, body.mode)) {
+  if (!(await consumeQuota(user.id, body.mode))) {
     return jsonError(429, `Daily ${body.mode} limit reached. It resets at 00:00 UTC.`);
   }
 

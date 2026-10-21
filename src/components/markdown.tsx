@@ -5,7 +5,7 @@ import remarkMath from "remark-math";
 
 export function Markdown({ children }: { children: string }) {
   return (
-    <div className="prose-arena">
+    <div className="prose-content">
       <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>
         {children}
       </ReactMarkdown>

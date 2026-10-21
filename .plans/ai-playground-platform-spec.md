@@ -2,7 +2,7 @@
 
 **Hackathon theme:** Fine-tuning for the Future: equal access to education & skills
 **Timeline:** 2 weeks, large team, production-quality build
-**Working name:** _TBD_ (placeholder: "AI Arena"; SDK module named `arena`)
+**Name:** EvalQuest (learner SDK module: `evalquest`)
 
 ---
 
@@ -20,7 +20,7 @@ One ladder covering the full range:
 | Learner | Entry point |
 |---|---|
 | Can't code at all | Prompt-engineering problems (no code), lesson→problem pairs |
-| Codes a bit, new to AI | Easy pipeline problems using the simple `arena` SDK |
+| Codes a bit, new to AI | Easy pipeline problems using the simple `evalquest` SDK |
 | Developers upskilling | Hard pipeline problems (OpenAI-compatible client), from-scratch implementations, fine-tuning concept problems |
 
 English only for v1.
@@ -72,7 +72,7 @@ All types share **one judge model**: run the submission on test cases → comput
 - **Fixed model per problem by default**, so everyone is compared on skill. Some problems are **"open model"**: the learner picks from a menu and the token cost matters (an efficiency lesson).
 - All models are small and cheap, served through **Vercel AI Gateway**. The platform pays for everything.
 - Learner code has two ways to call models (both go through our proxy, and **no keys ever reach the client**):
-  - **`arena` SDK** (beginner): `from arena import llm, embed` → `llm.chat(messages, model=None)`, `embed(texts)`. Usage is logged per run.
+  - **`evalquest` SDK** (beginner): `from evalquest import llm, embed` → `llm.chat(messages, model=None)`, `embed(texts)`. Usage is logged per run.
   - **OpenAI-compatible endpoint** (advanced): the real `openai` client pointed at our base URL with a short-lived, per-run session token.
 - The proxy enforces: problem-allowed models, max tokens per call, per-run call caps, quota, and auth.
 

@@ -6,7 +6,7 @@ You're building the help assistant for **Lumen Bank**. Implement `answer(questio
 You can call the platform's models with no API key:
 
 ```python
-from arena import llm, embed
+from evalquest import llm, embed
 reply = llm.chat([{"role": "user", "content": "Hi"}])   # -> str
 vectors = embed(["text one", "text two"])               # -> list[list[float]]
 ```

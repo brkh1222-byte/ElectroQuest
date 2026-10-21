@@ -1,4 +1,4 @@
-from arena import llm, embed, fixtures
+from evalquest import llm, embed, fixtures
 
 DOCS = fixtures["docs"]  # list of {"id": str, "text": str}
 

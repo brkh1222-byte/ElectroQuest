@@ -23,7 +23,7 @@ export async function POST(req: Request, ctx: RouteContext<"/api/problems/[slug]
   if (!body) return jsonError(400, "Invalid request.");
   const model = resolveModel(problem.config, body.model);
   if (!model) return jsonError(400, "That model isn't allowed for this problem.");
-  if (!consumeQuota(user.id, "run")) return jsonError(429, "Daily run limit reached.");
+  if (!(await consumeQuota(user.id, "run"))) return jsonError(429, "Daily run limit reached.");
 
   try {
     const reply = await chat({

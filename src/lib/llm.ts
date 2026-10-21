@@ -4,8 +4,8 @@ import { embedMany, generateText, type ModelMessage } from "ai";
 import type { ProblemConfig } from "./problems/schema";
 
 // Small, cheap models via Vercel AI Gateway (spec §5). Verify slugs against the gateway's model list.
-export const DEFAULT_MODEL = process.env.ARENA_DEFAULT_MODEL ?? "google/gemini-2.5-flash-lite";
-export const EMBEDDING_MODEL = process.env.ARENA_EMBEDDING_MODEL ?? "openai/text-embedding-3-small";
+export const DEFAULT_MODEL = process.env.EVALQUEST_DEFAULT_MODEL ?? "google/gemini-2.5-flash-lite";
+export const EMBEDDING_MODEL = process.env.EVALQUEST_EMBEDDING_MODEL ?? "openai/text-embedding-3-small";
 
 /** Models a problem allows. A single model = fixed; a list = "open model" problem. */
 export function allowedModels(config: ProblemConfig) {

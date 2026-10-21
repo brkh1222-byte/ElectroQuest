@@ -3,6 +3,7 @@ import "server-only";
 import { sql } from "drizzle-orm";
 import { db } from ".";
 import { leaderboardEntries, streakDays, submissions } from "./schema";
+import { ensureUser } from "./users";
 
 export async function recordSubmission(s: {
   userId: string;
@@ -15,6 +16,7 @@ export async function recordSubmission(s: {
 }) {
   if (!db) return; // no database configured yet
 
+  await ensureUser(s.userId);
   await db.insert(submissions).values({
     userId: s.userId,
     problemSlug: s.slug,

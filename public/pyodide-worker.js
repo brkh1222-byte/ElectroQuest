@@ -2,9 +2,9 @@
 const PYODIDE_VERSION = "0.27.7";
 importScripts(`https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/pyodide.js`);
 
-// The `arena` SDK learners import. LLM calls go through our proxy with a per-attempt session
+// The `evalquest` SDK learners import. LLM calls go through our proxy with a per-attempt session
 // token; synchronous XHR is allowed in workers, so learner code stays plain synchronous Python.
-const ARENA_MODULE = `
+const SDK_MODULE = `
 import json, sys, types
 from js import XMLHttpRequest
 
@@ -62,12 +62,12 @@ async function init(packages) {
     const instance = await pyodideLoading;
     if (pyodide) return init(packages);
     pyodide = instance;
-    pyodide.globals.set("_ARENA_SRC", ARENA_MODULE);
+    pyodide.globals.set("_SDK_SRC", SDK_MODULE);
     pyodide.runPython(`
 import sys, types
-_arena = types.ModuleType("arena")
-exec(_ARENA_SRC, _arena.__dict__)
-sys.modules["arena"] = _arena
+_sdk = types.ModuleType("evalquest")
+exec(_SDK_SRC, _sdk.__dict__)
+sys.modules["evalquest"] = _sdk
 `);
     pyodide.runPython(RUN_CASE);
   }
@@ -95,10 +95,10 @@ self.onmessage = async ({ data }) => {
     }
     if (data.type === "run") {
       await init(data.packages || []);
-      const arena = pyodide.pyimport("arena");
-      arena._state.set("token", data.token || null);
-      arena.fixtures.clear();
-      arena.fixtures.update(pyodide.toPy(data.fixtures || {}));
+      const sdk = pyodide.pyimport("evalquest");
+      sdk._state.set("token", data.token || null);
+      sdk.fixtures.clear();
+      sdk.fixtures.update(pyodide.toPy(data.fixtures || {}));
 
       const ns = pyodide.globals.get("dict")();
       try {
@@ -114,7 +114,7 @@ self.onmessage = async ({ data }) => {
       }
       const runCase = pyodide.globals.get("_run_case");
       for (const c of data.cases) {
-        arena._state.set("case", c.id);
+        sdk._state.set("case", c.id);
         try {
           const out = JSON.parse(runCase(fn, JSON.stringify(c.args), !!data.arrayArgs));
           self.postMessage({ id, type: "case", caseId: c.id, value: out.value, stdout: out.stdout });
@@ -122,7 +122,7 @@ self.onmessage = async ({ data }) => {
           self.postMessage({ id, type: "case", caseId: c.id, error: formatError(err) });
         }
       }
-      arena._state.set("token", null);
+      sdk._state.set("token", null);
       self.postMessage({ id, type: "done" });
     }
   } catch (err) {

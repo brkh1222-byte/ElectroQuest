@@ -17,11 +17,11 @@ export async function POST(req: Request, ctx: RouteContext<"/api/problems/[slug]
 
   const body = await parseBody(req, bodySchema);
   if (!body) return jsonError(400, "Invalid request.");
-  if (!consumeQuota(user.id, body.mode)) {
+  if (!(await consumeQuota(user.id, body.mode))) {
     return jsonError(429, `Daily ${body.mode} limit reached. It resets at 00:00 UTC.`);
   }
 
-  const { token, claims } = createSession(user.id, slug, body.mode);
+  const { token, claims } = await createSession(user.id, slug, body.mode);
   const tests = body.mode === "run" ? problem.visibleTests : problem.hiddenTests;
   return Response.json({
     token,
