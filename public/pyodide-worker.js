@@ -1,0 +1,131 @@
+/* Runs learner Python in the browser (spec §6). Classic worker so importScripts works. */
+const PYODIDE_VERSION = "0.27.7";
+importScripts(`https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/pyodide.js`);
+
+// The `arena` SDK learners import. LLM calls go through our proxy with a per-attempt session
+// token; synchronous XHR is allowed in workers, so learner code stays plain synchronous Python.
+const ARENA_MODULE = `
+import json, sys, types
+from js import XMLHttpRequest
+
+_state = {"token": None, "case": None}
+fixtures = {}
+
+def _post(path, payload):
+    if not _state["token"]:
+        raise RuntimeError("No active session: model calls only work during Run/Submit.")
+    xhr = XMLHttpRequest.new()
+    xhr.open("POST", path, False)
+    xhr.setRequestHeader("Content-Type", "application/json")
+    xhr.setRequestHeader("Authorization", "Bearer " + _state["token"])
+    xhr.send(json.dumps(payload))
+    data = json.loads(xhr.responseText or "{}")
+    if xhr.status >= 400:
+        raise RuntimeError(data.get("error", f"HTTP {xhr.status}"))
+    return data
+
+class _LLM:
+    def chat(self, messages, model=None):
+        """Send chat messages; returns the reply text."""
+        return _post("/api/llm/chat", {"caseId": _state["case"], "messages": messages, "model": model})["text"]
+
+llm = _LLM()
+
+def embed(texts):
+    """Embed a list of strings; returns a list of vectors."""
+    return _post("/api/llm/embed", {"texts": list(texts)})["embeddings"]
+`;
+
+const RUN_CASE = `
+import json, io, contextlib
+def _run_case(fn, args_json, array_args=False):
+    args = json.loads(args_json)
+    if array_args:
+        import numpy as np
+        args = [np.asarray(a, dtype=float) if isinstance(a, list) else a for a in args]
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        value = fn(*args)
+    if hasattr(value, "tolist"):
+        value = value.tolist()
+    return json.dumps({"value": value, "stdout": buf.getvalue()}, default=str)
+`;
+
+let pyodide = null;
+let pyodideLoading = null;
+const loadedPackages = new Set();
+
+async function init(packages) {
+  if (!pyodide) {
+    // Memoized: warm-up and the first run can arrive back to back.
+    pyodideLoading ??= loadPyodide();
+    const instance = await pyodideLoading;
+    if (pyodide) return init(packages);
+    pyodide = instance;
+    pyodide.globals.set("_ARENA_SRC", ARENA_MODULE);
+    pyodide.runPython(`
+import sys, types
+_arena = types.ModuleType("arena")
+exec(_ARENA_SRC, _arena.__dict__)
+sys.modules["arena"] = _arena
+`);
+    pyodide.runPython(RUN_CASE);
+  }
+  const missing = packages.filter((p) => !loadedPackages.has(p));
+  if (missing.length) {
+    await pyodide.loadPackage(missing);
+    missing.forEach((p) => loadedPackages.add(p));
+  }
+}
+
+function formatError(err) {
+  const msg = String(err && err.message ? err.message : err);
+  // Keep only the learner-relevant tail of Python tracebacks.
+  const idx = msg.lastIndexOf('File "<exec>"');
+  return idx >= 0 ? msg.slice(idx) : msg;
+}
+
+self.onmessage = async ({ data }) => {
+  const { id } = data;
+  try {
+    if (data.type === "init") {
+      await init(data.packages || []);
+      self.postMessage({ id, type: "ready" });
+      return;
+    }
+    if (data.type === "run") {
+      await init(data.packages || []);
+      const arena = pyodide.pyimport("arena");
+      arena._state.set("token", data.token || null);
+      arena.fixtures.clear();
+      arena.fixtures.update(pyodide.toPy(data.fixtures || {}));
+
+      const ns = pyodide.globals.get("dict")();
+      try {
+        pyodide.runPython(data.code, { globals: ns });
+      } catch (err) {
+        self.postMessage({ id, type: "done", compileError: formatError(err) });
+        return;
+      }
+      const fn = ns.get(data.entrypoint);
+      if (!fn) {
+        self.postMessage({ id, type: "done", compileError: `Function \`${data.entrypoint}\` is not defined.` });
+        return;
+      }
+      const runCase = pyodide.globals.get("_run_case");
+      for (const c of data.cases) {
+        arena._state.set("case", c.id);
+        try {
+          const out = JSON.parse(runCase(fn, JSON.stringify(c.args), !!data.arrayArgs));
+          self.postMessage({ id, type: "case", caseId: c.id, value: out.value, stdout: out.stdout });
+        } catch (err) {
+          self.postMessage({ id, type: "case", caseId: c.id, error: formatError(err) });
+        }
+      }
+      arena._state.set("token", null);
+      self.postMessage({ id, type: "done" });
+    }
+  } catch (err) {
+    self.postMessage({ id, type: "error", error: formatError(err) });
+  }
+};

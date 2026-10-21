@@ -1,0 +1,11 @@
+title: Ticket Triage
+type: prompt
+difficulty: easy
+tags: [prompting, classification]
+# Fixed model: everyone competes on prompt skill, not model size.
+model: default
+metric: label_accuracy
+threshold: 0.9
+labels: [bug, billing, feature]
+limits:
+  maxOutputTokens: 20
