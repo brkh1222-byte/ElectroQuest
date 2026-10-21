@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Arena
 
-## Getting Started
+LeetCode-style practice platform for AI development: prompt engineering, LLM pipelines, and
+AI-from-scratch problems. Free for learners: no API keys, no GPUs. Learner code runs in the browser (Pyodide).
 
-First, run the development server:
+Product spec: [`.plans/ai-playground-platform-spec.md`](.plans/ai-playground-platform-spec.md)
+
+## Run locally
 
 ```bash
+npm install
+cp .env.example .env.local   # add AI_GATEWAY_API_KEY to enable prompt/pipeline problems
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Without a gateway key, from-scratch problems work fully. Prompt and pipeline problems show
+"The model call failed".
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## How it works
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Problem type | Learner submits | Runs where | Graded where |
+|---|---|---|---|
+| `prompt` | system prompt | server (LLM) | server; hidden inputs never leave it |
+| `pipeline` | Python using `arena` SDK | browser (Pyodide worker) | server; expected outputs stay server-side |
+| `scratch` | Python/NumPy | browser | browser (tests ship to client, no leaderboard) |
 
-## Learn More
+- `public/pyodide-worker.js`: runs learner Python and defines the `arena` SDK (`llm.chat`, `embed`, `fixtures`).
+  Model calls use synchronous XHR to `/api/llm/*` with a signed per-attempt session token.
+- `src/app/api/problems/[slug]/*`: `prompt` (run/submit prompt problems), `chat` (scratch chat),
+  `session` + `score` (pipeline attempts).
+- `src/lib/llm.ts`: Vercel AI Gateway via AI SDK 7; temperature 0; model allowlist per problem.
+- `src/db/`: Drizzle schema for Neon. Writes are skipped until `DATABASE_URL` is set.
 
-To learn more about Next.js, take a look at the following resources:
+## Adding a problem
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Create `problems/<slug>/` with:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+problem.yaml          # type, difficulty, tags, model, metric, threshold, entrypoint, limits
+statement.md
+hints.md              # "## Hint 1" … "## Editorial"
+starter.py | starter_prompt.md
+tests/visible.jsonl   # {"id","input"|"args","expected"}
+tests/hidden.jsonl
+reference/            # reference solution (must pass before publishing)
+fixtures/*.json       # optional data exposed as arena.fixtures
+```
 
-## Deploy on Vercel
+## Not yet wired (temporary stand-ins)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Auth**: `src/lib/auth.ts` treats everyone as `dev-user` in development and nobody in production → Clerk.
+- **Quota + sessions**: in-memory maps (`src/lib/quota.ts`, `src/lib/sessions.ts`) → Upstash Redis / Postgres.
+  These won't work across multiple serverless instances.
+- **Database**: run `npm run db:generate && npm run db:migrate` once Neon is provisioned.
+- Not built yet: tracks, lessons, leaderboard/discussion UI, profiles, streak UI, contests, certificates, authoring pipeline,
+  OpenAI-compatible endpoint, failure explanations.

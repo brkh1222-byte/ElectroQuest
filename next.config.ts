@@ -1,9 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
+  // Problem content (incl. hidden tests) is read from disk at runtime; ship it with the functions.
+  outputFileTracingIncludes: {
+    "/**": ["./problems/**/*"],
+  },
   turbopack: {
     rules: {
       "*.css": {
