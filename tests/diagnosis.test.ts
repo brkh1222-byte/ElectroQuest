@@ -1,0 +1,122 @@
+import { describe, expect, it } from "vitest";
+import { deviceById } from "@/lib/data";
+import { emptyState, judgeVoltage, nextQuestion, pendingTests, rank, remaining } from "@/lib/diagnosis";
+
+const tv = deviceById("tv_remote")!;
+const garage = deviceById("garage_remote")!;
+const pad = deviceById("game_controller")!;
+
+describe("diagnosis engine", () => {
+  it("starts from the most common failure", () => {
+    expect(rank(tv, emptyState())[0].cause.id).toBe("dead_battery");
+  });
+
+  it("probabilities sum to 1", () => {
+    const sum = rank(tv, emptyState()).reduce((a, r) => a + r.p, 0);
+    expect(sum).toBeCloseTo(1);
+  });
+
+  it("asks questions in order and respects ask_if", () => {
+    const s = emptyState();
+    expect(nextQuestion(tv, s)?.id).toBe("response");
+    s.answers.response = "none";
+    expect(nextQuestion(tv, s)?.id).toBe("battery_age");
+    s.answers.battery_age = "just_now";
+    s.answers.wet_or_dropped = "neither";
+    s.answers.contacts_look = "unsure";
+    expect(nextQuestion(tv, s)).toBeNull(); // pad_feel only when some buttons work
+    s.answers.response = "some";
+    expect(nextQuestion(tv, s)?.id).toBe("pad_feel");
+  });
+
+  it("demo path: no flash + fresh batteries + corrosion photo → corroded contacts", () => {
+    const s = emptyState();
+    s.answers = { response: "none", battery_age: "just_now", wet_or_dropped: "neither", contacts_look: "unsure" };
+    s.tests.ir_camera = "no_flash";
+    s.findings.push({ defect: "corrosion", confidence: 0.9 });
+    const top = rank(tv, s);
+    expect(top[0].cause.id).toBe("corroded_contacts");
+  });
+
+  it("a visible IR flash points away from the remote's power and LED", () => {
+    const s = emptyState();
+    s.answers = { response: "none", battery_age: "recent", wet_or_dropped: "neither", contacts_look: "shiny" };
+    s.tests.ir_camera = "flash";
+    expect(rank(tv, s)[0].cause.id).toBe("tv_side");
+  });
+
+  it("some buttons working points to worn pads", () => {
+    const s = emptyState();
+    s.answers = { response: "some", pad_feel: "yes" };
+    expect(rank(tv, s)[0].cause.id).toBe("worn_pads");
+  });
+
+  it("tried fixes are removed and the next cause comes up", () => {
+    const s = emptyState();
+    const first = rank(tv, s)[0].cause.id;
+    s.tried.push(first);
+    const r = remaining(tv, s);
+    expect(r.map((x) => x.cause.id)).not.toContain(first);
+    expect(r[0].p).toBeGreaterThan(0);
+  });
+
+  it("garage remote: LED lights after a power cut → re-pairing", () => {
+    const s = emptyState();
+    s.answers = { led_lights: "yes", which_buttons: "all", what_changed: "power_cut", close_range: "no", wet_or_dropped: "neither" };
+    expect(rank(garage, s)[0].cause.id).toBe("lost_pairing");
+    expect(pendingTests(garage, s).map((t) => t.id)).toContain("pairing_check");
+  });
+
+  it("controller: drift answer → stick module", () => {
+    const s = emptyState();
+    s.answers = { main_problem: "drift", age: "old", wet_or_dropped: "neither" };
+    expect(rank(pad, s)[0].cause.id).toBe("joystick_drift");
+    expect(pendingTests(pad, s).map((t) => t.id)).toEqual(["drift_test"]);
+  });
+
+  it("controller: loose plug → USB port", () => {
+    const s = emptyState();
+    s.answers = { main_problem: "charge", swollen: "no", other_cable: "no", loose_plug: "yes", age: "old", wet_or_dropped: "dropped" };
+    expect(rank(pad, s)[0].cause.id).toBe("usb_port");
+  });
+
+  it("an unsure visual finding moves scores less than a confident one", () => {
+    const sure = emptyState();
+    sure.findings.push({ defect: "corrosion", confidence: 1 });
+    const unsure = emptyState();
+    unsure.findings.push({ defect: "corrosion", confidence: 0.2 });
+    const p = (s: ReturnType<typeof emptyState>) => rank(tv, s).find((r) => r.cause.id === "corroded_contacts")!.p;
+    expect(p(sure)).toBeGreaterThan(p(unsure));
+  });
+
+  it("judges multimeter readings in code", () => {
+    expect(judgeVoltage(2.9, { min: 2.6, max: 3.4 })).toBe("ok");
+    expect(judgeVoltage(2.1, { min: 2.6, max: 3.4 })).toBe("low");
+    expect(judgeVoltage(9.2, { min: 2.6, max: 3.4 })).toBe("high");
+  });
+});
+
+describe("demo script", () => {
+  it("second remote: burnt chip → unfixable → salvage", () => {
+    const s = emptyState();
+    s.answers = { response: "none", battery_age: "just_now", wet_or_dropped: "neither", contacts_look: "shiny" };
+    s.tests.ir_camera = "no_flash";
+    s.findings.push({ defect: "burn_mark", confidence: 0.85 });
+    const top = rank(tv, s)[0].cause;
+    expect(top.id).toBe("dead_chip");
+    expect(top.unfixable).toBe(true);
+  });
+});
+
+describe("evidence", () => {
+  it("explains the top cause with the strongest signals first", async () => {
+    const { evidenceFor } = await import("@/lib/diagnosis");
+    const s = emptyState();
+    s.answers = { response: "none", battery_age: "just_now", wet_or_dropped: "neither", contacts_look: "unsure" };
+    s.tests.ir_camera = "no_flash";
+    s.findings.push({ defect: "corrosion", confidence: 0.9 });
+    const ev = evidenceFor(tv, s, "corroded_contacts");
+    expect(ev[0].kind).toBe("finding");
+    expect(ev.some((e) => e.kind === "test")).toBe(true);
+  });
+});
