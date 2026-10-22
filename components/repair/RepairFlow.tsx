@@ -16,7 +16,8 @@ import { AppShell } from "../AppShell";
 import { AskSheet } from "../AskSheet";
 import { RecipeCard } from "../RecipeCard";
 import { ScanFlow } from "../ScanFlow";
-import { Bar, Button, Card, ErrorBox, Pill, Section, Spinner, Steps } from "../ui";
+import { ArrowLeft, ArrowRight, Camera, Check, MessageCircle, PartyPopper, Recycle, TriangleAlert, X } from "lucide-react";
+import { Bar, Button, Card, ErrorBox, I, Pill, Section, Spinner, Steps } from "../ui";
 import { BoardInspect, type BoardPhoto } from "./BoardInspect";
 import { FixPlanCard } from "./FixPlan";
 import { TestCard } from "./Tests";
@@ -97,13 +98,35 @@ export function RepairFlow({ deviceId }: { deviceId: string }) {
     </div>
   );
 
+  const decision = top && !top.cause.unfixable && (
+    <Card className="mt-6 border-2 border-ink lg:mt-0">
+                <p className="mb-3 text-xl font-bold">{t("did_it_work")}</p>
+                <div className="grid grid-cols-2 gap-2 lg:grid-cols-1">
+                  <Button big tone="ok" onClick={() => setPhase("fixed")}>
+                    <I icon={Check} /> {t("worked_yes")}
+                  </Button>
+                  <Button big tone="ghost" onClick={() => update((s) => ({ ...s, tried: [...s.tried, top.cause.id] }))}>
+                    <I icon={X} /> {t("worked_no")}
+                  </Button>
+                </div>
+                <div className="mt-2 grid grid-cols-2 gap-2 lg:grid-cols-1">
+                  <Button tone="ghost" onClick={() => setAsking(true)}>
+                    <I icon={MessageCircle} /> {t("ask_repair")}
+                  </Button>
+                  <Button tone="ghost" onClick={() => setPhase("salvage")}>
+                    <I icon={Recycle} /> {t("go_salvage")}
+                  </Button>
+                </div>
+              </Card>
+  );
+
   const candidates = (
-    <details className="mt-6 rounded-2xl border border-line bg-surface p-3" open={phase === "plan"}>
-      <summary className="cursor-pointer font-bold">{t("candidates")}</summary>
-      <ul className="mt-2 grid gap-2">
+    <Card>
+      <h2 className="font-bold">{t("candidates")}</h2>
+      <ul className="mt-3 grid gap-3">
         {ranked.slice(0, 5).map((r) => (
           <li key={r.cause.id} className={state.tried.includes(r.cause.id) ? "line-through opacity-50" : ""}>
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between gap-2 text-sm">
               <span>{tr(r.cause.name)}</span>
               <span className="tabular-nums">{Math.round(r.p * 100)}%</span>
             </div>
@@ -111,12 +134,14 @@ export function RepairFlow({ deviceId }: { deviceId: string }) {
           </li>
         ))}
       </ul>
-    </details>
+    </Card>
   );
 
   return (
     <AppShell title={tr(device.name)} back="/fix" hideNav>
       {!["fixed", "salvaged", "mains", "salvage"].includes(phase) && header}
+      <div className={["interview", "tests", "open", "plan"].includes(phase) ? "grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px]" : ""}>
+      <div className="min-w-0">
 
       {phase === "interview" && question && (
         <>
@@ -128,10 +153,9 @@ export function RepairFlow({ deviceId }: { deviceId: string }) {
           />
           {history.length > 0 && (
             <Button tone="ghost" className="mt-3 w-full" onClick={undo}>
-              ← {t("back")}
+              <I icon={ArrowLeft} /> {t("back")}
             </Button>
           )}
-          {candidates}
         </>
       )}
 
@@ -139,7 +163,6 @@ export function RepairFlow({ deviceId }: { deviceId: string }) {
         <>
           <p className="mb-3 text-lg text-muted">{t("tests_title")}</p>
           <TestCard key={tests[0].id} test={tests[0]} onOutcome={(o) => update((s) => ({ ...s, tests: { ...s.tests, [tests[0].id]: o } }))} />
-          {candidates}
         </>
       )}
 
@@ -155,7 +178,6 @@ export function RepairFlow({ deviceId }: { deviceId: string }) {
           <Button tone="ghost" onClick={() => setPhase("plan")}>
             {t("open_skip")}
           </Button>
-          {candidates}
         </div>
       )}
 
@@ -181,7 +203,7 @@ export function RepairFlow({ deviceId }: { deviceId: string }) {
               {top && <p className="mt-2 text-lg">{tr(top.cause.why)}</p>}
               {top && <p className="mt-2">{tr(top.cause.fix.summary)}</p>}
               <Button big tone="fix" className="mt-4 w-full" onClick={() => setPhase("salvage")}>
-                ♻ {t("go_salvage")}
+                <I icon={Recycle} /> {t("go_salvage")}
               </Button>
             </Card>
           ) : (
@@ -205,40 +227,21 @@ export function RepairFlow({ deviceId }: { deviceId: string }) {
               <div className="mt-4">
                 <FixPlanCard cause={top.cause} />
               </div>
-              <Card className="mt-6 border-2 border-ink">
-                <p className="mb-3 text-xl font-bold">{t("did_it_work")}</p>
-                <div className="grid grid-cols-2 gap-2">
-                  <Button big tone="ok" onClick={() => setPhase("fixed")}>
-                    ✓ {t("worked_yes")}
-                  </Button>
-                  <Button big tone="ghost" onClick={() => update((s) => ({ ...s, tried: [...s.tried, top.cause.id] }))}>
-                    ✗ {t("worked_no")}
-                  </Button>
-                </div>
-                <div className="mt-2 grid grid-cols-2 gap-2">
-                  <Button tone="ghost" onClick={() => setAsking(true)}>
-                    💬 {t("ask_repair")}
-                  </Button>
-                  <Button tone="ghost" onClick={() => setPhase("salvage")}>
-                    ♻ {t("go_salvage")}
-                  </Button>
-                </div>
-              </Card>
+              <div className="lg:hidden">{decision}</div>
             </>
           )}
-          {candidates}
         </div>
       )}
 
       {phase === "fixed" && (
-        <div className="grid gap-4 text-center">
-          <div className="text-7xl">🎉</div>
+        <div className="enter mx-auto grid max-w-md gap-4 text-center">
+          <PartyPopper aria-hidden className="mx-auto size-16 text-fix" strokeWidth={2} absoluteStrokeWidth />
           <h2 className="text-3xl font-extrabold">{t("repaired")}</h2>
           {top && <p className="text-lg">{tr(top.cause.fix.summary)}</p>}
-          <Link href="/progress" className="min-h-14 rounded-2xl bg-fix p-4 text-xl font-bold text-white">
+          <Link href="/progress" className="min-h-14 rounded-2xl bg-fix p-4 text-xl font-bold text-white transition-[scale] duration-150 ease-out active:scale-[0.96]">
             {t("nav_progress")}
           </Link>
-          <Link href="/" className="min-h-14 rounded-2xl border-2 border-line p-4 text-xl font-bold">
+          <Link href="/" className="min-h-14 rounded-2xl border border-transparent bg-surface p-4 text-xl font-bold shadow-[var(--shadow-border)] transition-[scale] duration-150 ease-out active:scale-[0.96]">
             {t("nav_home")}
           </Link>
         </div>
@@ -261,12 +264,23 @@ export function RepairFlow({ deviceId }: { deviceId: string }) {
 
       {phase === "mains" && (
         <Card className="border-2 border-bad bg-red-50">
-          <p className="text-xl font-bold text-bad">⚠ {t("mains_refuse")}</p>
+          <p className="flex gap-2 text-xl font-bold text-bad">
+            <I icon={TriangleAlert} className="mt-1" /> {t("mains_refuse")}
+          </p>
           <Link href="/fix" className="mt-4 inline-block font-semibold underline">
-            ← {t("back")}
+            {t("back")}
           </Link>
         </Card>
       )}
+
+      </div>
+      {["interview", "tests", "open", "plan"].includes(phase) && (
+        <aside className="grid gap-4 lg:sticky lg:top-8 lg:self-start">
+          {phase === "plan" && <div className="hidden lg:block">{decision}</div>}
+          {candidates}
+        </aside>
+      )}
+      </div>
 
       {asking && top && (
         <AskSheet title={t("ask_repair")} contextKind="repair" context={{ device: device.name, cause: top.cause.name, why: top.cause.why, fix: top.cause.fix }} onClose={() => setAsking(false)} />
@@ -284,7 +298,10 @@ function Evidence({ deviceId, state, causeId }: { deviceId: string; state: Diagn
       <div className="text-sm font-semibold text-muted">{t("evidence")}</div>
       <ul className="mt-1 list-disc space-y-1 pl-5">
         {ev.map((e, i) => (
-          <li key={i}>{tr(e.text)}</li>
+          <li key={i}>
+            {e.kind === "finding" && <I icon={Camera} className="me-1 inline align-[-0.15em] text-muted" />}
+            {tr(e.text)}
+          </li>
         ))}
       </ul>
     </div>
@@ -373,7 +390,9 @@ function SalvageStep({ deviceName, board, expected, onDone }: { deviceName: stri
   const { t } = useI18n();
   return (
     <div className="grid gap-3">
-      <h2 className="text-2xl font-extrabold">♻ {t("salvage_title")}</h2>
+      <h2 className="flex items-center gap-2 text-2xl font-extrabold">
+        <I icon={Recycle} className="text-fix" /> {t("salvage_title")}
+      </h2>
       <p className="text-lg">{t("salvage_intro")}</p>
       <Card>
         <div className="mb-1 text-sm font-semibold text-muted">{t("salvage_expect")}</div>
@@ -399,14 +418,16 @@ function SalvageResult({ before }: { before: Set<string> }) {
   const fresh = res.ready.filter((m) => !before.has(m.recipe.id));
   return (
     <div className="grid gap-4">
-      <div className="text-center text-6xl">♻️</div>
+      <Recycle aria-hidden className="mx-auto size-14 text-build" strokeWidth={2} absoluteStrokeWidth />
       <h2 className="text-center text-2xl font-extrabold">{t("scan_added")}</h2>
       {fresh.length > 0 && <p className="text-lg font-semibold text-build">{t("proj_new_from_salvage")}</p>}
-      {[...fresh, ...res.missing1].slice(0, 4).map((m) => (
-        <RecipeCard key={m.recipe.id} m={m} />
-      ))}
-      <Link href="/projects" className="min-h-14 rounded-2xl bg-build p-4 text-center text-xl font-bold text-white">
-        {t("nav_projects")} →
+      <div className="grid gap-4 md:grid-cols-2">
+        {[...fresh, ...res.missing1].slice(0, 4).map((m) => (
+          <RecipeCard key={m.recipe.id} m={m} />
+        ))}
+      </div>
+      <Link href="/projects" className="min-h-14 rounded-2xl bg-build p-4 text-center text-xl font-bold text-white transition-[scale] duration-150 ease-out active:scale-[0.96]">
+        {t("nav_projects")} <I icon={ArrowRight} className="inline" />
       </Link>
     </div>
   );

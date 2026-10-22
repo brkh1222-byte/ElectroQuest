@@ -15,6 +15,19 @@
   --warn: #b45309;
   --bad: #b91c1c;
   --focus: #2563eb;
+  /* Elevation: a 1px ring plus lift and ambient depth (borders stay for inputs, dividers and selected states). */
+  --shadow-border:
+    0px 0px 0px 1px oklch(0 0 0 / 0.06),
+    0px 1px 2px -1px oklch(0 0 0 / 0.06),
+    0px 2px 4px 0px oklch(0 0 0 / 0.04);
+  --shadow-border-hover:
+    0px 0px 0px 1px oklch(0 0 0 / 0.08),
+    0px 1px 2px -1px oklch(0 0 0 / 0.08),
+    0px 2px 4px 0px oklch(0 0 0 / 0.06);
+  --shadow-raised:
+    0px 0px 0px 1px oklch(0 0 0 / 0.06),
+    0px 4px 8px -2px oklch(0 0 0 / 0.08),
+    0px 12px 24px -6px oklch(0 0 0 / 0.08);
 }
 
 @theme inline {
@@ -47,6 +60,29 @@ body {
 :focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
+}
+
+/* Staged entrance for infrequent moments (home hero, results). Reduced motion keeps only the fade. */
+.enter {
+  animation: fade-in 300ms ease-out both;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .enter {
+    animation-name: fade-in-up;
+  }
+}
+.enter-1 { animation-delay: 100ms; }
+.enter-2 { animation-delay: 200ms; }
+.enter-3 { animation-delay: 300ms; }
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+    filter: blur(4px);
+  }
 }
 
 /* Bottom nav + iOS home indicator */

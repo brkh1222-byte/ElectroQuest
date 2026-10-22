@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
-import { Card, Pill, Section } from "@/components/ui";
+import { Check, Lock, Recycle } from "lucide-react";
+import { Card, I, Pill, Section } from "@/components/ui";
 import { deviceById, recipeById } from "@/lib/data";
 import { store, useLive } from "@/lib/db";
 import { useDemo } from "@/lib/demo";
@@ -24,7 +25,9 @@ export default function ProgressPage() {
           {[1, 2, 3].map((l) => (
             <Card key={l} className={`text-center ${levels.has(l) ? "border-build" : "opacity-50"}`}>
               <div className="text-3xl font-extrabold">{l}</div>
-              <div className="text-sm">{levels.has(l) ? t("level_unlocked") : `🔒 ${t("proj_locked")}`}</div>
+              <div className="flex items-center justify-center gap-1 text-sm">
+                {!levels.has(l) && <I icon={Lock} />} {levels.has(l) ? t("level_unlocked") : t("proj_locked")}
+              </div>
             </Card>
           ))}
         </div>
@@ -51,7 +54,7 @@ export default function ProgressPage() {
               return (
                 r && (
                   <li key={c.id}>
-                    <Link href={`/projects/${r.id}`} className="flex justify-between rounded-2xl border border-line bg-surface p-3 text-lg">
+                    <Link href={`/projects/${r.id}`} className="flex justify-between rounded-3xl border border-transparent bg-surface p-4 text-lg shadow-[var(--shadow-border)] transition-[box-shadow] duration-150 ease-out hover:shadow-[var(--shadow-border-hover)]">
                       <span>{tr(r.title)}</span>
                       <span className="text-muted">{new Date(c.completedAt).toLocaleDateString()}</span>
                     </Link>
@@ -69,10 +72,12 @@ export default function ProgressPage() {
             const d = deviceById(r.deviceId);
             const cause = d?.causes.find((c) => c.id === r.causeId);
             return (
-              <li key={r.id} className="rounded-2xl border border-line bg-surface p-3">
+              <li key={r.id} className="rounded-3xl border border-transparent bg-surface p-4 shadow-[var(--shadow-border)]">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-lg font-semibold">{d ? tr(d.name) : r.deviceId}</span>
-                  <Pill tone={r.outcome === "fixed" ? "ok" : "fix"}>{r.outcome === "fixed" ? "✓" : "♻"}</Pill>
+                  <Pill tone={r.outcome === "fixed" ? "ok" : "fix"}>
+                    <I icon={r.outcome === "fixed" ? Check : Recycle} />
+                  </Pill>
                 </div>
                 {cause && <div className="text-muted">{tr(cause.name)}</div>}
               </li>

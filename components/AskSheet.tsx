@@ -4,7 +4,8 @@ import { useState } from "react";
 import { ai, AiError } from "@/lib/ai-client";
 import { useI18n } from "@/lib/i18n";
 import { mentionsMains } from "@/lib/safety";
-import { Button, ErrorBox, Spinner } from "./ui";
+import { Send, X } from "lucide-react";
+import { Button, ErrorBox, I, Sheet, Spinner } from "./ui";
 
 interface Msg {
   role: "user" | "assistant";
@@ -52,15 +53,15 @@ export function AskSheet({
   };
 
   return (
-    <div className="fixed inset-0 z-40 flex items-end bg-black/40" onClick={onClose}>
-      <div className="pb-safe mx-auto flex max-h-[85dvh] w-full max-w-xl flex-col rounded-t-3xl bg-surface p-4" onClick={(e) => e.stopPropagation()}>
+    <Sheet onClose={onClose} wide>
+      <div className="flex min-h-0 flex-1 flex-col">
         <div className="mb-2 flex items-center justify-between">
           <h3 className="text-lg font-bold">{title}</h3>
-          <Button tone="ghost" onClick={onClose}>
-            {t("close")}
+          <Button tone="ghost" size="sm" onClick={onClose} aria-label={t("close")}>
+            <I icon={X} />
           </Button>
         </div>
-        <div className="flex-1 space-y-2 overflow-y-auto">
+        <div className="min-h-40 flex-1 space-y-2 overflow-y-auto overscroll-contain">
           {msgs.map((m, i) => (
             <div key={i} className={`max-w-[85%] rounded-2xl px-4 py-2 text-lg ${m.role === "user" ? "ml-auto bg-ink text-white" : "bg-bg"}`}>
               {m.text}
@@ -78,10 +79,10 @@ export function AskSheet({
         >
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("ask_placeholder")} className="min-h-12 flex-1 rounded-xl border-2 border-line px-3 text-lg" />
           <Button tone="plain" disabled={!q.trim() || busy}>
-            {t("ask_send")}
+            <I icon={Send} /> {t("ask_send")}
           </Button>
         </form>
       </div>
-    </div>
+    </Sheet>
   );
 }

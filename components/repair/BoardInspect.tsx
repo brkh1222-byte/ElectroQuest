@@ -9,7 +9,8 @@ import { loadImage, normalizePhoto, urlToPhoto } from "@/lib/image";
 import type { DeviceProfile } from "@/lib/schemas";
 import { Camera } from "../Camera";
 import { PhotoView, usePhotoUrl, type OverlayBox } from "../PhotoView";
-import { Button, Card, ErrorBox, Pill, Spinner } from "../ui";
+import { ArrowRight, RotateCcw, Sparkles } from "lucide-react";
+import { Button, Card, ErrorBox, I, Pill, Spinner } from "../ui";
 
 export interface BoardPhoto {
   blob: Blob;
@@ -87,13 +88,13 @@ export function BoardInspect({
     return (
       <div className="grid gap-3">
         <h2 className="text-2xl font-extrabold">{t("board_photo")}</h2>
-        <p className="text-lg">{t("board_photo_hint")}</p>
+        <p className="max-w-2xl text-lg">{t("board_photo_hint")}</p>
         <Camera onCapture={async (b) => take(await normalizePhoto(b))} />
         {demo && (
           <div className="grid grid-cols-2 gap-2">
             {[DEMO_PHOTOS.tvBoard, DEMO_PHOTOS.tvBoardDead].map((d, i) => (
               <Button key={d.key} tone="ghost" onClick={async () => take({ ...(await urlToPhoto(d.url)), demoKey: d.key })}>
-                ★ {t("cam_demo_photo")} {i + 1}
+                <I icon={Sparkles} /> {t("cam_demo_photo")} {i + 1}
               </Button>
             ))}
           </div>
@@ -105,7 +106,8 @@ export function BoardInspect({
     );
 
   return (
-    <div className="grid gap-3">
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="grid content-start gap-4">
       <PhotoView src={url} width={photo.width} height={photo.height} boxes={boxes} />
       {busy && (
         <Card>
@@ -113,12 +115,31 @@ export function BoardInspect({
           <p className="mt-2 text-sm text-muted">{t("analyzing_note")}</p>
         </Card>
       )}
+      {reference && golden && url && (
+        <Card>
+          <h3 className="mb-3 text-lg font-bold">{t("golden_title")}</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <figure>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={reference.image} alt="" className="w-full rounded-lg bg-white outline outline-1 -outline-offset-1 outline-black/10" />
+              <figcaption className="mt-1 text-center text-sm font-semibold text-ok">{t("golden_healthy")}</figcaption>
+            </figure>
+            <figure>
+              <PhotoView src={url} width={photo.width} height={photo.height} boxes={boxes} className="rounded-lg" />
+              <figcaption className="mt-1 text-center text-sm font-semibold text-bad">{t("golden_yours")}</figcaption>
+            </figure>
+          </div>
+          <p className="mt-3">{golden.summary}</p>
+        </Card>
+      )}
+      </div>
+      <aside className="grid content-start gap-3 lg:sticky lg:top-8">
       {err && <ErrorBox message={err} onRetry={() => analyze(photo)} />}
       {badQuality && <ErrorBox message={t("image_quality_bad")} />}
 
       {report && !badQuality && (
         <Card>
-          <h3 className="mb-2 text-lg font-bold">{t("findings_title")}</h3>
+          <h3 className="mb-3 text-lg font-bold">{t("findings_title")}</h3>
           {shown.length === 0 && <p>{t("findings_none")}</p>}
           <ol className="grid gap-2">
             {shown.map((f, i) => (
@@ -130,7 +151,7 @@ export function BoardInspect({
                     {Math.round(f.confidence * 100)}% {f.source === "golden" && <Pill>{t("golden_title")}</Pill>}
                   </div>
                 </div>
-                <Button tone="ghost" onClick={() => setDismissed([...dismissed, f.id])}>
+                <Button tone="ghost" size="sm" onClick={() => setDismissed([...dismissed, f.id])}>
                   {t("finding_dismiss")}
                 </Button>
               </li>
@@ -140,32 +161,15 @@ export function BoardInspect({
         </Card>
       )}
 
-      {reference && golden && url && (
-        <Card>
-          <h3 className="mb-2 text-lg font-bold">{t("golden_title")}</h3>
-          <div className="grid grid-cols-2 gap-2">
-            <figure>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={reference.image} alt="" className="w-full rounded-xl bg-white" />
-              <figcaption className="text-center text-sm font-semibold text-ok">{t("golden_healthy")}</figcaption>
-            </figure>
-            <figure>
-              <PhotoView src={url} width={photo.width} height={photo.height} boxes={boxes} />
-              <figcaption className="text-center text-sm font-semibold text-bad">{t("golden_yours")}</figcaption>
-            </figure>
-          </div>
-          <p className="mt-2">{golden.summary}</p>
-        </Card>
-      )}
-
       <div className="grid grid-cols-2 gap-2">
         <Button tone="ghost" onClick={() => setPhoto(null)}>
-          ↻ {t("cam_take")}
+          <I icon={RotateCcw} /> {t("cam_take")}
         </Button>
         <Button tone="fix" disabled={busy} onClick={() => onDone(photo, shown)}>
-          {t("to_plan")} →
+          {t("to_plan")} <I icon={ArrowRight} />
         </Button>
       </div>
+      </aside>
     </div>
   );
 }

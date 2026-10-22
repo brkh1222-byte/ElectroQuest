@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { RecipeCard } from "@/components/RecipeCard";
-import { LinkButton, Pill } from "@/components/ui";
+import { Camera, ChevronDown, Check } from "lucide-react";
+import { I, LinkButton, Pill } from "@/components/ui";
 import { recipes } from "@/lib/data";
 import { store, useLive } from "@/lib/db";
 import { useDemo } from "@/lib/demo";
@@ -30,49 +31,63 @@ export default function ProjectsPage() {
   const list = res ? res[tab] : [];
 
   return (
-    <AppShell title={t("proj_title")}>
-      <LinkButton href="/scan" tone="build" big className="w-full">
-        📷 {t("inv_scan")}
+    <AppShell
+      title={t("proj_title")}
+      action={
+        <LinkButton href="/scan" tone="build">
+          <I icon={Camera} /> {t("inv_scan")}
+        </LinkButton>
+      }
+    >
+      <LinkButton href="/scan" tone="build" big className="w-full lg:hidden">
+        <I icon={Camera} /> {t("inv_scan")}
       </LinkButton>
       {fromScan && res && res.ready.length > 0 && (
-        <p className="mt-4 rounded-2xl bg-teal-50 p-3 text-lg font-semibold text-build">
+        <p className="enter mt-4 rounded-2xl bg-teal-50 p-4 text-lg font-semibold text-build">
           {t("proj_you_can_build")} {res.ready.slice(0, 3).map((m) => tr(m.recipe.title)).join(", ")}
         </p>
       )}
 
-      <div className="mt-4 grid grid-cols-2 gap-2 rounded-2xl bg-line/60 p-1" role="tablist">
+      <div className="mt-4 grid grid-cols-2 gap-1 rounded-2xl bg-line/60 p-1 sm:inline-grid sm:min-w-[28rem]" role="tablist">
         {(["ready", "missing1"] as const).map((k) => (
           <button
             key={k}
             role="tab"
             aria-selected={tab === k}
             onClick={() => setTab(k)}
-            className={`min-h-12 rounded-xl font-bold ${tab === k ? "bg-surface shadow-sm" : "text-muted"}`}
+            className={`min-h-11 rounded-xl border border-transparent px-4 font-bold transition-[background-color,color] duration-150 ${tab === k ? "bg-surface text-ink shadow-[var(--shadow-border)]" : "text-muted hover:text-ink"}`}
           >
             {t(k === "ready" ? "proj_ready" : "proj_missing1")} {res && <span className="tabular-nums">({res[k].length})</span>}
           </button>
         ))}
       </div>
 
-      <div className="mt-4 grid gap-3">
-        {res && list.length === 0 && <p className="text-lg text-muted">{t(tab === "ready" ? "proj_none_ready" : "proj_none_missing")}</p>}
+      <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {res && list.length === 0 && <p className="text-lg text-muted sm:col-span-2 xl:col-span-3">{t(tab === "ready" ? "proj_none_ready" : "proj_none_missing")}</p>}
         {list.map((m) => (
           <div key={m.recipe.id} className="relative">
             <RecipeCard m={m} locked={!levels.has(m.recipe.difficulty)} />
             {doneIds.has(m.recipe.id) && (
               <span className="absolute bottom-3 right-3">
-                <Pill tone="ok">✓</Pill>
+                <Pill tone="ok">
+                  <I icon={Check} />
+                </Pill>
               </span>
             )}
           </div>
         ))}
       </div>
 
-      <button className="mt-6 min-h-12 w-full rounded-2xl border-2 border-dashed border-line font-semibold text-muted" onClick={() => setShowAll(!showAll)}>
-        {t("proj_all")} ({recipes.length}) {showAll ? "▲" : "▼"}
+      <button
+        aria-expanded={showAll}
+        className="mt-8 flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-line font-semibold text-muted transition-colors duration-150 hover:text-ink"
+        onClick={() => setShowAll(!showAll)}
+      >
+        {t("proj_all")} <span className="tabular-nums">({recipes.length})</span>
+        <I icon={ChevronDown} className={`transition-transform duration-150 ${showAll ? "rotate-180" : ""}`} />
       </button>
       {showAll && data && (
-        <div className="mt-3 grid gap-3">
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {recipes
             .slice()
             .sort((a, b) => a.difficulty - b.difficulty)

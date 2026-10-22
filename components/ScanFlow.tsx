@@ -13,7 +13,8 @@ import type { Detection, InventoryItem, Spec } from "@/lib/schemas";
 import { Camera } from "./Camera";
 import { PhotoView, usePhotoUrl, type OverlayBox } from "./PhotoView";
 import { ValuePicker } from "./ValuePicker";
-import { Button, Card, ErrorBox, Pill, Spinner } from "./ui";
+import { ArrowLeft, ArrowRight, Check, Lightbulb, Plus, RotateCcw } from "lucide-react";
+import { Button, Card, ErrorBox, I, Pill, Spinner } from "./ui";
 
 type Phase = "capture" | "detecting" | "merge" | "review" | "refine" | "confirm";
 type RefineStatus = "pending" | "loading" | "done" | "error";
@@ -212,135 +213,142 @@ export function ScanFlow({ kind, from, initialPhoto, demoPhoto = DEMO_PHOTOS.par
       tone: p.duplicateIds.includes(d.id) ? "duplicate" : d.uncertain ? "unsure" : "normal",
     }));
 
+  const sidePanel = (children: React.ReactNode) => <aside className="grid content-start gap-3 lg:sticky lg:top-6">{children}</aside>;
+
   return (
     <div>
       {phase === "capture" && (
-        <>
-          <p className="mb-2 text-lg">{t("scan_hint")}</p>
-          <p className="mb-3 text-muted">{t("scan_tip_resistor")}</p>
-          {error && <ErrorBox message={error} />}
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
           <Camera
             onCapture={async (b) => addPhoto(await normalizePhoto(b))}
             onDemoPhoto={demo ? async () => addPhoto({ ...(await urlToPhoto(demoPhoto.url)), demoKey: demoPhoto.key }) : undefined}
           />
-          {photos.length > 0 && (
-            <Button tone="ghost" className="mt-2 w-full" onClick={() => setPhase("review")}>
-              {t("back")}
-            </Button>
+          {sidePanel(
+            <>
+              <Card>
+                <p className="text-lg font-semibold">{t("scan_hint")}</p>
+                <p className="mt-2 flex gap-2 text-muted">
+                  <I icon={Lightbulb} className="mt-1 text-warn" /> {t("scan_tip_resistor")}
+                </p>
+              </Card>
+              {error && <ErrorBox message={error} />}
+              {photos.length > 0 && (
+                <Button tone="ghost" onClick={() => setPhase("review")}>
+                  <I icon={ArrowLeft} /> {t("back")}
+                </Button>
+              )}
+            </>,
           )}
-        </>
+        </div>
       )}
 
       {phase === "detecting" && (
-        <Card className="flex min-h-60 items-center justify-center">
+        <Card className="flex min-h-72 items-center justify-center">
           <Spinner label={t("scan_detecting")} />
         </Card>
       )}
 
       {phase === "merge" && current && (
-        <div className="grid gap-3">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
           <PhotoView src={currentUrl} width={current.width} height={current.height} boxes={boxesFor(current)} />
-          <Card>
-            <p className="font-semibold">{t("scan_merge_q")}</p>
-            {mergeQs.slice(0, 1).map((q) => (
-              <div key={q.type} className="mt-3">
-                <p className="text-lg">
-                  {partName(q.type, lang)}: {q.before} → {q.now}
-                </p>
-                <div className="mt-2 grid gap-2">
-                  <Button tone="ghost" onClick={() => answerMerge(q, true)}>
-                    {t("scan_merge_same")} ({Math.max(q.before, q.now)})
-                  </Button>
-                  <Button tone="ghost" onClick={() => answerMerge(q, false)}>
-                    {t("scan_merge_new")} ({q.before + q.now})
-                  </Button>
+          {sidePanel(
+            <Card>
+              <p className="font-semibold">{t("scan_merge_q")}</p>
+              {mergeQs.slice(0, 1).map((q) => (
+                <div key={q.type} className="mt-3">
+                  <p className="text-lg tabular-nums">
+                    {partName(q.type, lang)}: {q.before} → {q.now}
+                  </p>
+                  <div className="mt-3 grid gap-2">
+                    <Button tone="ghost" onClick={() => answerMerge(q, true)}>
+                      {t("scan_merge_same")} ({Math.max(q.before, q.now)})
+                    </Button>
+                    <Button tone="ghost" onClick={() => answerMerge(q, false)}>
+                      {t("scan_merge_new")} ({q.before + q.now})
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </Card>
+              ))}
+            </Card>,
+          )}
         </div>
       )}
 
       {phase === "review" && current && (
-        <div className="grid gap-3">
-          <PhotoView
-            src={currentUrl}
-            width={current.width}
-            height={current.height}
-            boxes={boxesFor(current)}
-            onBoxClick={(id) => removeDet(photos.length - 1, id)}
-          />
-          <p className="text-sm text-muted">
-            {t("scan_tap_to_remove")}
-            {lastRun && (
-              <>
-                {" "}
-                · {lastRun.ms} {t("scan_ms")} · {lastRun.mode === "mock" ? t("scan_detector_mock") : `${lastRun.mode}${lastRun.backend ? `/${lastRun.backend}` : ""}`}
-              </>
-            )}
-          </p>
-          <Card>
-            <h3 className="mb-2 font-bold">
-              {t("scan_found")}: {allDets.length}
-            </h3>
-            {allDets.length === 0 ? (
-              <p>{t("scan_none")}</p>
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {Object.entries(allDets.reduce<Record<string, number>>((a, { d }) => ({ ...a, [d.part_type]: (a[d.part_type] ?? 0) + 1 }), {})).map(([k, n]) => (
-                  <Pill key={k}>
-                    {n}× {partName(k, lang)}
-                  </Pill>
-                ))}
-              </div>
-            )}
-          </Card>
-          <Button tone="ghost" onClick={() => setPhase("capture")}>
-            ＋ {t("scan_more")}
-          </Button>
-          <Button big tone="build" onClick={startRefine} disabled={!allDets.length}>
-            {t("scan_read_values")} →
-          </Button>
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+          <div>
+            <PhotoView src={currentUrl} width={current.width} height={current.height} boxes={boxesFor(current)} onBoxClick={(id) => removeDet(photos.length - 1, id)} />
+            <p className="mt-2 text-sm text-muted">
+              {t("scan_tap_to_remove")}
+              {lastRun && (
+                <>
+                  {" "}
+                  · <span className="tabular-nums">{lastRun.ms}</span> {t("scan_ms")} · {lastRun.mode === "mock" ? t("scan_detector_mock") : `${lastRun.mode}${lastRun.backend ? `/${lastRun.backend}` : ""}`}
+                </>
+              )}
+            </p>
+          </div>
+          {sidePanel(
+            <>
+              <Card>
+                <h3 className="mb-3 text-lg font-bold">
+                  {t("scan_found")}: <span className="tabular-nums">{allDets.length}</span>
+                </h3>
+                {allDets.length === 0 ? (
+                  <p>{t("scan_none")}</p>
+                ) : (
+                  <ul className="grid gap-1.5">
+                    {Object.entries(allDets.reduce<Record<string, number>>((a, { d }) => ({ ...a, [d.part_type]: (a[d.part_type] ?? 0) + 1 }), {})).map(([k, n]) => (
+                      <li key={k} className="flex justify-between gap-2">
+                        <span>{partName(k, lang)}</span>
+                        <b className="tabular-nums">{n}</b>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Card>
+              <Button tone="ghost" onClick={() => setPhase("capture")}>
+                <I icon={Plus} /> {t("scan_more")}
+              </Button>
+              <Button big tone="build" onClick={startRefine} disabled={!allDets.length}>
+                {t("scan_read_values")} <I icon={ArrowRight} />
+              </Button>
+            </>,
+          )}
         </div>
       )}
 
       {phase === "refine" && (
-        <div className="grid gap-3">
-          <h2 className="text-xl font-bold">{t("scan_refine_title")}</h2>
-          <p className="text-muted">{t("scan_refine_hint")}</p>
-          <ul className="grid gap-2">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+          <ul className="grid content-start gap-2 md:grid-cols-2">
             {allDets.map(({ d, pi }) => {
               const st = status[d.id];
               const needs = NEEDS_VALUE.has(d.part_type);
               return (
-                <li key={d.id} className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-2">
+                <li key={d.id} className="flex items-center gap-3 rounded-3xl border border-transparent bg-surface p-2 pe-3 shadow-[var(--shadow-border)]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={thumbs.current.get(d.id)} alt="" className="h-16 w-16 shrink-0 rounded-xl bg-bg object-cover" />
+                  <img src={thumbs.current.get(d.id)} alt="" className="size-16 shrink-0 rounded-2xl bg-bg object-cover outline outline-1 -outline-offset-1 outline-black/10" />
                   <div className="min-w-0 flex-1">
                     <div className="font-semibold">{partName(d.part_type, lang)}</div>
                     <div className="text-lg">
                       {st === "loading" || st === "pending" ? (
                         <span className="text-muted">{t("scan_reading")}</span>
                       ) : (
-                        <>
+                        <span className="flex flex-wrap items-center gap-2">
                           {specLabel(d.spec, lang) || (needs ? t("scan_unknown") : "")}
-                          {d.uncertain && needs && (
-                            <span className="ml-2">
-                              <Pill tone="warn">? {t("uncertain")}</Pill>
-                            </span>
-                          )}
-                        </>
+                          {d.uncertain && needs && <Pill tone="warn">? {t("uncertain")}</Pill>}
+                        </span>
                       )}
                     </div>
                     {notes[d.id] && (st === "error" || d.uncertain) && <div className="text-sm text-muted">{notes[d.id]}</div>}
                   </div>
                   {st === "error" && (
-                    <Button tone="ghost" onClick={() => refineOne(pi, d)}>
-                      ↻
+                    <Button tone="ghost" size="sm" onClick={() => refineOne(pi, d)} aria-label={t("retry")}>
+                      <I icon={RotateCcw} />
                     </Button>
                   )}
                   {needs && (
-                    <Button tone={d.uncertain || !specLabel(d.spec, lang) ? "fix" : "ghost"} onClick={() => setPicker({ photo: pi, id: d.id })} aria-label={t("scan_pick_value")}>
+                    <Button size="sm" tone={d.uncertain || !specLabel(d.spec, lang) ? "fix" : "ghost"} onClick={() => setPicker({ photo: pi, id: d.id })} aria-label={t("scan_pick_value")}>
                       ?
                     </Button>
                   )}
@@ -348,31 +356,48 @@ export function ScanFlow({ kind, from, initialPhoto, demoPhoto = DEMO_PHOTOS.par
               );
             })}
           </ul>
-          <Button big tone="build" onClick={() => setPhase("confirm")} disabled={Object.values(status).some((s) => s === "loading" || s === "pending")}>
-            {t("next")} →
-          </Button>
+          {sidePanel(
+            <>
+              <Card>
+                <h2 className="text-xl font-bold">{t("scan_refine_title")}</h2>
+                <p className="mt-1 text-muted">{t("scan_refine_hint")}</p>
+              </Card>
+              <Button big tone="build" onClick={() => setPhase("confirm")} disabled={Object.values(status).some((s) => s === "loading" || s === "pending")}>
+                {t("next")} <I icon={ArrowRight} />
+              </Button>
+            </>,
+          )}
         </div>
       )}
 
       {phase === "confirm" && (
-        <div className="grid gap-3">
-          <h2 className="text-xl font-bold">{t("scan_confirm_title")}</h2>
-          <ul className="grid gap-2">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+          <ul className="grid content-start gap-2 md:grid-cols-2">
             {grouped.map((g) => (
-              <li key={specKey(g.part_type, g.spec)} className="flex items-center justify-between rounded-2xl border border-line bg-surface px-4 py-3 text-lg">
+              <li key={specKey(g.part_type, g.spec)} className="flex items-center justify-between rounded-3xl border border-transparent bg-surface px-5 py-4 text-lg shadow-[var(--shadow-border)]">
                 <span>
-                  <b>{g.qty}×</b> {itemLabel(g.part_type, g.spec, lang)}
+                  <b className="tabular-nums">{g.qty}×</b> {itemLabel(g.part_type, g.spec, lang)}
                 </span>
                 {g.uncertain && <Pill tone="warn">?</Pill>}
               </li>
             ))}
           </ul>
-          <Button tone="ghost" onClick={() => setPhase("refine")}>
-            ← {t("back")}
-          </Button>
-          <Button big tone="build" onClick={save} disabled={saving}>
-            {t("scan_add_inventory")}
-          </Button>
+          {sidePanel(
+            <>
+              <Card>
+                <h2 className="text-xl font-bold">{t("scan_confirm_title")}</h2>
+                <p className="mt-1 text-muted tabular-nums">
+                  {grouped.reduce((a, g) => a + g.qty, 0)} {t("parts_count")}
+                </p>
+              </Card>
+              <Button tone="ghost" onClick={() => setPhase("refine")}>
+                <I icon={ArrowLeft} /> {t("back")}
+              </Button>
+              <Button big tone="build" onClick={save} disabled={saving}>
+                <I icon={Check} /> {t("scan_add_inventory")}
+              </Button>
+            </>,
+          )}
         </div>
       )}
 

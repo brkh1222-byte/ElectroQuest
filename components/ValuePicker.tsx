@@ -6,7 +6,7 @@ import { useI18n } from "@/lib/i18n";
 import { specLabel } from "@/lib/parts-ui";
 import type { Spec } from "@/lib/schemas";
 import { parseValue } from "@/lib/units";
-import { Button } from "./ui";
+import { Button, Sheet } from "./ui";
 
 /** The "?" fallback: pick a value from a short list, or type one. */
 export function ValuePicker({ partType, current, onPick, onClose }: { partType: string; current?: Spec; onPick: (s: Spec) => void; onClose: () => void }) {
@@ -23,8 +23,8 @@ export function ValuePicker({ partType, current, onPick, onClose }: { partType: 
     return null;
   };
   return (
-    <div className="fixed inset-0 z-40 flex items-end bg-black/40" onClick={onClose}>
-      <div className="pb-safe mx-auto w-full max-w-xl rounded-t-3xl bg-surface p-4" onClick={(e) => e.stopPropagation()}>
+    <Sheet onClose={onClose}>
+      <div>
         <h3 className="mb-3 text-lg font-bold">{t("scan_pick_value")}</h3>
         {choices.length > 0 && (
           <div className="grid grid-cols-3 gap-2">
@@ -62,6 +62,6 @@ export function ValuePicker({ partType, current, onPick, onClose }: { partType: 
           {t("cancel")}
         </Button>
       </div>
-    </div>
+    </Sheet>
   );
 }

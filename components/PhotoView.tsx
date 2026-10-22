@@ -52,7 +52,7 @@ export function PhotoView({
   const sw = Math.max(width, height) / 220;
   const fs = Math.max(width, height) / 40;
   return (
-    <div className={`relative overflow-hidden rounded-2xl bg-black ${className}`} style={{ aspectRatio: `${width} / ${height}` }}>
+    <div className={`relative overflow-hidden rounded-2xl bg-black outline outline-1 -outline-offset-1 outline-black/10 ${className}`} style={{ aspectRatio: `${width} / ${height}` }}>
       {/* eslint-disable-next-line @next/next/no-img-element -- local blob URLs */}
       {src && <img src={src} alt="" className="absolute inset-0 h-full w-full" />}
       <svg viewBox={`0 0 ${width} ${height}`} className="absolute inset-0 h-full w-full">

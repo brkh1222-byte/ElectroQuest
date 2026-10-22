@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { canvasToBlob } from "@/lib/image";
-import { Button } from "./ui";
+import { Camera as CameraIcon, Flashlight, ImageUp, Sparkles, SwitchCamera } from "lucide-react";
+import { Button, I } from "./ui";
 
 export interface CameraProps {
   facing?: "environment" | "user";
@@ -85,38 +86,36 @@ export function Camera({ facing = "environment", onCapture, captureLabel, allowF
 
   return (
     <div className={className}>
-      <div className="relative aspect-[3/4] w-full overflow-hidden rounded-3xl bg-black">
+      <div className="relative aspect-[3/4] w-full overflow-hidden rounded-3xl bg-black sm:aspect-[4/3]">
         <video ref={videoRef} playsInline muted autoPlay className={`h-full w-full object-cover ${mode === "user" ? "-scale-x-100" : ""}`} />
         {!stream && !error && <p className="absolute inset-0 flex items-center justify-center text-white/80">{t("cam_starting")}</p>}
         {error && <p className="absolute inset-0 flex items-center justify-center p-6 text-center text-white">{error}</p>}
         <div className="absolute right-3 top-3 flex flex-col gap-2">
           {torchOk && (
-            <button onClick={toggleTorch} className={`min-h-12 rounded-xl px-3 font-bold ${torch ? "bg-yellow-300 text-black" : "bg-black/60 text-white"}`}>
-              🔦 {t("cam_torch")}
+            <button onClick={toggleTorch} aria-pressed={torch} className={`flex min-h-11 items-center gap-2 rounded-xl px-3 font-bold transition-[background-color,scale] duration-150 ease-out active:scale-[0.96] ${torch ? "bg-yellow-300 text-black" : "bg-black/60 text-white"}`}>
+              <I icon={Flashlight} /> {t("cam_torch")}
             </button>
           )}
           {allowFlip && (
-            <button onClick={() => setMode(mode === "user" ? "environment" : "user")} className="min-h-12 rounded-xl bg-black/60 px-3 font-bold text-white">
-              ⟲ {t("cam_flip")}
+            <button onClick={() => setMode(mode === "user" ? "environment" : "user")} className="flex min-h-11 items-center gap-2 rounded-xl bg-black/60 px-3 font-bold text-white transition-[scale] duration-150 ease-out active:scale-[0.96]">
+              <I icon={SwitchCamera} /> {t("cam_flip")}
             </button>
           )}
         </div>
       </div>
       {onCapture && (
-        <div className="mt-3 grid gap-2">
+        <div className="mt-3 grid gap-2 sm:grid-cols-[1.4fr_1fr_1fr]">
           <Button big tone="plain" onClick={capture} disabled={!stream || busy}>
-            📷 {captureLabel ?? t("cam_take")}
+            <I icon={CameraIcon} /> {captureLabel ?? t("cam_take")}
           </Button>
-          <div className="grid grid-cols-2 gap-2">
-            <Button tone="ghost" onClick={() => fileRef.current?.click()} disabled={busy} className={onDemoPhoto ? "" : "col-span-2"}>
-              🖼 {t("cam_upload")}
+          <Button big tone="ghost" onClick={() => fileRef.current?.click()} disabled={busy} className={onDemoPhoto ? "" : "sm:col-span-2"}>
+            <I icon={ImageUp} /> {t("cam_upload")}
+          </Button>
+          {onDemoPhoto && (
+            <Button big tone="ghost" onClick={onDemoPhoto} disabled={busy}>
+              <I icon={Sparkles} /> {t("cam_demo_photo")}
             </Button>
-            {onDemoPhoto && (
-              <Button tone="ghost" onClick={onDemoPhoto} disabled={busy}>
-                ★ {t("cam_demo_photo")}
-              </Button>
-            )}
-          </div>
+          )}
           <input
             ref={fileRef}
             type="file"

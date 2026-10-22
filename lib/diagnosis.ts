@@ -119,7 +119,7 @@ export function evidenceFor(profile: DeviceProfile, state: DiagnosisState, cause
   for (const f of strongestPerDefect(state.findings)) {
     const v = profile.visual_checks.find((x) => x.defect === f.defect);
     const w = v?.effects[causeId];
-    if (v && w && w > 1) out.push({ kind: "finding", text: { mn: `📷 ${v.where.mn}`, en: `📷 ${v.where.en}` }, weight: Math.pow(w, f.confidence) });
+    if (v && w && w > 1) out.push({ kind: "finding", text: { mn: v.where.mn, en: v.where.en }, weight: Math.pow(w, f.confidence) });
   }
   return out.sort((a, b) => b.weight - a.weight);
 }
