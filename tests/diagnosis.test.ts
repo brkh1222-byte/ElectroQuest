@@ -120,3 +120,30 @@ describe("evidence", () => {
     expect(ev.some((e) => e.kind === "test")).toBe(true);
   });
 });
+
+describe("live-answer regressions", () => {
+  it("the same defect seen twice counts once", () => {
+    const once = emptyState();
+    once.findings.push({ defect: "corrosion", confidence: 0.85 });
+    const twice = emptyState();
+    twice.findings.push({ defect: "corrosion", confidence: 0.85 }, { defect: "corrosion", confidence: 0.75 });
+    expect(rank(tv, twice)[0].p).toBeCloseTo(rank(tv, once)[0].p);
+  });
+
+  it("second remote with Claude's real (less confident) answers still ends in salvage", () => {
+    // Recorded live: defect check burn_mark 0.6; golden compare misread it as liquid_residue 0.75.
+    const s = emptyState();
+    s.answers = { response: "none", battery_age: "just_now", wet_or_dropped: "neither", contacts_look: "shiny" };
+    s.tests.ir_camera = "no_flash";
+    s.findings.push({ defect: "burn_mark", confidence: 0.6 }, { defect: "liquid_residue", confidence: 0.75 });
+    expect(rank(tv, s)[0].cause.id).toBe("dead_chip");
+  });
+
+  it("first remote with Claude's real answers → corroded contacts", () => {
+    const s = emptyState();
+    s.answers = { response: "none", battery_age: "just_now", wet_or_dropped: "neither", contacts_look: "unsure" };
+    s.tests.ir_camera = "no_flash";
+    s.findings.push({ defect: "corrosion", confidence: 0.9 }, { defect: "corrosion", confidence: 0.85 }, { defect: "cracked_joint", confidence: 0.6 });
+    expect(rank(tv, s)[0].cause.id).toBe("corroded_contacts");
+  });
+});

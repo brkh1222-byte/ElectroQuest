@@ -25,6 +25,7 @@ Open on a phone (same Wi-Fi): `npm run dev -- -H 0.0.0.0`, then go to `http://<l
 | `npm run check:classes` | Fails if the notebooks' class lists differ from `shared/*.json` |
 | `npm run typecheck` / `npm run lint` | TypeScript strict / ESLint |
 | `npm run build` | Production build (runs both checks first) |
+| `node scripts/live-check.mjs http://localhost:3000` | Calls every Claude task with known images and checks the answers (needs the dev server and an API key; costs a few cents) |
 
 ## Deploy (Vercel)
 

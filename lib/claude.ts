@@ -23,7 +23,11 @@ const MODELS = {
   fast: process.env.CLAUDE_MODEL_FAST || "claude-haiku-5-5",
   strong: process.env.CLAUDE_MODEL_STRONG || "claude-opus-5-5",
 };
-const EFFORT = { fast: "low", strong: "medium" } as const;
+type Effort = "low" | "medium" | "high";
+const EFFORT: Record<"fast" | "strong", Effort> = {
+  fast: (process.env.CLAUDE_EFFORT_FAST as Effort) || "low",
+  strong: (process.env.CLAUDE_EFFORT_STRONG as Effort) || "low",
+};
 /** Server-side refusal fallback is only offered on these model families. */
 const SUPPORTS_FALLBACK = /^claude-(opus|sonnet|fable)-/;
 
@@ -133,7 +137,13 @@ export async function runTask(task: TaskName, lang: Lang, rawInput: unknown) {
     } catch (e) {
       if (e instanceof Anthropic.RateLimitError) throw new TaskError("Claude is busy (rate limited). Try again in a moment.", 429);
       if (e instanceof Anthropic.AuthenticationError) throw new TaskError("Claude API key is invalid", 503);
-      if (e instanceof Anthropic.BadRequestError) throw new TaskError(`Claude rejected the request: ${e.message}`, 400);
+      if (e instanceof Anthropic.BadRequestError) {
+        // Surface the API's own message ("credit balance is too low", "image too large"…), not the raw JSON.
+        const detail = (e.error as { error?: { message?: string } } | undefined)?.error?.message ?? e.message;
+        // An account problem is the server's fault, not the request's: report it as unavailable so the UI offers retry/replay.
+        if (/credit balance/i.test(detail)) throw new TaskError(`Claude account has no credits: ${detail}`, 503);
+        throw new TaskError(`Claude rejected the request: ${detail}`, 400);
+      }
       if (e instanceof Anthropic.APIConnectionError) throw new TaskError("Can't reach Claude (network)", 503);
       if (e instanceof Anthropic.APIError) throw new TaskError(`Claude error ${e.status}`, 502);
       // Anything else before a response, e.g. no API key configured on the server.

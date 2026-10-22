@@ -42,6 +42,16 @@ function askIfOk(askIf: Record<string, string[]> | undefined, answers: Record<st
   return Object.entries(askIf).every(([q, allowed]) => answers[q] !== undefined && allowed.includes(answers[q]));
 }
 
+/**
+ * One piece of evidence per defect type: corrosion seen on two springs (or by both the defect check and
+ * the golden comparison) is still one observation, so only its most confident instance counts.
+ */
+function strongestPerDefect(findings: VisualFinding[]): VisualFinding[] {
+  const best = new Map<string, VisualFinding>();
+  for (const f of findings) if (!best.has(f.defect) || best.get(f.defect)!.confidence < f.confidence) best.set(f.defect, f);
+  return [...best.values()];
+}
+
 export function rank(profile: DeviceProfile, state: DiagnosisState): RankedCause[] {
   const scores = new Map(profile.causes.map((c) => [c.id, c.frequency]));
   for (const q of profile.questions) {
@@ -52,7 +62,7 @@ export function rank(profile: DeviceProfile, state: DiagnosisState): RankedCause
     const o = t.outcomes.find((x) => x.id === state.tests[t.id]);
     if (o) applyEffects(scores, o.effects);
   }
-  for (const f of state.findings) {
+  for (const f of strongestPerDefect(state.findings)) {
     const check = profile.visual_checks.find((v) => v.defect === f.defect);
     // A finding the model is unsure of moves the scores less.
     if (check) applyEffects(scores, check.effects, Math.max(0, Math.min(1, f.confidence)));
@@ -106,7 +116,7 @@ export function evidenceFor(profile: DeviceProfile, state: DiagnosisState, cause
     const w = o?.effects[causeId];
     if (o && w && w > 1) out.push({ kind: "test", text: { mn: `${t.title.mn}: ${o.text.mn}`, en: `${t.title.en}: ${o.text.en}` }, weight: w });
   }
-  for (const f of state.findings) {
+  for (const f of strongestPerDefect(state.findings)) {
     const v = profile.visual_checks.find((x) => x.defect === f.defect);
     const w = v?.effects[causeId];
     if (v && w && w > 1) out.push({ kind: "finding", text: { mn: `📷 ${v.where.mn}`, en: `📷 ${v.where.en}` }, weight: Math.pow(w, f.confidence) });

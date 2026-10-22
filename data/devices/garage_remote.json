@@ -477,8 +477,8 @@
         }
       ],
       "why": {
-        "mn": "Батарей, контакт, холболт хэвийн ч хаалга хариу өгөхгүй.",
-        "en": "Battery, contacts and pairing are fine, but the gate still doesn't respond."
+        "mn": "Самбар дээр түлэгдсэн ул мөр байгаа, эсвэл батарей, контакт, холболтыг үгүйсгэсэн: дамжуулагч хэсэг эвдэрсэн байх магадлалтай.",
+        "en": "There's a burn mark on the board, or battery, contacts and pairing were ruled out: the transmitter has most likely failed."
       },
       "fix": {
         "summary": {
@@ -967,7 +967,9 @@
         "en": "board"
       },
       "effects": {
-        "dead_transmitter": 4
+        "dead_transmitter": 40,
+        "worn_button": 0.5,
+        "lost_pairing": 0.3
       }
     },
     {

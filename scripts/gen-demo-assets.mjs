@@ -223,5 +223,8 @@ fs.writeFileSync(
 );
 
 fs.writeFileSync(path.join(root, "data/demo/fixtures.json"), JSON.stringify(fixtures, null, 2) + "\n");
-fs.writeFileSync(path.join(root, "data/demo/claude-cache.json"), JSON.stringify(canned, null, 2) + "\n");
+// Keep answers already recorded from real Claude runs; only fill in missing keys.
+const cachePath = path.join(root, "data/demo/claude-cache.json");
+const existing = fs.existsSync(cachePath) ? JSON.parse(fs.readFileSync(cachePath, "utf8")) : {};
+fs.writeFileSync(cachePath, JSON.stringify({ ...canned, ...existing }, null, 2) + "\n");
 console.log("demo assets written:", Object.keys(fixtures).join(", "), "|", Object.keys(canned).length, "canned answers");
