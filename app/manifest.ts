@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Засвар AI",
-    short_name: "Засвар AI",
+    name: "ElectroQuest",
+    short_name: "ElectroQuest",
     description: "Эвдэрсэн төхөөрөмжөө засаж, эд ангиас нь шинэ зүйл бүтээ",
     start_url: "/",
     display: "standalone",

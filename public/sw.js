@@ -1,6 +1,6 @@
 // Offline support: everything except Claude calls works without a network.
 // Pages and static assets: network first, cache fallback. Models, ORT runtime, demo images: cache first.
-const VERSION = "zasvar-v1";
+const VERSION = "electroquest-v1";
 const PRECACHE = ["/", "/fix", "/scan", "/inventory", "/projects", "/progress", "/model-card", "/manifest.webmanifest", "/demo/parts-pile.svg", "/demo/tv-board.svg", "/demo/tv-board-dead.svg", "/demo/golden-tv-remote.svg"];
 
 self.addEventListener("install", (e) => {

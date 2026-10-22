@@ -1,4 +1,4 @@
-# Засвар AI
+# ElectroQuest
 
 A phone app that fixes broken battery-powered gadgets and then builds new projects from their parts.
 

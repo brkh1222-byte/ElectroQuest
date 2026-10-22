@@ -8,7 +8,7 @@ import type { L } from "./schemas";
  * Content (recipes, devices) carries its own {mn, en} text and is read with `tr()`.
  */
 const mn = {
-  app_name: "Засвар AI",
+  app_name: "ElectroQuest",
   tagline: "Эвдэрсэн төхөөрөмжөө засаж, эд ангиас нь шинэ зүйл бүтээ",
   fix: "Засах",
   fix_sub: "Эвдэрсэн төхөөрөмж оношлох",
@@ -228,7 +228,7 @@ const mn = {
 export type StringKey = keyof typeof mn;
 
 const en: Record<StringKey, string> = {
-  app_name: "Zasvar AI",
+  app_name: "ElectroQuest",
   tagline: "Fix your broken gadgets, then build new things from their parts",
   fix: "Fix",
   fix_sub: "Diagnose a broken device",

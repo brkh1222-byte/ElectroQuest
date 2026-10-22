@@ -8,7 +8,7 @@ import { TASKS, type Lang, type TaskName } from "./ai-tasks";
 
 /** Prompt file versions. Bump a version by adding prompts/<task>.v2.md and changing it here. */
 export const PROMPT_VERSIONS: Record<TaskName | "_system", string> = {
-  _system: "v1",
+  _system: "v2",
   ping: "v1",
   read_marking: "v1",
   resistor_bands: "v1",

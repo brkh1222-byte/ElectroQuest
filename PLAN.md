@@ -1,4 +1,4 @@
-# Засвар AI: implementation plan
+# ElectroQuest: implementation plan
 
 A mobile-first PWA with three parts. **Fix it** diagnoses a broken battery device. **Salvage it** moves the device's reusable parts into an inventory. **Build with it** matches that inventory against beginner recipes and walks the user through a build.
 
