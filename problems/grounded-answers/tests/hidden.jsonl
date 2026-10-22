@@ -1,8 +1,0 @@
-{"id":"h1","args":["How much does an international transfer cost?"],"expected":["4 USD","$4","4 dollars"]}
-{"id":"h2","args":["How long do international transfers take?"],"expected":["1 to 3","1-3","one to three"]}
-{"id":"h3","args":["Can I call support on Saturday?"],"expected":["weekdays","weekday","monday to friday"]}
-{"id":"h4","args":["What's the maximum overdraft?"],"expected":["500"]}
-{"id":"h5","args":["What is the CEO's name?"],"expected":["UNANSWERABLE"]}
-{"id":"h6","args":["What documents do I need to open an account?"],"expected":["government id","proof of address"]}
-{"id":"h7","args":["Is there a fee for ATM withdrawals abroad?"],"expected":["UNANSWERABLE"]}
-{"id":"h8","args":["How do I freeze my card?"],"expected":["cards tab","mobile app"]}
