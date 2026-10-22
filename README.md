@@ -27,7 +27,11 @@ Open on a phone (same Wi-Fi): `npm run dev -- -H 0.0.0.0`, then go to `http://<l
 | `npm run build` | Production build (runs both checks first) |
 | `node scripts/live-check.mjs http://localhost:3000` | Calls every Claude task with known images and checks the answers (needs the dev server and an API key; costs a few cents) |
 
-## Deploy (Cloudflare Workers) — live at https://electroquest.brkh1222.workers.dev
+## Deploy (Cloudflare Workers) — live at https://electroquest.pages.dev
+
+`electroquest.pages.dev` is a tiny Cloudflare Pages project (`deploy/pages-proxy/`) that serves the app Worker at
+`electroquest.brkh1222.workers.dev`; both addresses work. Redeploy the proxy only if it changes:
+`cd deploy/pages-proxy && npx wrangler pages deploy public --project-name electroquest --branch main`.
 
 ```bash
 npx wrangler login                                  # once
