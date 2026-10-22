@@ -27,7 +27,17 @@ Open on a phone (same Wi-Fi): `npm run dev -- -H 0.0.0.0`, then go to `http://<l
 | `npm run build` | Production build (runs both checks first) |
 | `node scripts/live-check.mjs http://localhost:3000` | Calls every Claude task with known images and checks the answers (needs the dev server and an API key; costs a few cents) |
 
-## Deploy (Vercel)
+## Deploy (Cloudflare Workers) — live at https://electroquest.brkh1222.workers.dev
+
+```bash
+npx wrangler login                                  # once
+npx wrangler secret put ANTHROPIC_API_KEY           # once, paste the key
+npm run cf:deploy                                   # build with OpenNext and deploy
+```
+
+Cloudflare limits static files to 25 MB, so the Cloudflare build loads onnxruntime-web from jsDelivr (`NEXT_PUBLIC_ORT_BASE`) instead of `public/ort/`.
+
+## Deploy (Vercel, alternative)
 
 1. Import the repo in Vercel (framework: Next.js; build command: `npm run build`).
 2. Add `ANTHROPIC_API_KEY` (and optionally `CLAUDE_MODEL_FAST`, `CLAUDE_MODEL_STRONG`) under Project → Settings → Environment Variables, or run `vercel env add ANTHROPIC_API_KEY`.

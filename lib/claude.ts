@@ -1,10 +1,9 @@
 import "server-only";
-import fs from "node:fs/promises";
-import path from "node:path";
 import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import type { BetaContentBlockParam, BetaMessageParam } from "@anthropic-ai/sdk/resources/beta/messages/messages";
 import { TASKS, type Lang, type TaskName } from "./ai-tasks";
+import { prompts } from "./generated/data-index";
 
 /** Prompt file versions. Bump a version by adding prompts/<task>.v2.md and changing it here. */
 export const PROMPT_VERSIONS: Record<TaskName | "_system", string> = {
@@ -37,14 +36,10 @@ function getClient() {
   return client;
 }
 
-const promptCache = new Map<string, string>();
 async function loadPrompt(name: string, version: string): Promise<string> {
-  const key = `${name}.${version}`;
-  if (!promptCache.has(key)) {
-    const text = await fs.readFile(path.join(process.cwd(), "prompts", `${key}.md`), "utf8");
-    promptCache.set(key, text);
-  }
-  return promptCache.get(key)!;
+  const text = prompts[`${name}.${version}`];
+  if (text === undefined) throw new Error(`missing prompt prompts/${name}.${version}.md`);
+  return text;
 }
 
 const LANG_NAME: Record<Lang, string> = { mn: "Mongolian (Cyrillic)", en: "English" };
