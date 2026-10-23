@@ -115,7 +115,10 @@ export function isStandardValue(ohms: number): boolean {
 export function decodeEitherWay(bands: string[]): { result: DecodedResistor; confident: boolean } | null {
   const fwd = decodeBands(bands);
   const rev = decodeBands([...bands].reverse());
-  const score = (d: DecodedResistor | null) => (d ? (isStandardValue(d.ohms) ? 2 : 1) : 0);
+  // Hobby resistors run from about 1Ω to 10MΩ: a reading outside that (e.g. 1GΩ from a reversed 5-band code)
+  // is almost certainly the wrong direction, so it loses to any in-range reading.
+  const plausible = (d: DecodedResistor) => d.ohms >= 1 && d.ohms <= 10e6;
+  const score = (d: DecodedResistor | null) => (!d ? 0 : !plausible(d) ? 0.5 : isStandardValue(d.ohms) ? 2 : 1);
   const sf = score(fwd);
   const sr = score(rev);
   if (!fwd && !rev) return null;

@@ -46,6 +46,18 @@ describe("resistor colour decoder", () => {
     expect(r?.confident).toBe(false);
   });
 
+  it("reads real 5-band resistors from either end", () => {
+    // Reported from the team's kit, read from the tolerance end first.
+    const a = decodeEitherWay(["brown", "orange", "black", "black", "brown"]);
+    expect(a?.result.ohms).toBe(100000); // 100kΩ, not 130Ω
+    expect(a?.confident).toBe(true);
+    // Yellow misread as green: neither direction is standard, so it must not pick 1GΩ, and stays "?" for the user.
+    const b = decodeEitherWay(["brown", "black", "black", "violet", "green"]);
+    expect(b?.result.ohms).toBe(570);
+    expect(b?.confident).toBe(false);
+    expect(decodeEitherWay(["brown", "black", "black", "violet", "yellow"])?.result.ohms).toBe(470);
+  });
+
   it("knows E12 values", () => {
     expect(isStandardValue(4700)).toBe(true);
     expect(isStandardValue(220)).toBe(true);

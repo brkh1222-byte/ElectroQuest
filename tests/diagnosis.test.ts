@@ -176,3 +176,33 @@ describe("live-answer regressions", () => {
     expect(rank(tv, s)[0].cause.id).toBe("corroded_contacts");
   });
 });
+
+describe("bluetooth speaker", () => {
+  const sp = deviceById("bluetooth_speaker")!;
+  const top = (answers: Record<string, string>, tests: Record<string, string> = {}, findings: { defect: "burn_mark" | "cracked_joint"; confidence: number }[] = []) => {
+    const s = emptyState();
+    s.answers = answers;
+    s.tests = tests;
+    s.findings = findings;
+    return rank(sp, s)[0].cause.id;
+  };
+
+  it("old speaker that dies fast → worn battery", () => {
+    expect(top({ main_problem: "dies_fast", swollen: "no", charge_light: "yes", loose_plug: "no", age: "old", wet_or_dropped: "neither" })).toBe("battery_worn");
+  });
+  it("silent after a drop, aux silent too → broken speaker wire", () => {
+    expect(top({ main_problem: "no_sound", aux_works: "no", age: "old", wet_or_dropped: "dropped" })).toBe("speaker_wire");
+  });
+  it("plays over aux but not Bluetooth → pairing", () => {
+    expect(top({ main_problem: "no_bluetooth", aux_works: "yes", age: "old", wet_or_dropped: "neither" })).toBe("lost_pairing");
+  });
+  it("dead, but turns on after a long charge → flat battery", () => {
+    expect(top({ main_problem: "no_power", swollen: "no", charge_light: "yes", loose_plug: "no", age: "old", wet_or_dropped: "neither" }, { charge_test: "on" })).toBe("battery_flat");
+  });
+  it("dead with a loose plug and no charge light → USB port", () => {
+    expect(top({ main_problem: "no_power", swollen: "no", charge_light: "no", loose_plug: "yes", age: "old", wet_or_dropped: "dropped" })).toBe("usb_port");
+  });
+  it("first question is the gating one for the camera screen", () => {
+    expect(sp.questions[0].id).toBe("main_problem");
+  });
+});

@@ -16,7 +16,7 @@ export default function FixPage() {
   const mains = text.trim().length > 2 && mentionsMains(text);
   return (
     <AppShell title={t("fix_title")}>
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {devices.map((d) => (
           <Link
             key={d.id}
@@ -34,11 +34,11 @@ export default function FixPage() {
             <I icon={ChevronRight} className="ms-auto text-muted md:hidden" />
           </Link>
         ))}
-        <Button tone="ghost" big className="md:col-span-3 md:justify-self-start" onClick={() => setOther(!other)} aria-expanded={other}>
+        <Button tone="ghost" big className="md:col-span-2 xl:col-span-4 md:justify-self-start" onClick={() => setOther(!other)} aria-expanded={other}>
           {t("fix_other")} <I icon={ChevronRight} className={`transition-transform duration-150 ${other ? "rotate-90" : ""}`} />
         </Button>
         {other && (
-          <Card className="md:col-span-3">
+          <Card className="md:col-span-2 xl:col-span-4">
             <p className="text-lg">{t("fix_other_body")}</p>
             <input
               value={text}
