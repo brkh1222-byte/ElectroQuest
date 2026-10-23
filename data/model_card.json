@@ -1,20 +1,161 @@
 {
-  "status": "not_trained",
+  "status": "trained",
   "model_name": "parts-detector",
-  "base_model": "yolo11s (COCO pre-trained)",
-  "trained_at": null,
+  "base_model": "yolo11n (COCO pre-trained)",
+  "trained_at": "2026-10-23",
   "image_size": 640,
-  "epochs": null,
+  "epochs": 10,
   "data": {
     "public_datasets": [
-      { "name": "electric-components-kkgsp", "url": "https://universe.roboflow.com/school-p0xt8/electric-components-kkgsp", "images": null },
-      { "name": "electronics4", "url": "https://universe.roboflow.com/electronic-components-3jxxm/electronics4", "images": null }
+      {
+        "name": "arduino-ugn9a",
+        "url": "https://universe.roboflow.com/charles-dominique-bacanto-sk3id/arduino-ugn9a",
+        "images": 842
+      },
+      {
+        "name": "arduino-modules",
+        "url": "https://universe.roboflow.com/laboratorio-c/arduino-modules",
+        "images": 258
+      },
+      {
+        "name": "electronics4",
+        "url": "https://universe.roboflow.com/electronic-components-3jxxm/electronics4",
+        "images": 3892
+      },
+      {
+        "name": "electrocom-61",
+        "url": "https://universe.roboflow.com/datasetsynthesis/electrocom-61",
+        "images": 1983
+      },
+      {
+        "name": "new-phase-1",
+        "url": "https://universe.roboflow.com/phase-1-testing/new-phase-1",
+        "images": 605
+      },
+      {
+        "name": "electric-components-kkgsp",
+        "url": "https://universe.roboflow.com/school-p0xt8/electric-components-kkgsp",
+        "images": 7
+      }
     ],
-    "own_photos": null,
-    "train_images": null,
-    "val_images": null
+    "own_photos": 0,
+    "train_images": 6203,
+    "val_images": 1384
   },
-  "metrics": { "map50": null, "map50_95": null, "precision": null, "recall": null },
-  "per_class": [],
-  "examples": []
+  "metrics": {
+    "map50": 0.660319727381137,
+    "map50_95": 0.3833342066387347,
+    "precision": 0.6539733897244481,
+    "recall": 0.6422379104951098
+  },
+  "per_class": [
+    {
+      "name": "resistor",
+      "train_boxes": 3623,
+      "map50": 0.8147419584052911
+    },
+    {
+      "name": "capacitor",
+      "train_boxes": 3507,
+      "map50": 0.76323494143543
+    },
+    {
+      "name": "led",
+      "train_boxes": 446,
+      "map50": 0.45476457814069565
+    },
+    {
+      "name": "diode",
+      "train_boxes": 471,
+      "map50": 0.5340324536195918
+    },
+    {
+      "name": "transistor",
+      "train_boxes": 168,
+      "map50": 0.48805384480973035
+    },
+    {
+      "name": "ic",
+      "train_boxes": 2739,
+      "map50": 0.8642459310559758
+    },
+    {
+      "name": "button",
+      "train_boxes": 3656,
+      "map50": 0.6789669260879082
+    },
+    {
+      "name": "buzzer",
+      "train_boxes": 416,
+      "map50": 0.7054429857823001
+    },
+    {
+      "name": "potentiometer",
+      "train_boxes": 309,
+      "map50": 0.6048884232352904
+    },
+    {
+      "name": "ldr",
+      "train_boxes": 231,
+      "map50": 0.11959717618274522
+    },
+    {
+      "name": "battery",
+      "train_boxes": 369,
+      "map50": 0.913093338894799
+    },
+    {
+      "name": "breadboard",
+      "train_boxes": 262,
+      "map50": 0.9168293181161276
+    },
+    {
+      "name": "arduino",
+      "train_boxes": 776,
+      "map50": 0.9007188263859053
+    },
+    {
+      "name": "jumper_wire",
+      "train_boxes": 83,
+      "map50": 0.8360941558441558
+    },
+    {
+      "name": "servo",
+      "train_boxes": 166,
+      "map50": 0.22148893593382551
+    },
+    {
+      "name": "dc_motor",
+      "train_boxes": 67,
+      "map50": 0.55735154610667
+    },
+    {
+      "name": "ultrasonic_sensor",
+      "train_boxes": 324,
+      "map50": 0.7060663060197134
+    },
+    {
+      "name": "display",
+      "train_boxes": 622,
+      "map50": 0.8061434468043077
+    }
+  ],
+  "examples": [
+    {
+      "image": "/models/examples/example_0.jpg",
+      "caption": "3 parts found"
+    },
+    {
+      "image": "/models/examples/example_1.jpg",
+      "caption": "0 parts found"
+    },
+    {
+      "image": "/models/examples/example_2.jpg",
+      "caption": "1 parts found"
+    },
+    {
+      "image": "/models/examples/example_3.jpg",
+      "caption": "2 parts found"
+    }
+  ]
 }

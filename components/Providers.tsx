@@ -3,6 +3,7 @@
 import { useEffect, type ReactNode } from "react";
 import { LangProvider } from "@/lib/i18n";
 import { syncDemoFromUrl } from "@/lib/demo";
+import { PresenterPanel } from "./PresenterPanel";
 
 export function Providers({ children }: { children: ReactNode }) {
   useEffect(() => {
@@ -11,5 +12,10 @@ export function Providers({ children }: { children: ReactNode }) {
       navigator.serviceWorker.register("/sw.js").catch((e) => console.warn("[sw]", e));
     }
   }, []);
-  return <LangProvider>{children}</LangProvider>;
+  return (
+    <LangProvider>
+      {children}
+      <PresenterPanel />
+    </LangProvider>
+  );
 }
