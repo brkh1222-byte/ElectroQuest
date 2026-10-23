@@ -557,8 +557,8 @@
         }
       ],
       "why": {
-        "mn": "Батарей, порт, холболт хэвийн ч ажиллахгүй байгаа тул самбар эвдэрсэн.",
-        "en": "Battery, port and pairing are fine, but it still doesn't work, so the board has failed."
+        "mn": "Самбар дээр түлэгдсэн ул мөр байгаа, эсвэл батарей, порт, холболтыг үгүйсгэсэн: үндсэн самбар эвдэрсэн байх магадлалтай.",
+        "en": "There's a burn mark on the board, or battery, port and pairing were ruled out: the main board has most likely failed."
       },
       "fix": {
         "summary": {
@@ -1071,7 +1071,10 @@
         "en": "board"
       },
       "effects": {
-        "dead_board": 4
+        "dead_board": 40,
+        "joystick_drift": 0.5,
+        "worn_pads": 0.5,
+        "lost_pairing": 0.3
       }
     },
     {

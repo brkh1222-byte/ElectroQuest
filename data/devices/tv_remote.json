@@ -554,8 +554,8 @@
         }
       ],
       "why": {
-        "mn": "Бусад шалтгааныг шалгаад үгүйсгэсэн тул пультийн чип эвдэрсэн байх магадлалтай.",
-        "en": "We checked and ruled out the other causes, so the remote's chip has probably failed."
+        "mn": "Самбар дээр түлэгдсэн ул мөр байгаа, эсвэл бусад шалтгааныг үгүйсгэсэн: пультийн чип эвдэрсэн байх магадлалтай. Нэг эд анги солих нь ихэвчлэн тусалдаггүй.",
+        "en": "There's a burn mark on the board, or the other causes were ruled out: the remote's chip has most likely failed. Replacing a single part usually won't save it."
       },
       "fix": {
         "summary": {
@@ -1016,8 +1016,10 @@
         "en": "board"
       },
       "effects": {
-        "dead_chip": 15,
-        "water_damage": 1.5
+        "dead_chip": 40,
+        "water_damage": 1.5,
+        "dead_ir_led": 0.5,
+        "worn_pads": 0.5
       }
     },
     {
