@@ -58,14 +58,18 @@ def prelabel(folder: str):
         img.thumbnail((1280, 1280))
         out = OWN_RAW / "images" / f"kit_{i:03d}.jpg"
         img.save(out, quality=90)
-        r = model.predict(str(out), conf=0.2, verbose=False)[0]
+        # Our kit only has the demo part types: don't make reviewers delete capacitors and diodes that aren't there.
+        r = model.predict(str(out), conf=0.2, verbose=False, classes=[base.CLASSES.index(c) for c in DEMO_CLASSES])[0]
         lines = [f"{int(c)} {x:.6f} {y:.6f} {w:.6f} {h:.6f}" for (x, y, w, h), c in zip(r.boxes.xywhn.tolist(), r.boxes.cls.tolist())]
         lbl = OWN_RAW / "labels" / f"kit_{i:03d}.txt"
         lbl.write_text("\n".join(lines) + ("\n" if lines else ""))
         found = {}
         for c in r.boxes.cls.tolist():
             found[base.CLASSES[int(c)]] = found.get(base.CLASSES[int(c)], 0) + 1
-        project.single_upload(image_path=str(out), annotation_path=str(lbl), annotation_labelmap=str(OWN_RAW / "classes.txt"), batch_name="demo-kit")
+        if lines:
+            project.single_upload(image_path=str(out), annotation_path=str(lbl), annotation_labelmap=str(OWN_RAW / "classes.txt"), batch_name="demo-kit", annotation_overwrite=True)
+        else:  # nothing found: upload the photo unlabelled, the reviewer draws the boxes
+            project.single_upload(image_path=str(out), batch_name="demo-kit")
         print(f"{out.name}: {found}")
     print(f"\nUploaded {len(photos)} photos to Roboflow project '{PROJECT}'. Review them in Annotate, then run: specialize.py fetch")
 
