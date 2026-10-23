@@ -1,7 +1,7 @@
 {
   "id": "garage_remote",
   "name": {
-    "mn": "Гараж / хаалганы пульт",
+    "mn": "Гараж / хаалганы удирдлага",
     "en": "Garage / gate remote"
   },
   "icon": "/icons/garage-remote.svg",
@@ -29,7 +29,7 @@
         }
       ],
       "why": {
-        "mn": "Пультийн гэрэл бүдэг/асахгүй, ойроос л ажилладаг нь сул батарейн шинж.",
+        "mn": "Удирдлагын гэрэл бүдэг/асахгүй, ойроос л ажилладаг нь сул батарейн шинж.",
         "en": "A dim or dead LED and short range are classic weak-battery signs."
       },
       "fix": {
@@ -54,7 +54,7 @@
         ],
         "steps": [
           {
-            "mn": "Пультийг нээж батарейн дээрх бичгийг (A23, 27A, CR2032…) хар.",
+            "mn": "Удирдлагыг нээж батарейн дээрх бичгийг (A23, 27A, CR2032…) хар.",
             "en": "Open the remote and read the battery's label (A23, 27A, CR2032…)."
           },
           {
@@ -91,7 +91,7 @@
       },
       "symptoms": [
         {
-          "mn": "Пультийн LED асдаг ч хаалга нээгдэхгүй",
+          "mn": "Удирдлагын LED асдаг ч хаалга нээгдэхгүй",
           "en": "The remote's LED lights but the gate doesn't open"
         },
         {
@@ -100,12 +100,12 @@
         }
       ],
       "why": {
-        "mn": "Пультийн гэрэл асаж байгаа ч хаалга хариу өгөхгүй бол пульт дохио илгээж байгаа ч хүлээн авагч кодоо мартсан.",
+        "mn": "Удирдлагын гэрэл асаж байгаа ч хаалга хариу өгөхгүй бол удирдлага дохио илгээж байгаа ч хүлээн авагч кодоо мартсан.",
         "en": "The remote's LED lights but the gate ignores it: the remote is transmitting, but the receiver has forgotten its code."
       },
       "fix": {
         "summary": {
-          "mn": "Пультийг дахин холбоно (кодлох) — тоног төхөөрөмж солих хэрэггүй",
+          "mn": "Удирдлагыг дахин холбоно (кодлох) — тоног төхөөрөмж солих хэрэггүй",
           "en": "Re-pair the remote — no hardware needed"
         },
         "parts": [],
@@ -116,11 +116,11 @@
         },
         "steps": [
           {
-            "mn": "Ажилладаг өөр пульт байгаа бол: хоёр пультийг ойрхон барьж, хуулбарлах (clone) горимын товчны хослолыг (ихэвчлэн 2 товчийг зэрэг 5 сек) дарж, LED анивчихыг хүлээнэ.",
+            "mn": "Ажилладаг өөр удирдлага байгаа бол: хоёр удирдлагыг ойрхон барьж, хуулбарлах (clone) горимын товчны хослолыг (ихэвчлэн 2 товчийг зэрэг 5 сек) дарж, LED анивчихыг хүлээнэ.",
             "en": "If you have a working remote: hold both close together, press your remote's clone-mode combination (often two buttons together for 5 s) and wait for the LED to flash."
           },
           {
-            "mn": "Дараа нь ажилладаг пультийн товчийг дарна — шинэ пультийн LED хурдан анивчвал код хуулагдсан.",
+            "mn": "Дараа нь ажилладаг удирдлагын товчийг дарна — шинэ удирдлагын LED хурдан анивчвал код хуулагдсан.",
             "en": "Then press the working remote's button — a fast flash on your remote means the code was copied."
           },
           {
@@ -128,11 +128,11 @@
             "en": "If the system has a LEARN/PROG button on the receiver: that box is on 220V. Don't open it yourself — ask the building manager or installer to press LEARN for you."
           },
           {
-            "mn": "LEARN дарсны дараа 10 секундийн дотор пультийн товчийг 2 секунд дарна.",
+            "mn": "LEARN дарсны дараа 10 секундийн дотор удирдлагын товчийг 2 секунд дарна.",
             "en": "After LEARN is pressed, hold your remote's button for 2 seconds within 10 seconds."
           },
           {
-            "mn": "Пультийн гарын авлагыг (загварын нэр + \"programming\") хайж яг өөрийн загварын алхмыг шалгаарай.",
+            "mn": "Удирдлагын гарын авлагыг (загварын нэр + \"programming\") хайж яг өөрийн загварын алхмыг шалгаарай.",
             "en": "Look up your model's manual (model name + \"programming\") for its exact steps."
           }
         ],
@@ -299,7 +299,7 @@
       },
       "symptoms": [
         {
-          "mn": "Пультийг хавчихад ажилладаг",
+          "mn": "Удирдлагыг хавчихад ажилладаг",
           "en": "Works when you squeeze the remote"
         }
       ],
@@ -342,7 +342,7 @@
         "shop_price_mnt": 20000,
         "needs_soldering": true,
         "give_up_when": {
-          "mn": "Хавчаар хугарсан бол шинэ пульт.",
+          "mn": "Хавчаар хугарсан бол шинэ удирдлага.",
           "en": "If the clip is snapped, get a new remote."
         },
         "safety": [
@@ -420,17 +420,17 @@
       "id": "receiver_side",
       "frequency": 3,
       "name": {
-        "mn": "Пульт хэвийн — хаалганы хүлээн авагч эвдэрсэн",
+        "mn": "Удирдлага хэвийн — хаалганы хүлээн авагч эвдэрсэн",
         "en": "The remote is fine — the gate receiver is faulty"
       },
       "symptoms": [
         {
-          "mn": "Ажилладаг өөр пульт ч хаалгыг нээж чадахгүй",
+          "mn": "Ажилладаг өөр удирдлага ч хаалгыг нээж чадахгүй",
           "en": "Even a working remote can't open the gate"
         }
       ],
       "why": {
-        "mn": "Өөр пульт ч ажиллахгүй байгаа тул асуудал хаалганы талд.",
+        "mn": "Өөр удирдлага ч ажиллахгүй байгаа тул асуудал хаалганы талд.",
         "en": "Another remote fails too, so the problem is on the gate side."
       },
       "fix": {
@@ -482,13 +482,13 @@
       },
       "fix": {
         "summary": {
-          "mn": "Шинэ пульт аваад хуучныг эд анги болгоно",
+          "mn": "Шинэ удирдлага аваад хуучныг эд анги болгоно",
           "en": "Buy a new remote and salvage the old one"
         },
         "parts": [
           {
             "name": {
-              "mn": "Шинэ хуулбарлагч пульт",
+              "mn": "Шинэ хуулбарлагч удирдлага",
               "en": "New clone remote"
             },
             "price_mnt": 20000
@@ -497,7 +497,7 @@
         "tools": [],
         "steps": [
           {
-            "mn": "Хуучин пультийг задлаад товчлуур, LED, батарейн хавчаарыг эд анги болгоно.",
+            "mn": "Хуучин удирдлагыг задлаад товчлуур, LED, батарейн хавчаарыг эд анги болгоно.",
             "en": "Open the old remote and salvage the buttons, LED and battery clip."
           }
         ],
@@ -516,7 +516,7 @@
     {
       "id": "led_lights",
       "text": {
-        "mn": "Товч дарахад пульт дээрх жижиг гэрэл асаж байна уу?",
+        "mn": "Товч дарахад удирдлага дээрх жижиг гэрэл асаж байна уу?",
         "en": "Does the little light on the remote turn on when you press a button?"
       },
       "answers": [
@@ -722,12 +722,12 @@
       "id": "other_remote",
       "kind": "yes_no",
       "title": {
-        "mn": "Өөр пультээр шалгах",
+        "mn": "Өөр удирдлагаар шалгах",
         "en": "Second-remote check"
       },
       "instructions": [
         {
-          "mn": "Хөрш эсвэл гэр бүлийн гишүүний ажилладаг пультийг хаалганы дэргэд туршина уу.",
+          "mn": "Хөрш эсвэл гэр бүлийн гишүүний ажилладаг удирдлагыг хаалганы дэргэд туршина уу.",
           "en": "Try a neighbour's or family member's working remote at the same gate."
         }
       ],
@@ -735,7 +735,7 @@
         {
           "id": "works",
           "text": {
-            "mn": "Тэр пульт ажиллана",
+            "mn": "Тэр удирдлага ажиллана",
             "en": "That remote works"
           },
           "effects": {
@@ -757,7 +757,7 @@
         {
           "id": "none",
           "text": {
-            "mn": "Өөр пульт байхгүй",
+            "mn": "Өөр удирдлага байхгүй",
             "en": "No other remote"
           },
           "effects": {}
@@ -778,11 +778,11 @@
       },
       "instructions": [
         {
-          "mn": "Пультийн LED асаж байгаа тул эхлээд дахин холбож үзье (задлах шаардлагагүй).",
+          "mn": "Удирдлагын LED асаж байгаа тул эхлээд дахин холбож үзье (задлах шаардлагагүй).",
           "en": "The remote's LED lights, so try re-pairing first (no need to open anything)."
         },
         {
-          "mn": "Ажилладаг пульттэй бол хуулбарлах горим, LEARN товчтой системтэй бол суурилуулагчаар LEARN дарж өгнө.",
+          "mn": "Ажилладаг удирдлагатай бол хуулбарлах горим, LEARN товчтой системтэй бол суурилуулагчаар LEARN дарж өгнө.",
           "en": "With a working remote use clone mode; for a system with a LEARN button, ask the installer to press LEARN."
         }
       ],

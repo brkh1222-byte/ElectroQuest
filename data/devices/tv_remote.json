@@ -1,7 +1,7 @@
 {
   "id": "tv_remote",
   "name": {
-    "mn": "ТВ / агааржуулагчийн пульт",
+    "mn": "ТВ / агааржуулагчийн удирдлага",
     "en": "TV / AC remote"
   },
   "icon": "/icons/tv-remote.svg",
@@ -29,7 +29,7 @@
         }
       ],
       "why": {
-        "mn": "Ихэнх пульт батарейгаас болж ажиллахаа больдог. Камерын шалгалтад гэрэл харагдаагүй.",
+        "mn": "Ихэнх удирдлага батарейгаас болж ажиллахаа больдог. Камерын шалгалтад гэрэл харагдаагүй.",
         "en": "Most remotes stop because of the battery, and the camera test showed no flash."
       },
       "fix": {
@@ -53,7 +53,7 @@
             "en": "Take the old batteries out and buy fresh alkaline ones of the same size."
           },
           {
-            "mn": "Пультийн доторх +/− тэмдгийн дагуу хийнэ. Пүрштэй тал нь (−).",
+            "mn": "Удирдлагын доторх +/− тэмдгийн дагуу хийнэ. Пүрштэй тал нь (−).",
             "en": "Match the +/− marks inside the remote. The spring side is (−)."
           },
           {
@@ -178,7 +178,7 @@
         }
       ],
       "why": {
-        "mn": "Зарим товч ажилладаг бол пульт өөрөө ажиллаж байна. Ажиллахгүй товчны дор хар дамжуулагч цэг элэгдсэн байх магадлалтай.",
+        "mn": "Зарим товч ажилладаг бол удирдлага өөрөө ажиллаж байна. Ажиллахгүй товчны дор хар дамжуулагч цэг элэгдсэн байх магадлалтай.",
         "en": "Some buttons work, so the remote itself is fine. The black conductive dots under the dead buttons are probably worn."
       },
       "fix": {
@@ -218,7 +218,7 @@
         },
         "steps": [
           {
-            "mn": "Пультийг задална (задлах заавар).",
+            "mn": "Удирдлагыг задална (задлах заавар).",
             "en": "Open the remote (see the opening guide)."
           },
           {
@@ -242,7 +242,7 @@
         "time_minutes": 30,
         "shop_price_mnt": 20000,
         "give_up_when": {
-          "mn": "Самбарын контакт өөрөө идэгдсэн бол шинэ пульт (≈15,000₮) хямд.",
+          "mn": "Самбарын контакт өөрөө идэгдсэн бол шинэ удирдлага (≈15,000₮) хямд.",
           "en": "If the board contacts themselves are eaten away, a new remote (≈15,000₮) is cheaper."
         },
         "safety": [
@@ -394,7 +394,7 @@
         "shop_price_mnt": 25000,
         "needs_soldering": true,
         "give_up_when": {
-          "mn": "Шинэ LED-тэй ч гэрэл гарахгүй бол чип эвдэрсэн: шинэ пульт аваад хуучныг задлаад эд анги болгоорой.",
+          "mn": "Шинэ LED-тэй ч гэрэл гарахгүй бол чип эвдэрсэн: шинэ удирдлага аваад хуучныг задлаад эд анги болгоорой.",
           "en": "No flash even with a new LED means the chip is dead: get a new remote and salvage this one."
         },
         "safety": [
@@ -489,7 +489,7 @@
       "id": "tv_side",
       "frequency": 3,
       "name": {
-        "mn": "Пульт хэвийн — асуудал ТВ талд",
+        "mn": "Удирдлага хэвийн — асуудал ТВ талд",
         "en": "The remote is fine — the problem is the TV"
       },
       "symptoms": [
@@ -499,7 +499,7 @@
         }
       ],
       "why": {
-        "mn": "Камерт нил ягаан гэрэл харагдсан тул пульт дохио илгээж байна.",
+        "mn": "Камерт нил ягаан гэрэл харагдсан тул удирдлага дохио илгээж байна.",
         "en": "The camera saw the purple flash, so the remote is sending a signal."
       },
       "fix": {
@@ -515,7 +515,7 @@
             "en": "Make sure nothing blocks the sensor on the front of the TV."
           },
           {
-            "mn": "Өөр пульт (эсвэл утасны IR апп) ажиллаж байгаа эсэхийг туршина.",
+            "mn": "Өөр удирдлага (эсвэл утасны IR апп) ажиллаж байгаа эсэхийг туршина.",
             "en": "Try another remote (or a phone IR app)."
           },
           {
@@ -554,18 +554,18 @@
         }
       ],
       "why": {
-        "mn": "Самбар дээр түлэгдсэн ул мөр байгаа, эсвэл бусад шалтгааныг үгүйсгэсэн: пультийн чип эвдэрсэн байх магадлалтай. Нэг эд анги солих нь ихэвчлэн тусалдаггүй.",
+        "mn": "Самбар дээр түлэгдсэн ул мөр байгаа, эсвэл бусад шалтгааныг үгүйсгэсэн: удирдлагын чип эвдэрсэн байх магадлалтай. Нэг эд анги солих нь ихэвчлэн тусалдаггүй.",
         "en": "There's a burn mark on the board, or the other causes were ruled out: the remote's chip has most likely failed. Replacing a single part usually won't save it."
       },
       "fix": {
         "summary": {
-          "mn": "Засах үнэ цэнэгүй: шинэ/универсал пульт аваад, хуучныг эд анги болгоно",
+          "mn": "Засах үнэ цэнэгүй: шинэ/универсал удирдлага аваад, хуучныг эд анги болгоно",
           "en": "Not worth fixing: get a new or universal remote and salvage this one"
         },
         "parts": [
           {
             "name": {
-              "mn": "Универсал пульт",
+              "mn": "Универсал удирдлага",
               "en": "Universal remote"
             },
             "price_mnt": 15000
@@ -574,7 +574,7 @@
         "tools": [],
         "steps": [
           {
-            "mn": "Хуучин пультийг задлаад хэрэгтэй эд ангийг (IR LED г.м) эд ангийн жагсаалтдаа нэмнэ.",
+            "mn": "Хуучин удирдлагыг задлаад хэрэгтэй эд ангийг (IR LED г.м) эд ангийн жагсаалтдаа нэмнэ.",
             "en": "Open the old remote and add its useful parts (IR LED etc.) to your parts list."
           }
         ],
@@ -593,7 +593,7 @@
     {
       "id": "response",
       "text": {
-        "mn": "Пультийн товч дарахад ТВ хариу өгч байна уу?",
+        "mn": "Удирдлагын товч дарахад ТВ хариу өгч байна уу?",
         "en": "Does the TV react when you press the remote's buttons?"
       },
       "answers": [
@@ -809,7 +809,7 @@
       },
       "instructions": [
         {
-          "mn": "Доорх камерыг нээгээд пультийн урд талын жижиг гэрлийг камер руу чиглүүл.",
+          "mn": "Доорх камерыг нээгээд удирдлагын урд талын жижиг гэрлийг камер руу чиглүүл.",
           "en": "Open the camera below and point the small bulb at the front of the remote at it."
         },
         {
@@ -1049,7 +1049,7 @@
       "model": "demo-tv-remote",
       "image": "/demo/golden-tv-remote.svg",
       "notes": {
-        "mn": "Манай демо пультийн эрүүл самбар: контакт гялалзсан, IR LED шулуун, гагнуур гялгар.",
+        "mn": "Манай демо удирдлагын эрүүл самбар: контакт гялалзсан, IR LED шулуун, гагнуур гялгар.",
         "en": "Our demo remote's healthy board: shiny contacts, straight IR LED, shiny solder joints."
       }
     }
