@@ -1,0 +1,20 @@
+{
+  "status": "not_trained",
+  "model_name": "parts-detector",
+  "base_model": "yolo11s (COCO pre-trained)",
+  "trained_at": null,
+  "image_size": 640,
+  "epochs": null,
+  "data": {
+    "public_datasets": [
+      { "name": "electric-components-kkgsp", "url": "https://universe.roboflow.com/school-p0xt8/electric-components-kkgsp", "images": null },
+      { "name": "electronics4", "url": "https://universe.roboflow.com/electronic-components-3jxxm/electronics4", "images": null }
+    ],
+    "own_photos": null,
+    "train_images": null,
+    "val_images": null
+  },
+  "metrics": { "map50": null, "map50_95": null, "precision": null, "recall": null },
+  "per_class": [],
+  "examples": []
+}

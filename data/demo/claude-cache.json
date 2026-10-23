@@ -1,0 +1,223 @@
+{
+  "parts-pile:r100k": {
+    "bands": [
+      "brown",
+      "black",
+      "yellow",
+      "gold"
+    ],
+    "tolerance_band_visible": true,
+    "confident": true,
+    "note": ""
+  },
+  "parts-pile:r470": {
+    "bands": [
+      "yellow",
+      "violet",
+      "brown",
+      "gold"
+    ],
+    "tolerance_band_visible": true,
+    "confident": true,
+    "note": ""
+  },
+  "parts-pile:r10k": {
+    "bands": [
+      "brown",
+      "black",
+      "orange",
+      "gold"
+    ],
+    "tolerance_band_visible": true,
+    "confident": true,
+    "note": ""
+  },
+  "parts-pile:cap": {
+    "lines": [
+      "100µF",
+      "16V"
+    ],
+    "part_number": null,
+    "capacitor_kind": "electrolytic",
+    "confident": true,
+    "note": ""
+  },
+  "parts-pile:bat": {
+    "lines": [
+      "9V"
+    ],
+    "part_number": null,
+    "capacitor_kind": "unknown",
+    "confident": true,
+    "note": ""
+  },
+  "tv-board:defects": {
+    "image_quality": "good",
+    "findings": [
+      {
+        "defect": "corrosion",
+        "box": {
+          "x": 0.82,
+          "y": 0.54,
+          "w": 0.11,
+          "h": 0.16
+        },
+        "confidence": 0.9,
+        "label": "Батарейн пүрш исэлдсэн (ногоон өнгөр)"
+      },
+      {
+        "defect": "cracked_joint",
+        "box": {
+          "x": 0.07,
+          "y": 0.5,
+          "w": 0.05,
+          "h": 0.08
+        },
+        "confidence": 0.6,
+        "label": "IR LED-ийн хөлийн гагнуур хагарсан байж магадгүй"
+      }
+    ],
+    "summary": "Батарейн контакт исэлдсэн нь хамгийн тод харагдаж байна. IR LED-ийн нэг хөлийн гагнуур хагарсан байж болзошгүй."
+  },
+  "tv-board:golden": {
+    "same_layout": "yes",
+    "differences": [
+      {
+        "description": "Доод батарейн пүрш дээр ногоон/цагаан исэл бий, эрүүл самбарт байхгүй.",
+        "defect": "corrosion",
+        "box": {
+          "x": 0.82,
+          "y": 0.54,
+          "w": 0.11,
+          "h": 0.16
+        },
+        "confidence": 0.92
+      },
+      {
+        "description": "IR LED-ийн доод хөлийн гагнуур бүдэг, цагираг хэлбэрийн хагаралтай.",
+        "defect": "cracked_joint",
+        "box": {
+          "x": 0.07,
+          "y": 0.5,
+          "w": 0.05,
+          "h": 0.08
+        },
+        "confidence": 0.65
+      }
+    ],
+    "summary": "Хоёр ялгаа: исэлдсэн батарейн контакт, IR LED-ийн хагарсан гагнуур."
+  },
+  "tv-board-dead:defects": {
+    "image_quality": "good",
+    "findings": [
+      {
+        "defect": "burn_mark",
+        "box": {
+          "x": 0.11,
+          "y": 0.38,
+          "w": 0.18,
+          "h": 0.25
+        },
+        "confidence": 0.85,
+        "label": "Чипийн орчим түлэгдсэн толбо"
+      }
+    ],
+    "summary": "Чипийн эргэн тойронд түлэгдсэн ул мөр харагдаж байна."
+  },
+  "tv-board-dead:golden": {
+    "same_layout": "yes",
+    "differences": [
+      {
+        "description": "Чипийн эргэн тойронд хар хүрэн түлэгдсэн толбо.",
+        "defect": "burn_mark",
+        "box": {
+          "x": 0.11,
+          "y": 0.38,
+          "w": 0.18,
+          "h": 0.25
+        },
+        "confidence": 0.88
+      }
+    ],
+    "summary": "Чип түлэгдсэн — засах үнэ цэнэгүй."
+  },
+  "tv-board:multimeter": {
+    "display_text": "2.94",
+    "value": 2.94,
+    "unit": "V",
+    "is_dc_volts_mode": "yes",
+    "confident": true
+  },
+  "tv-board:tvb-r1": {
+    "bands": [
+      "red",
+      "red",
+      "black",
+      "gold"
+    ],
+    "tolerance_band_visible": true,
+    "confident": true,
+    "note": ""
+  },
+  "tv-board:tvb-r2": {
+    "bands": [
+      "brown",
+      "black",
+      "red",
+      "gold"
+    ],
+    "tolerance_band_visible": true,
+    "confident": true,
+    "note": ""
+  },
+  "tv-board:tvb-c1": {
+    "lines": [
+      "47µF"
+    ],
+    "part_number": null,
+    "capacitor_kind": "electrolytic",
+    "confident": false,
+    "note": "Хүчдэлийн бичиг харагдахгүй байна."
+  },
+  "tv-board-dead:tvd-r1": {
+    "bands": [
+      "red",
+      "red",
+      "black",
+      "gold"
+    ],
+    "tolerance_band_visible": true,
+    "confident": true,
+    "note": ""
+  },
+  "tv-board-dead:tvd-r2": {
+    "bands": [
+      "brown",
+      "black",
+      "red",
+      "gold"
+    ],
+    "tolerance_band_visible": true,
+    "confident": true,
+    "note": ""
+  },
+  "tv-board-dead:tvd-c1": {
+    "lines": [
+      "47µF"
+    ],
+    "part_number": null,
+    "capacitor_kind": "electrolytic",
+    "confident": false,
+    "note": "Хүчдэлийн бичиг харагдахгүй байна."
+  },
+  "tv-board-dead:tvd-q1": {
+    "lines": [
+      "S8050",
+      "D331"
+    ],
+    "part_number": "S8050",
+    "capacitor_kind": "unknown",
+    "confident": true,
+    "note": ""
+  }
+}

@@ -1,0 +1,20 @@
+[
+  "resistor",
+  "capacitor",
+  "led",
+  "diode",
+  "transistor",
+  "ic",
+  "button",
+  "buzzer",
+  "potentiometer",
+  "ldr",
+  "battery",
+  "breadboard",
+  "arduino",
+  "jumper_wire",
+  "servo",
+  "dc_motor",
+  "ultrasonic_sensor",
+  "display"
+]
