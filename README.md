@@ -59,7 +59,7 @@ Before going on stage, run the full script once with Wi-Fi so the real Claude an
 
 **Stage script**
 
-1. Fix → TV remote → *Not at all* → *Just changed them* → *Neither* → *Not sure* → IR camera test (no flash) → skip multimeter.
+1. Fix → TV remote → *Not at all* → the camera opens; beside it tap IR test *no flash*, *Just changed them*, *Neither*, *Not sure* → *Continue* → skip multimeter.
 2. Open it → board photo (demo photo 1) → corroded battery contacts + cracked IR LED joint → fix plan: 500₮ vs 15,000₮ at a shop.
 3. A teammate fixes it → *It works!*
 4. Fix → TV remote again → … → demo photo 2 (burnt chip) → *Not worth fixing* → Salvage → parts (incl. an S8050 transistor) go to the inventory.

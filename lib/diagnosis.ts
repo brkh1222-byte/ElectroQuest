@@ -79,8 +79,53 @@ export function nextQuestion(profile: DeviceProfile, state: DiagnosisState): Que
   return profile.questions.find((q) => state.answers[q.id] === undefined && askIfOk(q.ask_if, state.answers)) ?? null;
 }
 
+/** Questions that can be asked right now, answered or not, in file order (the chips beside the camera). */
+export function askableQuestions(profile: DeviceProfile, state: DiagnosisState): Question[] {
+  return profile.questions.filter((q) => askIfOk(q.ask_if, state.answers));
+}
+
+/** Tests that can be run right now, done or not. */
+export function askableTests(profile: DeviceProfile, state: DiagnosisState): GuidedTest[] {
+  return profile.tests.filter((t) => askIfOk(t.ask_if, state.answers));
+}
+
 export function pendingTests(profile: DeviceProfile, state: DiagnosisState): GuidedTest[] {
-  return profile.tests.filter((t) => state.tests[t.id] === undefined && askIfOk(t.ask_if, state.answers));
+  return askableTests(profile, state).filter((t) => state.tests[t.id] === undefined);
+}
+
+/**
+ * Whether a question is asked on its own screen before the camera opens. Everything else is asked
+ * beside the live camera, in any order, so it has to make sense without a fixed sequence.
+ */
+export function isPreCamera(profile: DeviceProfile, question: Question): boolean {
+  // TODO: the first question for now. Alternative: any question that another question's or test's ask_if
+  // refers to, which finds the gating question without relying on file order.
+  return profile.questions[0]?.id === question.id;
+}
+
+/** The next pre-camera question still to answer, or null when the camera screen can open. */
+export function nextPreCameraQuestion(profile: DeviceProfile, state: DiagnosisState): Question | null {
+  return askableQuestions(profile, state).find((q) => isPreCamera(profile, q) && state.answers[q.id] === undefined) ?? null;
+}
+
+/**
+ * Record (or change) an answer. Chips can be re-tapped in any order, so answers and test results whose
+ * ask_if no longer holds are dropped: switching `response` away from "some" removes `pad_feel`.
+ */
+export function setAnswer(profile: DeviceProfile, state: DiagnosisState, questionId: string, answerId: string): DiagnosisState {
+  const answers = { ...state.answers, [questionId]: answerId };
+  // Dropping one answer can invalidate a question that depended on it, so repeat until nothing changes.
+  for (let changed = true; changed; ) {
+    changed = false;
+    for (const q of profile.questions) {
+      if (answers[q.id] !== undefined && !askIfOk(q.ask_if, answers)) {
+        delete answers[q.id];
+        changed = true;
+      }
+    }
+  }
+  const tests = Object.fromEntries(Object.entries(state.tests).filter(([id]) => askIfOk(profile.tests.find((t) => t.id === id)?.ask_if, answers)));
+  return { ...state, answers, tests };
 }
 
 /** Top candidates still worth trying (fix not yet tried, non-zero probability). */
