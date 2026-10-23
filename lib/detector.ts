@@ -15,6 +15,13 @@ import { uid } from "./db";
 
 export type DetectorMode = "auto" | "onnx" | "remote" | "mock";
 export const MODEL_URL = "/models/best.onnx";
+
+/**
+ * The parts in our demo kit. Only these compete for each box, so a transistor the model half-thinks is a diode
+ * comes out as a transistor. Set NEXT_PUBLIC_KIT_CLASSES=all to detect every part type.
+ */
+const KIT = (process.env.NEXT_PUBLIC_KIT_CLASSES ?? "resistor,led,transistor,ldr,battery,breadboard,jumper_wire").split(",");
+const KIT_CLASSES = KIT[0] === "all" ? undefined : PART_TYPES.flatMap((p, i) => (KIT.includes(p) ? [i] : []));
 const REMOTE_URL = process.env.NEXT_PUBLIC_DETECTOR_URL;
 
 export interface DetectResult {
@@ -74,7 +81,7 @@ export async function detectParts(img: HTMLImageElement, opts: { demoKey?: strin
   const mode = await resolveMode();
   if (mode === "onnx") {
     const model = await loadModel();
-    const raw = await model.run(img, { conf: 0.3 });
+    const raw = await model.runTiled(img, { conf: 0.3, classes: KIT_CLASSES });
     const detections = raw.map((r) => ({
       id: uid(),
       part_type: PART_TYPES[r.classIndex],

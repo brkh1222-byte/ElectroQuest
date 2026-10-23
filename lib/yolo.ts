@@ -63,12 +63,32 @@ export class YoloModel {
     return new YoloModel(ort, session, used, imgsz, numClasses);
   }
 
-  async run(img: HTMLImageElement, opts: { conf?: number; iou?: number } = {}): Promise<RawDetection[]> {
+  /**
+   * Whole photo plus 4 overlapping quarters, merged with NMS: parts in a pile are tiny at 640 px, and each quarter
+   * shows them about twice as big.
+   */
+  async runTiled(img: HTMLImageElement, opts: RunOpts = {}): Promise<RawDetection[]> {
+    const W = img.naturalWidth;
+    const H = img.naturalHeight;
+    const tw = Math.round(W * 0.6);
+    const th = Math.round(H * 0.6);
+    const regions = [undefined, ...[0, W - tw].flatMap((x) => [0, H - th].map((y) => ({ x, y, w: tw, h: th })))];
+    const all: RawDetection[] = [];
+    for (const region of regions) {
+      const dets = await this.run(img, { ...opts, region });
+      // Drop boxes cut by a tile edge: the whole photo or a neighbouring tile sees that part whole.
+      all.push(...(region ? dets.filter((d) => !touchesInnerEdge(d.box, region, W, H)) : dets));
+    }
+    return nms(all.sort((a, b) => b.score - a.score), opts.iou ?? 0.5);
+  }
+
+  async run(img: HTMLImageElement, opts: RunOpts = {}): Promise<RawDetection[]> {
     const conf = opts.conf ?? 0.3;
     const iou = opts.iou ?? 0.5;
     const S = this.imgsz;
-    const w = img.naturalWidth;
-    const h = img.naturalHeight;
+    const R = opts.region ?? { x: 0, y: 0, w: img.naturalWidth, h: img.naturalHeight };
+    const w = R.w;
+    const h = R.h;
     const scale = Math.min(S / w, S / h);
     const dw = Math.round(w * scale);
     const dh = Math.round(h * scale);
@@ -82,7 +102,7 @@ export class YoloModel {
     const ctx = c.getContext("2d", { willReadFrequently: true })!;
     ctx.fillStyle = "rgb(114,114,114)";
     ctx.fillRect(0, 0, S, S);
-    ctx.drawImage(img, dx, dy, dw, dh);
+    ctx.drawImage(img, R.x, R.y, R.w, R.h, dx, dy, dw, dh);
     const { data } = ctx.getImageData(0, 0, S, S);
     const plane = S * S;
     const chw = new Float32Array(3 * plane);
@@ -102,7 +122,8 @@ export class YoloModel {
     for (let i = 0; i < N; i++) {
       let best = -1;
       let bestScore = conf;
-      for (let k = 0; k < nc; k++) {
+      for (const k of opts.classes ?? range(nc)) {
+        if (k >= nc) continue;
         const s = d[(4 + k) * N + i];
         if (s > bestScore) {
           bestScore = s;
@@ -119,11 +140,27 @@ export class YoloModel {
       dets.push({
         classIndex: best,
         score: bestScore,
-        box: { x: Math.max(0, x), y: Math.max(0, y), w: Math.min(w, bw / scale), h: Math.min(h, bh / scale) },
+        box: { x: R.x + Math.max(0, x), y: R.y + Math.max(0, y), w: Math.min(w, bw / scale), h: Math.min(h, bh / scale) },
       });
     }
     return nms(dets, iou);
   }
+}
+
+export interface RunOpts {
+  conf?: number;
+  iou?: number;
+  /** Only these class indices compete for each box (e.g. the parts in our kit). */
+  classes?: number[];
+  /** Part of the photo to look at, in image pixels. */
+  region?: Box;
+}
+
+const range = (n: number) => Array.from({ length: n }, (_, i) => i);
+
+function touchesInnerEdge(b: Box, r: Box, W: number, H: number) {
+  const m = 4;
+  return (r.x > 0 && b.x <= r.x + m) || (r.y > 0 && b.y <= r.y + m) || (r.x + r.w < W && b.x + b.w >= r.x + r.w - m) || (r.y + r.h < H && b.y + b.h >= r.y + r.h - m);
 }
 
 function iouOf(a: Box, b: Box) {
