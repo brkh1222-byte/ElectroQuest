@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { deviceById } from "@/lib/data";
-import { emptyState, judgeVoltage, nextQuestion, pendingTests, rank, remaining } from "@/lib/diagnosis";
+import { askableQuestions, emptyState, isPreCamera, judgeVoltage, nextPreCameraQuestion, nextQuestion, pendingTests, rank, remaining, setAnswer } from "@/lib/diagnosis";
 
 const tv = deviceById("tv_remote")!;
 const garage = deviceById("garage_remote")!;
@@ -93,6 +93,35 @@ describe("diagnosis engine", () => {
     expect(judgeVoltage(2.9, { min: 2.6, max: 3.4 })).toBe("ok");
     expect(judgeVoltage(2.1, { min: 2.6, max: 3.4 })).toBe("low");
     expect(judgeVoltage(9.2, { min: 2.6, max: 3.4 })).toBe("high");
+  });
+});
+
+describe("camera screen", () => {
+  it("asks only the question other questions depend on before the camera", () => {
+    expect(nextPreCameraQuestion(tv, emptyState())?.id).toBe("response");
+    expect(nextPreCameraQuestion(garage, emptyState())?.id).toBe("led_lights");
+    expect(nextPreCameraQuestion(pad, emptyState())?.id).toBe("main_problem");
+    expect(nextPreCameraQuestion(tv, setAnswer(tv, emptyState(), "response", "none"))).toBeNull();
+  });
+
+  it("shows the rest beside the camera, following ask_if", () => {
+    const s = setAnswer(tv, emptyState(), "response", "some");
+    expect(askableQuestions(tv, s).filter((q) => !isPreCamera(tv, q)).map((q) => q.id)).toEqual(["battery_age", "wet_or_dropped", "contacts_look", "pad_feel"]);
+  });
+
+  it("changing an answer drops answers that no longer apply", () => {
+    let s = setAnswer(tv, emptyState(), "response", "some");
+    s = setAnswer(tv, s, "pad_feel", "yes");
+    s = setAnswer(tv, s, "battery_age", "recent");
+    s = setAnswer(tv, s, "response", "none");
+    expect(s.answers).toEqual({ response: "none", battery_age: "recent" });
+  });
+
+  it("changing an answer drops test results that no longer apply", () => {
+    let s = setAnswer(garage, emptyState(), "led_lights", "yes");
+    s = { ...s, tests: { pairing_check: "still_fails", other_remote: "fails" } };
+    s = setAnswer(garage, s, "led_lights", "no");
+    expect(s.tests).toEqual({ other_remote: "fails" });
   });
 });
 

@@ -6,15 +6,16 @@ import { ai, AiError } from "@/lib/ai-client";
 import { deviceById, recipes } from "@/lib/data";
 import { store, uid } from "@/lib/db";
 import type { DefectFinding } from "@/lib/defects";
-import { emptyState, evidenceFor, nextQuestion, pendingTests, rank, remaining, type DiagnosisState } from "@/lib/diagnosis";
+import { askableQuestions, askableTests, emptyState, evidenceFor, isPreCamera, nextPreCameraQuestion, pendingTests, rank, remaining, setAnswer, type DiagnosisState } from "@/lib/diagnosis";
 import { useI18n } from "@/lib/i18n";
 import { matchAll } from "@/lib/matcher";
 import { itemLabel } from "@/lib/parts-ui";
 import { mentionsMains } from "@/lib/safety";
-import type { DefectType, InventoryItem, Question } from "@/lib/schemas";
+import type { DefectType, GuidedTest, InventoryItem, Question } from "@/lib/schemas";
 import { AppShell } from "../AppShell";
 import { AskSheet } from "../AskSheet";
 import { RecipeCard } from "../RecipeCard";
+import { Camera as LiveCamera } from "../Camera";
 import { ScanFlow } from "../ScanFlow";
 import { ArrowLeft, ArrowRight, Camera, Check, MessageCircle, PartyPopper, Recycle, TriangleAlert, X } from "lucide-react";
 import { Bar, Button, Card, ErrorBox, I, Pill, Section, Spinner, Steps } from "../ui";
@@ -22,10 +23,11 @@ import { BoardInspect, type BoardPhoto } from "./BoardInspect";
 import { FixPlanCard } from "./FixPlan";
 import { TestCard } from "./Tests";
 
-type Phase = "interview" | "tests" | "open" | "inspect" | "plan" | "fixed" | "salvage" | "salvaged" | "mains";
+type Phase = "interview" | "look" | "tests" | "open" | "inspect" | "plan" | "fixed" | "salvage" | "salvaged" | "mains";
 
-const PHASES: { id: Phase; key: "phase_interview" | "phase_tests" | "phase_open" | "phase_findings" | "phase_plan" }[] = [
+const PHASES: { id: Phase; key: "phase_interview" | "phase_look" | "phase_tests" | "phase_open" | "phase_findings" | "phase_plan" }[] = [
   { id: "interview", key: "phase_interview" },
+  { id: "look", key: "phase_look" },
   { id: "tests", key: "phase_tests" },
   { id: "open", key: "phase_open" },
   { id: "inspect", key: "phase_findings" },
@@ -39,7 +41,8 @@ export function RepairFlow({ deviceId }: { deviceId: string }) {
   const [startedAt] = useState(() => Date.now());
   const [phase, setPhase] = useState<Phase>("interview");
   const [state, setState] = useState<DiagnosisState>(emptyState);
-  const [history, setHistory] = useState<DiagnosisState[]>([]);
+  // Undo restores the phase too, so "back" from the first test returns to the camera screen.
+  const [history, setHistory] = useState<{ state: DiagnosisState; phase: Phase }[]>([]);
   const [board, setBoard] = useState<BoardPhoto | null>(null);
   const [asking, setAsking] = useState(false);
   const [salvaged, setSalvaged] = useState<{ before: Set<string>; items: InventoryItem[] } | null>(null);
@@ -58,28 +61,32 @@ export function RepairFlow({ deviceId }: { deviceId: string }) {
     });
   }, [repairId, deviceId, startedAt, outcome, state, device]);
 
-  const update = (fn: (s: DiagnosisState) => DiagnosisState) => {
-    setHistory((h) => [...h, state]);
+  const update = (fn: (s: DiagnosisState) => DiagnosisState, next?: Phase) => {
+    setHistory((h) => [...h, { state, phase }]);
     setState(fn(state));
+    if (next) setPhase(next);
   };
   const undo = () => {
     const prev = history[history.length - 1];
     if (!prev) return;
     setHistory(history.slice(0, -1));
-    setState(prev);
-    if (phase !== "interview" && nextQuestion(device, prev)) setPhase("interview");
+    setState(prev.state);
+    setPhase(prev.phase);
   };
 
   const ranked = useMemo(() => rank(device, state), [device, state]);
   const left = useMemo(() => remaining(device, state), [device, state]);
-  const question = nextQuestion(device, state);
+  const question = nextPreCameraQuestion(device, state);
   const tests = pendingTests(device, state);
+  // Beside the camera: every other question, plus the IR test, which needs a live camera anyway.
+  const lookQuestions = askableQuestions(device, state).filter((q) => !isPreCamera(device, q));
+  const lookTests = askableTests(device, state).filter((t) => t.kind === "ir_camera");
   const top = left[0];
 
   // Auto-advance between phases when a phase runs out of work.
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- phase follows from the diagnosis state
-    if (phase === "interview" && !question) setPhase(tests.length ? "tests" : "open");
+    if (phase === "interview" && !question) setPhase("look");
     else if (phase === "tests" && !tests.length) setPhase("open");
   }, [phase, question, tests.length]);
 
@@ -97,6 +104,13 @@ export function RepairFlow({ deviceId }: { deviceId: string }) {
       })}
     </div>
   );
+
+  // Unanswered chips are fine (no evidence); an IR test left open counts as skipped so it isn't asked again.
+  const continueFromLook = () => {
+    const next = { ...state, tests: { ...state.tests } };
+    for (const t of lookTests) next.tests[t.id] ??= "_skip";
+    update(() => next, pendingTests(device, next).length ? "tests" : "open");
+  };
 
   const decision = top && !top.cause.unfixable && (
     <Card className="mt-6 border-2 border-ink lg:mt-0">
@@ -140,7 +154,7 @@ export function RepairFlow({ deviceId }: { deviceId: string }) {
   return (
     <AppShell title={tr(device.name)} back="/fix" hideNav>
       {!["fixed", "salvaged", "mains", "salvage"].includes(phase) && header}
-      <div className={["interview", "tests", "open", "plan"].includes(phase) ? "grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px]" : ""}>
+      <div className={["interview", "look", "tests", "open", "plan"].includes(phase) ? "grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px]" : ""}>
       <div className="min-w-0">
 
       {phase === "interview" && question && (
@@ -148,7 +162,7 @@ export function RepairFlow({ deviceId }: { deviceId: string }) {
           <Interview
             key={question.id}
             question={question}
-            onAnswer={(a) => update((s) => ({ ...s, answers: { ...s.answers, [question.id]: a } }))}
+            onAnswer={(a) => update((s) => setAnswer(device, s, question.id, a))}
             onMains={() => setPhase("mains")}
           />
           {history.length > 0 && (
@@ -157,6 +171,20 @@ export function RepairFlow({ deviceId }: { deviceId: string }) {
             </Button>
           )}
         </>
+      )}
+
+      {phase === "look" && (
+        <div className="grid gap-4">
+          <div>
+            <h2 className="text-2xl font-extrabold">{t("look_title")}</h2>
+            <p className="mt-1 text-lg text-muted">{t("look_intro")}</p>
+          </div>
+          {/* The IR flash shows up best on the front camera; flip to the rear one to look at the contacts. */}
+          <LiveCamera facing={lookTests.length ? "user" : "environment"} allowFlip />
+          <Button tone="ghost" className="w-full" onClick={undo}>
+            <I icon={ArrowLeft} /> {t("back")}
+          </Button>
+        </div>
       )}
 
       {phase === "tests" && tests[0] && (
@@ -274,8 +302,18 @@ export function RepairFlow({ deviceId }: { deviceId: string }) {
       )}
 
       </div>
-      {["interview", "tests", "open", "plan"].includes(phase) && (
+      {["interview", "look", "tests", "open", "plan"].includes(phase) && (
         <aside className="grid gap-4 lg:sticky lg:top-8 lg:self-start">
+          {phase === "look" && (
+            <LookPanel
+              questions={lookQuestions}
+              tests={lookTests}
+              state={state}
+              onAnswer={(q, a) => update((s) => setAnswer(device, s, q, a))}
+              onTest={(id, o) => update((s) => ({ ...s, tests: { ...s.tests, [id]: o } }))}
+              onContinue={continueFromLook}
+            />
+          )}
           {phase === "plan" && <div className="hidden lg:block">{decision}</div>}
           {candidates}
         </aside>
@@ -383,6 +421,70 @@ function Interview({ question, onAnswer, onMains }: { question: Question; onAnsw
         )}
       </Section>
     </div>
+  );
+}
+
+/** The questions beside the camera: tap-chips in any order, re-tap to change. */
+function LookPanel({
+  questions,
+  tests,
+  state,
+  onAnswer,
+  onTest,
+  onContinue,
+}: {
+  questions: Question[];
+  tests: GuidedTest[];
+  state: DiagnosisState;
+  onAnswer: (questionId: string, answerId: string) => void;
+  onTest: (testId: string, outcomeId: string) => void;
+  onContinue: () => void;
+}) {
+  const { t, tr } = useI18n();
+  const open = questions.filter((q) => state.answers[q.id] === undefined).length + tests.filter((x) => state.tests[x.id] === undefined).length;
+  return (
+    <Card>
+      <h2 className="font-bold">{t("look_panel_title")}</h2>
+      <div className="mt-4 grid gap-5">
+        {tests.map((test) => (
+          <div key={test.id}>
+            <Chips label={tr(test.title)} options={test.outcomes} picked={state.tests[test.id]} onPick={(o) => onTest(test.id, o)} />
+            {/* Collapsed so the chips sit right under the camera on a phone. */}
+            <details className="mt-2 text-sm">
+              <summary className="cursor-pointer font-semibold text-muted">{t("look_how")}</summary>
+              <ol className="mt-2 list-decimal space-y-1 pl-5">
+                {test.instructions.map((s, i) => (
+                  <li key={i}>{tr(s)}</li>
+                ))}
+              </ol>
+            </details>
+          </div>
+        ))}
+        {questions.map((q) => (
+          <Chips key={q.id} label={tr(q.text)} options={q.answers} picked={state.answers[q.id]} onPick={(a) => onAnswer(q.id, a)} />
+        ))}
+      </div>
+      <Button big tone="fix" className="mt-6 w-full" onClick={onContinue}>
+        {t("look_continue")} <I icon={ArrowRight} />
+      </Button>
+      {open > 0 && <p className="mt-2 text-center text-sm text-muted">{t("look_unanswered").replace("{n}", String(open))}</p>}
+    </Card>
+  );
+}
+
+function Chips({ label, options, picked, onPick }: { label: string; options: { id: string; text: { mn: string; en: string } }[]; picked?: string; onPick: (id: string) => void }) {
+  const { tr } = useI18n();
+  return (
+    <fieldset>
+      <legend className="mb-2 font-semibold leading-snug">{label}</legend>
+      <div className="flex flex-wrap gap-2">
+        {options.map((o) => (
+          <Button key={o.id} size="sm" tone={picked === o.id ? "fix" : "ghost"} aria-pressed={picked === o.id} className="rounded-full text-left" onClick={() => onPick(o.id)}>
+            {picked === o.id && <I icon={Check} />} {tr(o.text)}
+          </Button>
+        ))}
+      </div>
+    </fieldset>
   );
 }
 

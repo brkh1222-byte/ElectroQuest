@@ -83,7 +83,11 @@ cp .env.example .env.local   # add your ANTHROPIC_API_KEY
 npm run dev                  # http://localhost:3000
 ```
 
-The app runs without an API key; only the AI features (reading labels, board analysis, chat) need it.
+1. Fix → TV remote → *Not at all* → the camera opens; beside it tap IR test *no flash*, *Just changed them*, *Neither*, *Not sure* → *Continue* → skip multimeter.
+2. Open it → board photo (demo photo 1) → corroded battery contacts + cracked IR LED joint → fix plan: 500₮ vs 15,000₮ at a shop.
+3. A teammate fixes it → *It works!*
+4. Fix → TV remote again → … → demo photo 2 (burnt chip) → *Not worth fixing* → Salvage → parts (incl. an S8050 transistor) go to the inventory.
+5. Build → scan → demo photo (parts pile) → read values → add → "You can build: Night light…" → parts highlighted on the photo → build step by step → cover the light sensor → it turns on.
 
 | Command | What it does |
 |---|---|
