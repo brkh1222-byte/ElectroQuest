@@ -1,63 +1,87 @@
 # ElectroQuest
 
-A phone app that fixes broken battery-powered gadgets and then builds new projects from their parts.
+**Fix it. Salvage it. Build with it.**
 
-1. **Fix it.** The app diagnoses a TV/AC remote, garage remote or game controller (ask → look → test → decide) and shows a fix plan with the cost compared to a repair shop.
-2. **Salvage it.** If the device can't be fixed, you scan the board and its reusable parts go into your parts inventory.
-3. **Build with it.** You scan a pile of parts, and the app suggests projects you can build right now (like Brickit for LEGO), highlights which parts to pick up, and walks you through the build step by step.
+ElectroQuest is a web app that helps anyone repair broken battery-powered gadgets, turn the ones that can't be saved into spare parts, and learn electronics by building projects from those parts — guided by AI and our own fine-tuned vision model.
 
-The UI is in Mongolian by default, with an English toggle. It's a mobile-first PWA: everything except Claude calls works offline.
+**Live:** [electroquest.pages.dev](https://electroquest.pages.dev) · Built for the PineQuest *"Fine-tune for the future"* hackathon (theme: equal access to skills).
 
-## Setup
+---
+
+## Why
+
+In Mongolia, a broken TV remote or game controller usually goes to a repair shop or the trash. Most failures are simple — a dead battery, corroded contacts, worn button pads — and anyone could fix them with the right guidance. Repairing and building teaches real electronics skills, and every saved device is less e-waste.
+
+## What it does
+
+| | Feature | How |
+|---|---|---|
+| 🔧 | **Fix it** | The AI works like a repair technician: it asks questions, runs phone-only tests (IR camera test, multimeter photo), looks at a photo of the opened board, then ranks the likely causes with a fix plan, the parts, and the cost versus a repair shop (e.g. **500₮ instead of 15,000₮**). |
+| ♻️ | **Salvage it** | If the device can't be fixed, the app scans the board and moves its reusable parts into your parts list. |
+| 💡 | **Build with it** | Like [Brickit](https://brickit.app) for LEGO: scan a pile of parts, see which of **20 beginner projects** you can build right now (or which one part to buy), with the parts highlighted on your own photo and step-by-step breadboard guidance. |
+
+Supported devices: TV/AC remotes, garage/gate remotes and game controllers — battery-powered only. The app never guides repairs inside anything that plugs into the wall.
+
+Mongolian by default, with an English toggle. Works offline for everything except AI calls.
+
+## How it works
+
+```mermaid
+flowchart LR
+  subgraph Browser["In the browser (laptop or phone)"]
+    UI["App screens<br/>Fix · Scan · Build"]
+    DET["Our fine-tuned detector<br/>YOLO11n · ONNX · WebGPU"]
+    RULES["Rules + data<br/>diagnosis scoring · matcher · 20 recipes"]
+    DB["Saved on device<br/>IndexedDB"]
+  end
+  API["/api/ai route<br/>Cloudflare Worker<br/>holds the key · validates JSON"]
+  CLAUDE["Claude<br/>Haiku 5.5: labels, bands, chat<br/>Opus 5.5: board damage"]
+  TRAIN["Training<br/>6 Roboflow datasets → YOLO11n fine-tune"]
+
+  UI --> DET
+  UI --> RULES
+  UI --> DB
+  UI -- "question + image" --> API --> CLAUDE
+  TRAIN -- "best.onnx" --> DET
+```
+
+**The key design rule: AI reads and explains, our code decides.**
+
+- **Our own model** finds parts in a photo — in the browser, ~50 ms per photo, photos never leave the device.
+- **Claude** reads what a detector can't: chip markings, resistor colour bands, a multimeter display, visible board damage — and answers questions in the user's language. Every answer is schema-checked JSON.
+- **Plain code with tests** makes the decisions: the order of diagnosis questions and the cause scoring, resistor values from colours, and which projects your parts can build. Claude can never invent a circuit or a part value.
+- **Safety in code:** anything mains-powered (220V) is refused before the AI is even asked.
+
+## Our fine-tuned model
+
+| | |
+|---|---|
+| Base model | YOLO11n, pre-trained on COCO |
+| Training data | 6 public [Roboflow Universe](https://universe.roboflow.com) datasets, ~7,600 labelled images, remapped onto our 18 part classes |
+| Classes | resistor, capacitor, LED, diode, transistor, IC, button, buzzer, potentiometer, LDR, battery, breadboard, Arduino, jumper wire, servo, DC motor, ultrasonic sensor, display |
+| Current live model | mAP50 **0.66** (interim export after 10 epochs; training continues — see the in-app **Model card**) |
+| Runs | In the browser via onnxruntime-web (WebGPU, WASM fallback) |
+
+Train it yourself: [`training/README.md`](training/README.md) (local on a Mac/GPU with `training/train_local.py`, or the Colab notebook). Real metrics and example predictions are written to `data/model_card.json` and shown on the in-app Model card page.
+
+## Tech stack
+
+- **Next.js 16** (App Router) · TypeScript strict · Tailwind CSS 4 · lucide icons
+- **Claude API** (`@anthropic-ai/sdk`) — structured outputs, versioned prompts in `prompts/`
+- **onnxruntime-web** — our YOLO11 detector in the browser
+- **IndexedDB** (`idb`) — local-first storage
+- **zod** — validates every data file and every AI answer
+- **Vitest** — 100+ tests (matcher, diagnosis scoring, resistor decoder, every recipe circuit checked against its schematic)
+- **Cloudflare Workers** via OpenNext — hosting
+- **Ultralytics YOLO11** + **Roboflow** — training
+
+## Getting started
 
 ```bash
-npm install                  # also copies onnxruntime-web into public/ort
-cp .env.example .env.local   # add ANTHROPIC_API_KEY
+npm install                  # also copies the ONNX runtime into public/ort
+cp .env.example .env.local   # add your ANTHROPIC_API_KEY
 npm run dev                  # http://localhost:3000
 ```
-
-Open on a phone (same Wi-Fi): `npm run dev -- -H 0.0.0.0`, then go to `http://<laptop-ip>:3000`. Camera access needs HTTPS on phones, so use the Vercel preview, or `npx next dev --experimental-https`.
-
-| Command | What it does |
-|---|---|
-| `npm test` | Unit tests: matcher, resistor decoder, marking parser, diagnosis scoring, progression, every recipe/device file, class-list sync |
-| `npm run check:data` | Validate all JSON in `data/` (also runs before every build) |
-| `npm run check:classes` | Fails if the notebooks' class lists differ from `shared/*.json` |
-| `npm run typecheck` / `npm run lint` | TypeScript strict / ESLint |
-| `npm run build` | Production build (runs both checks first) |
-| `node scripts/live-check.mjs http://localhost:3000` | Calls every Claude task with known images and checks the answers (needs the dev server and an API key; costs a few cents) |
-
-## Deploy (Cloudflare Workers) — live at https://electroquest.pages.dev
-
-`electroquest.pages.dev` is a tiny Cloudflare Pages project (`deploy/pages-proxy/`) that serves the app Worker at
-`electroquest.brkh1222.workers.dev`; both addresses work. Redeploy the proxy only if it changes:
-`cd deploy/pages-proxy && npx wrangler pages deploy public --project-name electroquest --branch main`.
-
-```bash
-npx wrangler login                                  # once
-npx wrangler secret put ANTHROPIC_API_KEY           # once, paste the key
-npm run cf:deploy                                   # build with OpenNext and deploy
-```
-
-Cloudflare limits static files to 25 MB, so the Cloudflare build loads onnxruntime-web from jsDelivr (`NEXT_PUBLIC_ORT_BASE`) instead of `public/ort/`.
-
-## Deploy (Vercel, alternative)
-
-1. Import the repo in Vercel (framework: Next.js; build command: `npm run build`).
-2. Add `ANTHROPIC_API_KEY` (and optionally `CLAUDE_MODEL_FAST`, `CLAUDE_MODEL_STRONG`) under Project → Settings → Environment Variables, or run `vercel env add ANTHROPIC_API_KEY`.
-3. Deploy. The API key is only read by `app/api/ai/route.ts` on the server and never reaches the browser.
-
-## Demo mode
-
-Open **`/?demo=1`** (turn it off with `/?demo=0`). In demo mode:
-
-- Camera screens offer **demo photos** (the parts pile and two broken remote boards), whose detections are recorded in `data/demo/fixtures.json`.
-- Every Claude call on the scripted path is **recorded** on the first successful run. If Claude or the Wi-Fi fails later, the recording is **replayed**; if there's no recording, a canned answer from `data/demo/claude-cache.json` is used.
-- All recipe levels are unlocked.
-
-Before going on stage, run the full script once with Wi-Fi so the real Claude answers get recorded. Open **Debug** (home page link → enable developer mode) to see every AI call with latency and a live/replay/canned tag, and the recorded answers.
-
-**Stage script**
 
 1. Fix → TV remote → *Not at all* → the camera opens; beside it tap IR test *no flash*, *Just changed them*, *Neither*, *Not sure* → *Continue* → skip multimeter.
 2. Open it → board photo (demo photo 1) → corroded battery contacts + cracked IR LED joint → fix plan: 500₮ vs 15,000₮ at a shop.
@@ -65,28 +89,34 @@ Before going on stage, run the full script once with Wi-Fi so the real Claude an
 4. Fix → TV remote again → … → demo photo 2 (burnt chip) → *Not worth fixing* → Salvage → parts (incl. an S8050 transistor) go to the inventory.
 5. Build → scan → demo photo (parts pile) → read values → add → "You can build: Night light…" → parts highlighted on the photo → build step by step → cover the light sensor → it turns on.
 
-## How to add a recipe (no code)
+| Command | What it does |
+|---|---|
+| `npm test` | Unit tests |
+| `npm run check:data` | Validates every recipe and device file (runs before every build) |
+| `npm run lint` / `npm run typecheck` | ESLint / TypeScript |
+| `npm run build` | Production build |
+| `node scripts/live-check.mjs http://localhost:3000` | Checks every Claude task against known images (needs an API key) |
+| `npm run cf:deploy` | Build and deploy to Cloudflare |
 
-1. Copy a similar file in `data/recipes/` and give it a new `id` (same as the file name).
-2. Edit `title`, `summary`, `what_you_learn`, `test`, `safety` (each has `mn` and `en`).
-3. `slots`: the parts it needs. Each slot has `part_type` (one of `shared/classes.json`), `quantity`, and `accept`, either a range (`"ohms": {"min": 220, "max": 1000}`) or a preset/group from `data/substitutions.json` (`"preset": "led_resistor_5v"`, `"group": "npn_small"`). `preferred` is what we suggest buying.
-4. `layout`: where every leg goes on the breadboard (`"a5"`, `"t+3"` = top plus rail, `"b-7"` = bottom minus rail). Off-board parts (battery, Arduino, servo, motor) are connected with wires to `"BAT.+"`, `"ARD.D9"`, etc.
-5. `schematic.nets`: which pins are connected (`"R1.2"`, `"LED1.A"`, `"BAT.-"`).
-6. `steps`: the text for each step, plus `add`: which components/wires are placed in that step.
-7. Run `npm run check:data`. It tells you if the layout doesn't build the schematic, a hole is used twice, an LED has no resistor, or a step forgets a part.
+## Demo mode
 
-## How to add a device profile
+Open [`/?demo=1`](https://electroquest.pages.dev/?demo=1): demo photos appear next to the camera, recorded AI answers are replayed if the Wi-Fi drops, and all project levels are unlocked. Add `?present=1` (or press **P**) for the presenter panel with the run-of-show checklist, a timer and a demo reset.
 
-Add `data/devices/<id>.json` (copy `tv_remote.json`). It needs:
+## Project structure
 
-- `causes`: each with `frequency` (prior), a `fix` plan with prices, `shop_price_mnt`, steps and safety. Mark one cause `unfixable` so the flow can end in salvage.
-- `questions`: answers with `effects` (`{"cause_id": multiplier}`; `0` rules a cause out). Use `ask_if` to ask a question only after certain answers.
-- `tests`: `ir_camera`, `multimeter_battery` (with `battery_options`) or `yes_no`.
-- `visual_checks`: how each defect type seen on the board photo moves the causes.
-- `salvage`: the parts you usually get out of it.
+```
+app/            Pages (home, fix, scan, inventory, projects, build, progress, model card, debug) + /api/ai
+components/     UI, camera, scan flow, build mode, repair flow
+lib/            Detector, diagnosis engine, matcher, Claude client, storage, i18n
+data/           Recipes, device profiles, parts catalogue, model card (JSON — editable without code)
+prompts/        Versioned Claude prompts
+training/       Training script + notebooks for the detector
+shared/         The 18-class list shared by the app and the training code
+tests/          Vitest suites
+```
 
-The device must be battery-powered (`"power": "battery"`). Then run `npm run check:data`.
+Adding a project or a device needs no code — copy a JSON file in `data/recipes/` or `data/devices/` and run `npm run check:data`; it catches miswired circuits, unsafe LED resistors and missing steps. Details in [PLAN.md](PLAN.md) and [DECISIONS.md](DECISIONS.md).
 
-## Project layout
+## Team
 
-See [PLAN.md](PLAN.md) for the file structure and milestones, [DECISIONS.md](DECISIONS.md) for the judgement calls, and [training/README.md](training/README.md) for the fine-tuned model.
+PineQuest Season 5 · Team 9.
