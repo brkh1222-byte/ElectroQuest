@@ -15,6 +15,7 @@ export const PROMPT_VERSIONS: Record<TaskName | "_system", string> = {
   read_multimeter: "v1",
   board_defects: "v1",
   golden_compare: "v1",
+  repair_advice: "v1",
   ask: "v1",
 };
 
