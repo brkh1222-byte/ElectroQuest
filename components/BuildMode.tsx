@@ -6,7 +6,8 @@ import { AppShell } from "./AppShell";
 import { AskSheet } from "./AskSheet";
 import { BreadboardSvg } from "./BreadboardSvg";
 import { PhotoView, usePhotoUrl, type OverlayBox } from "./PhotoView";
-import { Button, Card, Pill } from "./ui";
+import { ArrowLeft, ArrowRight, Check, MessageCircle, PartyPopper, Recycle } from "lucide-react";
+import { Button, Card, I, Pill } from "./ui";
 import { allSlots, recipeById, substitutions } from "@/lib/data";
 import { store, useLive, type Scan } from "@/lib/db";
 import { useI18n } from "@/lib/i18n";
@@ -68,9 +69,12 @@ export function BuildMode({ id }: { id: string }) {
   return (
     <AppShell title={tr(recipe.title)} back={`/projects/${recipe.id}`} hideNav>
       {phase === "pick" && (
-        <div className="grid gap-4">
-          <h2 className="text-2xl font-extrabold">{t("build_pick")}</h2>
-          <p className="text-muted">{t("build_pick_hint")}</p>
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
+          <div className="grid content-start gap-4">
+          <div>
+            <h2 className="text-2xl font-extrabold">{t("build_pick")}</h2>
+            <p className="text-muted">{t("build_pick_hint")}</p>
+          </div>
           {data?.scans.map((scan) =>
             scan.photos.map((p, pi) => {
               const here = picks.filter((x) => x.ref?.scanId === scan.id && x.ref.photo === pi);
@@ -78,6 +82,8 @@ export function BuildMode({ id }: { id: string }) {
               return <PickPhoto key={`${scan.id}-${pi}`} scan={scan} photo={pi} picks={here} />;
             }),
           )}
+          </div>
+          <aside className="grid content-start gap-3 lg:sticky lg:top-8">
           <Card>
             <ul className="grid gap-2">
               {picks.map((x, i) => (
@@ -101,73 +107,78 @@ export function BuildMode({ id }: { id: string }) {
             )}
           </Card>
           <Button big tone="build" onClick={() => setPhase("steps")}>
-            {t("next")} →
+            {t("next")} <I icon={ArrowRight} />
           </Button>
+          </aside>
         </div>
       )}
 
       {phase === "steps" && s && (
-        <div className="grid gap-4 pb-28">
+        <div className="grid gap-6 pb-28 lg:grid-cols-[420px_minmax(0,1fr)] lg:pb-0">
+          <div className="grid content-start gap-4 lg:sticky lg:top-8">
           <div className="flex items-center justify-between">
-            <span className="text-lg font-bold">
+            <span className="text-lg font-bold tabular-nums">
               {t("step")} {step + 1} {t("of")} {recipe.steps.length}
             </span>
             <div className="flex gap-1">
               {recipe.steps.map((_, i) => (
-                <span key={i} className={`h-2 w-5 rounded-full ${i <= step ? "bg-build" : "bg-line"}`} />
+                <span key={i} className={`h-2 w-5 rounded-full transition-colors duration-150 ${i <= step ? "bg-build" : "bg-line"}`} />
               ))}
             </div>
           </div>
           <p className="text-2xl font-semibold leading-snug">{tr(s.text)}</p>
           <PinoutNote recipe={recipe} stepAdds={s.add} picks={picks} />
-          <Card className="overflow-x-auto p-2">
-            <BreadboardSvg recipe={recipe} step={step} />
-          </Card>
           <Placements recipe={recipe} adds={s.add} />
           <Button tone="ghost" onClick={() => setAsking(true)}>
-            💬 {t("ask_step")}
+            <I icon={MessageCircle} /> {t("ask_step")}
           </Button>
-          <div className="pb-safe fixed inset-x-0 bottom-0 z-20 border-t border-line bg-surface p-3">
-            <div className="mx-auto grid max-w-xl grid-cols-2 gap-3">
+          <div className="pb-safe fixed inset-x-0 bottom-0 z-20 border-t border-line bg-surface p-3 lg:static lg:border-0 lg:bg-transparent lg:p-0">
+            <div className="mx-auto grid max-w-xl grid-cols-2 gap-3 lg:max-w-none">
               <Button big tone="ghost" onClick={() => (step === 0 ? setPhase("pick") : setStep(step - 1))}>
-                ← {t("back")}
+                <I icon={ArrowLeft} /> {t("back")}
               </Button>
               <Button big tone="build" onClick={() => (step === recipe.steps.length - 1 ? setPhase("test") : setStep(step + 1))}>
-                {t("next")} →
+                {t("next")} <I icon={ArrowRight} />
               </Button>
             </div>
           </div>
+          </div>
+          <Card className="overflow-x-auto p-3 lg:order-none">
+            <BreadboardSvg recipe={recipe} step={step} />
+          </Card>
         </div>
       )}
 
       {phase === "test" && (
-        <div className="grid gap-4">
+        <div className="grid gap-6 lg:grid-cols-[420px_minmax(0,1fr)]">
+          <div className="grid content-start gap-4">
           <h2 className="text-2xl font-extrabold">{t("test_title")}</h2>
           <p className="text-2xl leading-snug">{tr(recipe.test)}</p>
-          <Card className="overflow-x-auto p-2">
-            <BreadboardSvg recipe={recipe} />
-          </Card>
           {failed && <Card className="border-warn bg-amber-50 text-lg">{t("not_working_tips")}</Card>}
           <Button big tone="ok" onClick={finish}>
-            ✓ {t("it_works")}
+            <I icon={Check} /> {t("it_works")}
           </Button>
           <div className="grid grid-cols-2 gap-2">
             <Button tone="ghost" onClick={() => setFailed(true)}>
               {t("not_working")}
             </Button>
             <Button tone="ghost" onClick={() => setAsking(true)}>
-              💬 {t("ask_step")}
+              <I icon={MessageCircle} /> {t("ask_step")}
             </Button>
           </div>
           <Button tone="ghost" onClick={() => { setStep(0); setPhase("steps"); }}>
-            ← {t("step")} 1
+            <I icon={ArrowLeft} /> {t("step")} 1
           </Button>
+          </div>
+          <Card className="overflow-x-auto p-3">
+            <BreadboardSvg recipe={recipe} />
+          </Card>
         </div>
       )}
 
       {phase === "done" && (
-        <div className="grid gap-4 text-center">
-          <div className="text-7xl">🎉</div>
+        <div className="enter mx-auto grid max-w-md gap-4 text-center">
+          <PartyPopper aria-hidden className="mx-auto size-16 text-build" strokeWidth={2} absoluteStrokeWidth />
           <h2 className="text-3xl font-extrabold">{t("completed")}</h2>
           {newBadges.length > 0 && (
             <div className="flex flex-wrap justify-center gap-2">
@@ -178,10 +189,10 @@ export function BuildMode({ id }: { id: string }) {
               ))}
             </div>
           )}
-          <Link href="/projects" className="min-h-14 rounded-2xl bg-build p-4 text-xl font-bold text-white">
+          <Link href="/projects" className="min-h-14 rounded-2xl bg-build p-4 text-xl font-bold text-white transition-[scale] duration-150 ease-out active:scale-[0.96]">
             {t("nav_projects")}
           </Link>
-          <Link href="/progress" className="min-h-14 rounded-2xl border-2 border-line p-4 text-xl font-bold">
+          <Link href="/progress" className="min-h-14 rounded-2xl border border-transparent bg-surface p-4 text-xl font-bold shadow-[var(--shadow-border)] transition-[scale] duration-150 ease-out active:scale-[0.96]">
             {t("nav_progress")}
           </Link>
         </div>
@@ -194,7 +205,12 @@ export function BuildMode({ id }: { id: string }) {
 
 function SourceTag({ item }: { item: InventoryItem }) {
   const { t } = useI18n();
-  if (item.source === "salvaged") return <Pill tone="fix">♻ {item.from ?? t("src_salvaged")}</Pill>;
+  if (item.source === "salvaged")
+    return (
+      <Pill tone="fix">
+        <I icon={Recycle} /> {item.from ?? t("src_salvaged")}
+      </Pill>
+    );
   return <Pill>{t(item.source === "manual" ? "src_manual" : "src_scanned")}</Pill>;
 }
 
@@ -255,7 +271,7 @@ function PinoutNote({ recipe, stepAdds, picks }: { recipe: Recipe; stepAdds: str
   const key = used && Object.keys(pinouts).find((k) => used.toUpperCase().startsWith(k));
   if (!key) return null;
   return (
-    <Card className="border-build bg-teal-50 text-lg">
+    <Card className="bg-teal-50 p-5 text-lg">
       {t(pinouts[key] === "C-B-E" ? "pinout_cbe" : "pinout_ebc").replace("{pn}", used)}
     </Card>
   );

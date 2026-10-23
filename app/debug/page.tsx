@@ -49,7 +49,7 @@ export default function DebugPage() {
   };
 
   return (
-    <AppShell title={t("debug")} back="/">
+    <AppShell title={t("debug")} width="narrow">
       <Card>
         <label className="flex min-h-12 items-center justify-between gap-3 text-lg font-semibold">
           {t("dev_mode")}

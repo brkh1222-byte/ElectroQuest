@@ -45,3 +45,7 @@ next-env.d.ts
 # copied from node_modules by scripts/copy-ort.mjs
 /public/ort/
 /lib/generated/
+
+# Cloudflare build output
+/.open-next/
+/.wrangler/

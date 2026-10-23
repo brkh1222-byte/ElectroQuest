@@ -6,10 +6,10 @@ import "./globals.css";
 const noto = Noto_Sans({ variable: "--font-noto", subsets: ["latin", "cyrillic"], weight: ["400", "500", "600", "700", "800"] });
 
 export const metadata: Metadata = {
-  title: "Засвар AI",
+  title: "ElectroQuest",
   description: "Эвдэрсэн төхөөрөмжөө засаж, эд ангиас нь шинэ зүйл бүтээ. Fix broken gadgets and build with their parts.",
-  applicationName: "Засвар AI",
-  appleWebApp: { capable: true, title: "Засвар AI", statusBarStyle: "default" },
+  applicationName: "ElectroQuest",
+  appleWebApp: { capable: true, title: "ElectroQuest", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {

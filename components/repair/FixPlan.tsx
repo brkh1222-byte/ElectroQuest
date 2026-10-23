@@ -2,7 +2,8 @@
 
 import { useI18n } from "@/lib/i18n";
 import type { Cause } from "@/lib/schemas";
-import { Bullets, Card, Difficulty, Money, Pill, Section, Steps } from "../ui";
+import { Clock, Flame } from "lucide-react";
+import { Bullets, Card, Difficulty, I, Money, Pill, Section, Steps } from "../ui";
 
 export function FixPlanCard({ cause }: { cause: Cause }) {
   const { t, tr } = useI18n();
@@ -16,26 +17,30 @@ export function FixPlanCard({ cause }: { cause: Cause }) {
         <h3 className="text-2xl font-extrabold">{tr(f.summary)}</h3>
         <div className="mt-2 flex flex-wrap items-center gap-3">
           <Difficulty level={f.difficulty} />
-          <span className="text-muted">
-            ⏱ {f.time_minutes} {t("proj_minutes")}
+          <span className="inline-flex items-center gap-1 text-muted tabular-nums">
+            <I icon={Clock} /> {f.time_minutes} {t("proj_minutes")}
           </span>
-          {f.needs_soldering && <Pill tone="warn">🔥 solder</Pill>}
+          {f.needs_soldering && (
+            <Pill tone="warn">
+              <I icon={Flame} /> solder
+            </Pill>
+          )}
         </div>
         {/* The selling point: what it costs you vs. a repair shop. */}
         <div className="mt-4 grid grid-cols-3 gap-2 text-center">
-          <div className="rounded-xl bg-green-50 p-2">
+          <div className="rounded-lg bg-green-50 p-3">
             <div className="text-sm text-muted">{t("cost_you")}</div>
-            <div className="text-2xl font-extrabold text-ok">
+            <div className="text-2xl font-extrabold text-ok tabular-nums">
               <Money mnt={cost} />
             </div>
           </div>
-          <div className="rounded-xl bg-bg p-2">
+          <div className="rounded-lg bg-bg p-3">
             <div className="text-sm text-muted">{t("cost_shop")}</div>
-            <div className="text-2xl font-extrabold line-through decoration-2">
+            <div className="text-2xl font-extrabold line-through decoration-2 tabular-nums">
               <Money mnt={f.shop_price_mnt} />
             </div>
           </div>
-          <div className="rounded-xl bg-fix p-2 text-white">
+          <div className="rounded-lg bg-fix p-3 text-white">
             <div className="text-sm opacity-90">{t("you_save")}</div>
             <div className="text-2xl font-extrabold">
               <Money mnt={saved} />

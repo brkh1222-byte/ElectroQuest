@@ -8,7 +8,7 @@ import type { L } from "./schemas";
  * Content (recipes, devices) carries its own {mn, en} text and is read with `tr()`.
  */
 const mn = {
-  app_name: "Засвар AI",
+  app_name: "ElectroQuest",
   tagline: "Эвдэрсэн төхөөрөмжөө засаж, эд ангиас нь шинэ зүйл бүтээ",
   fix: "Засах",
   fix_sub: "Эвдэрсэн төхөөрөмж оношлох",
@@ -31,6 +31,11 @@ const mn = {
   loading: "Ачаалж байна…",
   close: "Хаах",
   or: "эсвэл",
+  home_how: "Яаж ажилладаг вэ",
+  home_step_fix: "AI асууж, шалгаж, зургаас гэмтлийг олж, засах аргыг заана.",
+  home_step_salvage: "Засах боломжгүй бол самбарыг зураглаад хэрэгтэй эд ангийг хадгална.",
+  home_step_build: "Эд ангиа зураглахад AI таны бүтээж болох төслийг санал болгож, алхам алхмаар заана.",
+  salvage: "Задлах",
   parts_count: "эд анги",
   projects_done: "дууссан төсөл",
   repairs_done: "засвар",
@@ -228,7 +233,7 @@ const mn = {
 export type StringKey = keyof typeof mn;
 
 const en: Record<StringKey, string> = {
-  app_name: "Zasvar AI",
+  app_name: "ElectroQuest",
   tagline: "Fix your broken gadgets, then build new things from their parts",
   fix: "Fix",
   fix_sub: "Diagnose a broken device",
@@ -251,6 +256,11 @@ const en: Record<StringKey, string> = {
   loading: "Loading…",
   close: "Close",
   or: "or",
+  home_how: "How it works",
+  home_step_fix: "AI asks, tests and spots damage in a photo, then shows you how to fix it.",
+  home_step_salvage: "Can't fix it? Photograph the board and keep the useful parts.",
+  home_step_build: "Scan your parts and AI suggests projects you can build, step by step.",
+  salvage: "Salvage",
   parts_count: "parts",
   projects_done: "projects done",
   repairs_done: "repairs",

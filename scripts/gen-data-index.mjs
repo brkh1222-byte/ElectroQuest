@@ -19,6 +19,12 @@ const lines = [
   `export const rawDevices: Record<string, unknown> = {\n${devices.map((f) => `  "${f}": ${ident("d_", f)},`).join("\n")}\n};`,
   "",
 ];
+// Prompts are bundled into the server code so the route works on platforms without a filesystem (Cloudflare Workers).
+const prompts = Object.fromEntries(
+  fs.readdirSync(path.join(root, "prompts")).filter((f) => f.endsWith(".md")).sort()
+    .map((f) => [f.replace(/\.md$/, ""), fs.readFileSync(path.join(root, "prompts", f), "utf8")]),
+);
+lines.push(`export const prompts: Record<string, string> = ${JSON.stringify(prompts, null, 2)};`, "");
 fs.mkdirSync(path.join(root, "lib/generated"), { recursive: true });
 fs.writeFileSync(path.join(root, "lib/generated/data-index.ts"), lines.join("\n"));
 console.log(`data index: ${recipes.length} recipes, ${devices.length} devices`);

@@ -1,5 +1,5 @@
 {
-  "name": "zasvar-ai",
+  "name": "electroquest",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -15,11 +15,14 @@
     "lint": "eslint",
     "typecheck": "npm run gen && next typegen && tsc --noEmit",
     "pretest": "npm run gen",
-    "test": "vitest run"
+    "test": "vitest run",
+    "cf:build": "rm -rf public/ort && npm run gen && NEXT_PUBLIC_ORT_BASE=https://cdn.jsdelivr.net/npm/onnxruntime-web@1.30.0/dist/ opennextjs-cloudflare build; node scripts/copy-ort.mjs",
+    "cf:deploy": "npm run cf:build && opennextjs-cloudflare deploy"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.1.0",
     "idb": "^8.0.4",
+    "lucide-react": "^1.61.0",
     "next": "16.4.2",
     "onnxruntime-web": "^1.30.0",
     "react": "19.3.0",
@@ -28,6 +31,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.20.13",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^24.19.2",
     "@types/react": "^19",
@@ -37,6 +41,7 @@
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
     "typescript": "^5",
-    "vitest": "^5.0.5"
+    "vitest": "^5.0.5",
+    "wrangler": "^4.151.3"
   }
 }

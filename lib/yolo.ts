@@ -17,9 +17,11 @@ let ortPromise: Promise<{ ort: Ort; backend: Backend }> | null = null;
 function loadOrt() {
   ortPromise ??= (async () => {
     const backend: Backend = typeof navigator !== "undefined" && "gpu" in navigator ? "webgpu" : "wasm";
-    const url = backend === "webgpu" ? "/ort/ort.webgpu.min.mjs" : "/ort/ort.wasm.min.mjs";
+    // Local/Vercel builds serve the runtime from /ort/; Cloudflare's 25 MB file limit means it comes from a CDN there.
+    const base = process.env.NEXT_PUBLIC_ORT_BASE || "/ort/";
+    const url = `${base}${backend === "webgpu" ? "ort.webgpu.min.mjs" : "ort.wasm.min.mjs"}`;
     const ort: Ort = await import(/* webpackIgnore: true */ /* turbopackIgnore: true */ url);
-    ort.env.wasm.wasmPaths = "/ort/";
+    ort.env.wasm.wasmPaths = base;
     ort.env.wasm.numThreads = self.crossOriginIsolated ? Math.min(4, navigator.hardwareConcurrency || 2) : 1;
     // On the WASM path run inference in a worker so the UI never freezes.
     if (backend === "wasm") ort.env.wasm.proxy = true;

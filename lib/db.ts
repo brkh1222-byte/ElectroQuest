@@ -59,7 +59,7 @@ export interface DemoCacheEntry {
   recordedAt: number;
 }
 
-interface ZasvarDB extends DBSchema {
+interface ElectroQuestDB extends DBSchema {
   inventory: { key: string; value: InventoryItem };
   scans: { key: string; value: Scan };
   repairs: { key: string; value: Repair };
@@ -71,9 +71,9 @@ interface ZasvarDB extends DBSchema {
 
 type StoreName = "inventory" | "scans" | "repairs" | "completions" | "kv" | "ailog" | "demo_cache";
 
-let dbp: Promise<IDBPDatabase<ZasvarDB>> | null = null;
+let dbp: Promise<IDBPDatabase<ElectroQuestDB>> | null = null;
 function db() {
-  dbp ??= openDB<ZasvarDB>("zasvar", 1, {
+  dbp ??= openDB<ElectroQuestDB>("electroquest", 1, {
     upgrade(d) {
       d.createObjectStore("inventory", { keyPath: "id" });
       d.createObjectStore("scans", { keyPath: "id" });
@@ -96,22 +96,22 @@ function changed(store: StoreName) {
 export const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 
 export const store = {
-  async all<S extends Exclude<StoreName, "kv">>(name: S): Promise<ZasvarDB[S]["value"][]> {
+  async all<S extends Exclude<StoreName, "kv">>(name: S): Promise<ElectroQuestDB[S]["value"][]> {
     return (await db()).getAll(name);
   },
-  async get<S extends Exclude<StoreName, "kv">>(name: S, key: ZasvarDB[S]["key"]): Promise<ZasvarDB[S]["value"] | undefined> {
+  async get<S extends Exclude<StoreName, "kv">>(name: S, key: ElectroQuestDB[S]["key"]): Promise<ElectroQuestDB[S]["value"] | undefined> {
     return (await db()).get(name, key);
   },
-  async put<S extends Exclude<StoreName, "kv">>(name: S, value: ZasvarDB[S]["value"]) {
+  async put<S extends Exclude<StoreName, "kv">>(name: S, value: ElectroQuestDB[S]["value"]) {
     await (await db()).put(name, value);
     changed(name);
   },
-  async putMany<S extends Exclude<StoreName, "kv">>(name: S, values: ZasvarDB[S]["value"][]) {
+  async putMany<S extends Exclude<StoreName, "kv">>(name: S, values: ElectroQuestDB[S]["value"][]) {
     const tx = (await db()).transaction(name, "readwrite");
     await Promise.all([...values.map((v) => tx.store.put(v)), tx.done]);
     changed(name);
   },
-  async delete<S extends Exclude<StoreName, "kv">>(name: S, key: ZasvarDB[S]["key"]) {
+  async delete<S extends Exclude<StoreName, "kv">>(name: S, key: ElectroQuestDB[S]["key"]) {
     await (await db()).delete(name, key);
     changed(name);
   },

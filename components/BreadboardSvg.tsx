@@ -77,6 +77,12 @@ export function BreadboardSvg({ recipe, step, className = "" }: { recipe: Recipe
   const win = viewWindow(recipe);
   const { pos: off, boxes } = offboardLayout(recipe, win.x0);
   const vbW = Math.max(win.x1 - win.x0, boxes.reduce((a, b) => Math.max(a, b.x + b.w + 10), 0) - win.x0);
+  // Only the columns in view are drawn as board; a fade on a cropped edge shows the board continues.
+  const bx0 = Math.max(X0 - 30, win.x0 + 4);
+  const bx1 = Math.min(W - 20, win.x0 + vbW - 4);
+  const lx = bx0 + 8;
+  const croppedL = bx0 > X0 - 30;
+  const croppedR = bx1 < W - 20;
   const placedAt = new Map<string, number>();
   recipe.steps.forEach((s, i) => s.add.forEach((a) => placedAt.set(a, i)));
   const stateOf = (id: string): State => {
@@ -120,26 +126,42 @@ export function BreadboardSvg({ recipe, step, className = "" }: { recipe: Recipe
       })}
 
       {/* the board */}
-      <rect x={X0 - 30} y={OFF} width={W - X0 + 10} height={366} rx={10} fill="#f8f7f2" stroke="#d6d3cc" strokeWidth={2} />
-      <rect x={X0 - 22} y={OFF + 172} width={W - X0 - 6} height={10} fill="#e7e5df" />
-      <line x1={X0 - 10} x2={W - 30} y1={RAIL_Y["t-"] - 9} y2={RAIL_Y["t-"] - 9} stroke="#2563eb" strokeWidth={2} />
-      <line x1={X0 - 10} x2={W - 30} y1={RAIL_Y["t+"] + 9} y2={RAIL_Y["t+"] + 9} stroke="#dc2626" strokeWidth={2} />
-      <line x1={X0 - 10} x2={W - 30} y1={RAIL_Y["b+"] - 9} y2={RAIL_Y["b+"] - 9} stroke="#dc2626" strokeWidth={2} />
-      <line x1={X0 - 10} x2={W - 30} y1={RAIL_Y["b-"] + 9} y2={RAIL_Y["b-"] + 9} stroke="#2563eb" strokeWidth={2} />
-      <text x={X0 - 24} y={RAIL_Y["t-"] + 5} fontSize={14} fontWeight={800} fill="#2563eb">−</text>
-      <text x={X0 - 24} y={RAIL_Y["t+"] + 5} fontSize={14} fontWeight={800} fill="#dc2626">+</text>
-      <text x={X0 - 24} y={RAIL_Y["b+"] + 5} fontSize={14} fontWeight={800} fill="#dc2626">+</text>
-      <text x={X0 - 24} y={RAIL_Y["b-"] + 5} fontSize={14} fontWeight={800} fill="#2563eb">−</text>
-      {[...ROWS_TOP, ...ROWS_BOTTOM].map((r) => (
-        <text key={r} x={X0 - 20} y={rowY(r) + 4} fontSize={11} fill="#6b7280">
-          {r}
-        </text>
-      ))}
-      {[1, 5, 10, 15, 20, 25, 30].map((c) => (
-        <text key={c} x={colX(c)} y={OFF + 62} fontSize={11} fill="#6b7280" textAnchor="middle">
-          {c}
-        </text>
-      ))}
+      {(() => {
+        return (
+          <g>
+            <rect x={bx0} y={OFF} width={bx1 - bx0} height={366} rx={10} fill="#f8f7f2" stroke="#d6d3cc" strokeWidth={2} />
+            <rect x={bx0 + 8} y={OFF + 172} width={bx1 - bx0 - 16} height={10} fill="#e7e5df" />
+            {(["t-", "t+", "b+", "b-"] as const).map((r) => (
+              <line key={r} x1={lx + 12} x2={bx1 - 10} y1={RAIL_Y[r] + (r === "t-" || r === "b+" ? -9 : 9)} y2={RAIL_Y[r] + (r === "t-" || r === "b+" ? -9 : 9)} stroke={r.endsWith("+") ? "#dc2626" : "#2563eb"} strokeWidth={2} />
+            ))}
+            {(["t-", "t+", "b+", "b-"] as const).map((r) => (
+              <text key={r} x={lx - 2} y={RAIL_Y[r] + 5} fontSize={14} fontWeight={800} fill={r.endsWith("+") ? "#dc2626" : "#2563eb"}>
+                {r.endsWith("+") ? "+" : "−"}
+              </text>
+            ))}
+            {[...ROWS_TOP, ...ROWS_BOTTOM].map((r) => (
+              <text key={r} x={lx} y={rowY(r) + 4} fontSize={11} fill="#6b7280">
+                {r}
+              </text>
+            ))}
+            {[1, 5, 10, 15, 20, 25, 30].filter((c) => colX(c) > lx + 10 && colX(c) < bx1).map((c) => (
+              <text key={c} x={colX(c)} y={OFF + 62} fontSize={11} fill="#6b7280" textAnchor="middle">
+                {c}
+              </text>
+            ))}
+            <defs>
+              <linearGradient id="fadeR" x1="0" x2="1">
+                <stop offset="0" stopColor="#fff" stopOpacity="0" />
+                <stop offset="1" stopColor="#fff" stopOpacity="1" />
+              </linearGradient>
+              <linearGradient id="fadeL" x1="1" x2="0">
+                <stop offset="0" stopColor="#fff" stopOpacity="0" />
+                <stop offset="1" stopColor="#fff" stopOpacity="1" />
+              </linearGradient>
+            </defs>
+          </g>
+        );
+      })()}
       {holes}
 
       {/* components */}
@@ -174,6 +196,8 @@ export function BreadboardSvg({ recipe, step, className = "" }: { recipe: Recipe
           </g>
         );
       })}
+      {croppedR && <rect x={bx1 - 40} y={OFF - 2} width={44} height={370} fill="url(#fadeR)" />}
+      {croppedL && <rect x={bx0 - 4} y={OFF - 2} width={44} height={370} fill="url(#fadeL)" />}
       <defs>
         <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
           <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#facc15" floodOpacity="1" />
@@ -354,7 +378,7 @@ function Part({ c, pts, spec }: { c: LayoutComponent; pts: Record<string, Pt>; s
             </g>
           ))}
           <text x={(pts.A.x + pts.B.x) / 2} y={pts.A.y - 40} fontSize={11} fontWeight={800} textAnchor="middle" fill="#b45309">
-            👆
+            touch
           </text>
         </g>
       );

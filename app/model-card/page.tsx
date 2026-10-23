@@ -33,7 +33,7 @@ export default function ModelCardPage() {
   const c = modelCard;
   const L = (x: { mn: string; en: string }) => x[lang];
   return (
-    <AppShell title={t("model_card")} back="/">
+    <AppShell title={t("model_card")}>
       <p className="text-lg text-muted">{t("model_card_sub")}</p>
       {c.status === "not_trained" && <Card className="mt-3 border-warn bg-amber-50 font-semibold">{L(T.not_trained)}</Card>}
 
@@ -47,6 +47,8 @@ export default function ModelCardPage() {
         </div>
       </Card>
 
+      <div className="grid gap-x-8 lg:grid-cols-2">
+      <div>
       <Section title={L(T.how)}>
         <Card>
           <ol className="list-decimal space-y-1 pl-5">
@@ -82,6 +84,8 @@ export default function ModelCardPage() {
         </Card>
       </Section>
 
+      </div>
+      <div>
       <Section title={L(T.metrics)}>
         <div className="grid grid-cols-2 gap-2">
           {(
@@ -121,13 +125,16 @@ export default function ModelCardPage() {
         </Card>
       </Section>
 
+      </div>
+      </div>
+
       {c.examples.length > 0 && (
         <Section title={L(T.examples)}>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             {c.examples.map((e) => (
               <figure key={e.image}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={e.image} alt={e.caption} className="w-full rounded-xl" />
+                <img src={e.image} alt={e.caption} className="w-full rounded-2xl outline outline-1 -outline-offset-1 outline-black/10" />
                 <figcaption className="text-sm text-muted">{e.caption}</figcaption>
               </figure>
             ))}

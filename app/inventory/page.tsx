@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { ValuePicker } from "@/components/ValuePicker";
-import { Button, Card, LinkButton, Pill } from "@/components/ui";
+import { ArrowRight, Camera, Minus, Plus } from "lucide-react";
+import { Button, I, LinkButton, Pill, Sheet } from "@/components/ui";
 import { catalogue } from "@/lib/data";
 import { store, uid, useLive } from "@/lib/db";
 import { useI18n, type StringKey } from "@/lib/i18n";
@@ -48,17 +49,18 @@ export default function InventoryPage() {
 
   return (
     <AppShell title={t("inv_title")}>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-2 sm:flex">
         <LinkButton href="/scan" tone="build">
-          📷 {t("inv_scan")}
+          <I icon={Camera} /> {t("inv_scan")}
         </LinkButton>
         <Button tone="ghost" onClick={() => setAdding(true)}>
-          ＋ {t("inv_add")}
+          <I icon={Plus} /> {t("inv_add")}
         </Button>
       </div>
 
       {items && items.length === 0 && <p className="mt-6 text-lg text-muted">{t("inv_empty")}</p>}
 
+      <div className="mt-2 grid gap-x-6 lg:grid-cols-2">
       {groups.map((g) => (
         <section key={g.type} className="mt-5">
           <h2 className="mb-2 text-lg font-bold">
@@ -66,18 +68,18 @@ export default function InventoryPage() {
           </h2>
           <ul className="grid gap-2">
             {g.items.map((i) => (
-              <li key={i.id} className="rounded-2xl border border-line bg-surface p-3">
+              <li key={i.id} className="rounded-3xl border border-transparent bg-surface p-4 shadow-[var(--shadow-border)]">
                 <div className="flex items-center gap-2">
                   <button className="min-h-12 flex-1 text-left text-lg font-semibold" onClick={() => setEditing(i)}>
                     {specLabel(i.spec, lang) || partName(i.part_type, lang)} {i.uncertain && <Pill tone="warn">? {t("uncertain")}</Pill>}
                   </button>
                   <div className="flex items-center gap-1">
-                    <Button tone="ghost" className="min-w-12" onClick={() => setQty(i, i.quantity - 1)} aria-label="−">
-                      −
+                    <Button tone="ghost" size="sm" className="min-w-10 px-0" onClick={() => setQty(i, i.quantity - 1)} aria-label="−">
+                      <I icon={Minus} />
                     </Button>
                     <span className="w-8 text-center text-xl font-bold tabular-nums">{i.quantity}</span>
-                    <Button tone="ghost" className="min-w-12" onClick={() => setQty(i, i.quantity + 1)} aria-label="+">
-                      +
+                    <Button tone="ghost" size="sm" className="min-w-10 px-0" onClick={() => setQty(i, i.quantity + 1)} aria-label="+">
+                      <I icon={Plus} />
                     </Button>
                   </div>
                 </div>
@@ -94,6 +96,7 @@ export default function InventoryPage() {
           </ul>
         </section>
       ))}
+      </div>
 
       {editing && editing.id !== "__new" && (
         <ValuePicker
@@ -108,23 +111,19 @@ export default function InventoryPage() {
       )}
 
       {adding && (
-        <div className="fixed inset-0 z-30 flex items-end bg-black/40" onClick={() => setAdding(false)}>
-          <Card className="pb-safe mx-auto w-full max-w-xl rounded-b-none">
-            <div onClick={(e) => e.stopPropagation()}>
-              <h3 className="mb-2 text-lg font-bold">{t("inv_part_type")}</h3>
-              <div className="grid max-h-[45vh] grid-cols-2 gap-2 overflow-y-auto">
-                {PART_TYPES.map((p) => (
-                  <Button key={p} tone={newType === p ? "build" : "ghost"} onClick={() => setNewType(p)}>
-                    {partName(p, lang)}
-                  </Button>
-                ))}
-              </div>
-              <Button big tone="plain" className="mt-3 w-full" onClick={nextAfterType}>
-                {t("next")} →
+        <Sheet onClose={() => setAdding(false)} wide>
+          <h3 className="mb-3 text-lg font-bold">{t("inv_part_type")}</h3>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {PART_TYPES.map((p) => (
+              <Button key={p} size="sm" tone={newType === p ? "build" : "ghost"} onClick={() => setNewType(p)}>
+                {partName(p, lang)}
               </Button>
-            </div>
-          </Card>
-        </div>
+            ))}
+          </div>
+          <Button big tone="plain" className="mt-4 w-full" onClick={nextAfterType}>
+            {t("next")} <I icon={ArrowRight} />
+          </Button>
+        </Sheet>
       )}
       {editing?.id === "__new" && (
         <ValuePicker partType={editing.part_type} onClose={() => setEditing(null)} onPick={async (spec) => { await addManual(spec); setEditing(null); }} />

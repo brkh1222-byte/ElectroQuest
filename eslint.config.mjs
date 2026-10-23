@@ -15,6 +15,8 @@ const eslintConfig = defineConfig([
     // Copied third-party runtime and generated code:
     "public/ort/**",
     "lib/generated/**",
+    ".open-next/**",
+    ".wrangler/**",
   ]),
 ]);
 

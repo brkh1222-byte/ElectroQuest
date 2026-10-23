@@ -8,7 +8,8 @@ import { useI18n } from "@/lib/i18n";
 import { loadImage, normalizePhoto, toDataUrl } from "@/lib/image";
 import type { GuidedTest } from "@/lib/schemas";
 import { Camera } from "../Camera";
-import { Button, Card, ErrorBox, Spinner, Steps } from "../ui";
+import { ArrowRight, Camera as CameraIcon, RotateCcw } from "lucide-react";
+import { Button, Card, ErrorBox, I, Spinner, Steps } from "../ui";
 
 export function TestCard({ test, onOutcome }: { test: GuidedTest; onOutcome: (outcomeId: string) => void }) {
   const { tr, t } = useI18n();
@@ -46,7 +47,7 @@ function IrCamera() {
   if (!open)
     return (
       <Button big tone="fix" onClick={() => setOpen(true)}>
-        📷 {t("ir_open_camera")}
+        <I icon={CameraIcon} /> {t("ir_open_camera")}
       </Button>
     );
   return <Camera facing="user" allowFlip />;
@@ -137,10 +138,10 @@ function Multimeter({ test, onOutcome }: { test: GuidedTest; onOutcome: (id: str
           {reading.notDc && <div className="mt-1 text-warn">{t("mm_not_dc")}</div>}
           <div className="mt-3 grid grid-cols-2 gap-2">
             <Button tone="ghost" onClick={() => setReading(null)}>
-              ↻ {t("retry")}
+              <I icon={RotateCcw} /> {t("retry")}
             </Button>
             <Button tone="plain" onClick={() => onOutcome(verdict === "low" ? "low" : verdict === "ok" ? "ok" : "skip")}>
-              {t("next")} →
+              {t("next")} <I icon={ArrowRight} />
             </Button>
           </div>
         </Card>
