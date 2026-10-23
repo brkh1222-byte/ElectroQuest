@@ -46,7 +46,7 @@ let pass = 0;
 for (const [task, input, check, expect] of cases) {
   for (const lang of task === "ask" || task === "interpret_answer" || task === "board_defects" ? ["mn"] : ["en"]) {
     const t0 = Date.now();
-    const r = await fetch(`${BASE}/api/ai`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ task, lang, input }) }).then((r) => r.json());
+    const r = await fetch(`${BASE}/api/ai`, { method: "POST", headers: { "content-type": "application/json", origin: BASE }, body: JSON.stringify({ task, lang, input }) }).then((r) => r.json());
     const ok = r.ok && check(r.data);
     if (ok) pass++;
     console.log(`${ok ? "✓" : "✗"} ${task.padEnd(16)} ${String(Date.now() - t0).padStart(6)}ms  ${r.model ?? ""}  expect: ${expect ?? "ok"}`);
