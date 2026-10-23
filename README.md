@@ -59,7 +59,10 @@ flowchart LR
 | Base model | YOLO11n, pre-trained on COCO |
 | Training data | 6 public [Roboflow Universe](https://universe.roboflow.com) datasets, ~7,600 labelled images, remapped onto our 18 part classes |
 | Classes | resistor, capacitor, LED, diode, transistor, IC, button, buzzer, potentiometer, LDR, battery, breadboard, Arduino, jumper wire, servo, DC motor, ultrasonic sensor, display |
-| Current live model | mAP50 **0.66** (interim export after 10 epochs; training continues — see the in-app **Model card**) |
+| Training | 60 epochs on a MacBook M4 GPU, 640 px, AdamW, mosaic augmentation |
+| Results | mAP50 **0.79**, mAP50-95 0.50, precision 0.85, recall 0.76 on 1,384 validation photos (in-app **Model card**) |
+| Strongest classes | breadboard 0.97, battery 0.96, resistor 0.93, jumper wire 0.82 |
+| Weakest classes | LDR 0.18 (few public photos): next we fine-tune on our own kit photos (`training/specialize.py`) |
 | Runs | In the browser via onnxruntime-web (WebGPU, WASM fallback) |
 
 Train it yourself: [`training/README.md`](training/README.md) (local on a Mac/GPU with `training/train_local.py`, or the Colab notebook). Real metrics and example predictions are written to `data/model_card.json` and shown on the in-app Model card page.
