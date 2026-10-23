@@ -75,8 +75,8 @@ describe("recipe files", () => {
 });
 
 describe("device files", () => {
-  it("has the three MVP devices, all battery powered", () => {
-    expect(devices.map((d) => d.id).sort()).toEqual(["game_controller", "garage_remote", "tv_remote"]);
+  it("has the supported devices, all battery powered", () => {
+    expect(devices.map((d) => d.id).sort()).toEqual(["bluetooth_speaker", "game_controller", "garage_remote", "tv_remote"]);
     for (const d of devices) expect(d.power).toBe("battery");
   });
 
