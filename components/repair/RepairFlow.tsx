@@ -20,6 +20,7 @@ import { ScanFlow } from "../ScanFlow";
 import { ArrowLeft, ArrowRight, Camera, Check, MessageCircle, PartyPopper, Recycle, TriangleAlert, X } from "lucide-react";
 import { Bar, Button, Card, ErrorBox, I, Pill, Section, Spinner, Steps } from "../ui";
 import { BoardInspect, type BoardPhoto } from "./BoardInspect";
+import { AiAdvice } from "./AiAdvice";
 import { FixPlanCard } from "./FixPlan";
 import { TestCard } from "./Tests";
 
@@ -44,6 +45,7 @@ export function RepairFlow({ deviceId }: { deviceId: string }) {
   // Undo restores the phase too, so "back" from the first test returns to the camera screen.
   const [history, setHistory] = useState<{ state: DiagnosisState; phase: Phase }[]>([]);
   const [board, setBoard] = useState<BoardPhoto | null>(null);
+  const [findingLabels, setFindingLabels] = useState<{ label: string; confidence: number }[]>([]);
   const [asking, setAsking] = useState(false);
   const [salvaged, setSalvaged] = useState<{ before: Set<string>; items: InventoryItem[] } | null>(null);
 
@@ -214,6 +216,7 @@ export function RepairFlow({ deviceId }: { deviceId: string }) {
           device={device}
           onDone={(photo, findings: DefectFinding[]) => {
             setBoard(photo);
+            setFindingLabels(findings.map((f) => ({ label: f.label, confidence: f.confidence })));
             update((s) => ({
               ...s,
               findings: findings.filter((f) => f.defect !== "other").map((f) => ({ defect: f.defect as DefectType, confidence: f.confidence })),
@@ -236,6 +239,7 @@ export function RepairFlow({ deviceId }: { deviceId: string }) {
             </Card>
           ) : (
             <>
+              <AiAdvice device={device} state={state} ranked={ranked} findingLabels={findingLabels} photoChecked={!!board} />
               <Card>
                 <div className="text-sm font-semibold text-muted">{t("likely_cause")}</div>
                 <div className="flex items-baseline justify-between gap-2">
