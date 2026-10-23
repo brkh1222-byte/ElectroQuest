@@ -102,6 +102,25 @@ export const TASKS = {
       summary: z.string(),
     }),
   },
+  repair_advice: {
+    tier: "fast",
+    input: z.object({
+      device: z.string(),
+      answers: z.array(z.object({ question: z.string(), answer: z.string() })),
+      tests: z.array(z.object({ test: z.string(), result: z.string() })),
+      photo_findings: z.array(z.object({ label: z.string(), confidence: z.number() })),
+      photo_checked: z.boolean(),
+      causes: z.array(z.object({ name: z.string(), probability: z.number(), why: z.string(), fix: z.string(), steps: z.array(z.string()) })),
+    }),
+    output: z.object({
+      headline: z.string(),
+      reasoning: z.string(),
+      fix_first: z.string(),
+      steps: z.array(z.string()),
+      if_that_fails: z.string(),
+      safety: z.string(),
+    }),
+  },
   ask: {
     tier: "fast",
     input: z.object({
