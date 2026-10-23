@@ -38,106 +38,106 @@
         "images": 7
       }
     ],
-    "own_photos": 0,
+    "own_photos": 54,
     "train_images": 6203,
     "val_images": 1384
   },
   "metrics": {
-    "map50": 0.7913034468190588,
-    "map50_95": 0.503868180743509,
-    "precision": 0.8474325718315208,
-    "recall": 0.7626306008538563
+    "map50": 0.5651799965540318,
+    "map50_95": 0.3241692409225896,
+    "precision": 0.6549135531810578,
+    "recall": 0.5303011596235992
   },
   "per_class": [
     {
       "name": "resistor",
       "train_boxes": 3623,
-      "map50": 0.9278566543519662
+      "map50": 0.8240478290077667
     },
     {
       "name": "capacitor",
       "train_boxes": 3507,
-      "map50": 0.8739182876833741
+      "map50": 0.6420993693537845
     },
     {
       "name": "led",
       "train_boxes": 446,
-      "map50": 0.667510262162817
+      "map50": 0.3223627800866822
     },
     {
       "name": "diode",
       "train_boxes": 471,
-      "map50": 0.7526702346100582
+      "map50": 0.5745077338957263
     },
     {
       "name": "transistor",
       "train_boxes": 168,
-      "map50": 0.6898728935174772
+      "map50": 0.5734598008492368
     },
     {
       "name": "ic",
       "train_boxes": 2739,
-      "map50": 0.9349073676029288
+      "map50": 0.2268172042272128
     },
     {
       "name": "button",
       "train_boxes": 3656,
-      "map50": 0.8295017285242868
+      "map50": 0.3759505701115875
     },
     {
       "name": "buzzer",
       "train_boxes": 416,
-      "map50": 0.817326357737408
+      "map50": 0.3769589750555565
     },
     {
       "name": "potentiometer",
       "train_boxes": 309,
-      "map50": 0.8366279941642205
+      "map50": 0.5147479018460285
     },
     {
       "name": "ldr",
       "train_boxes": 231,
-      "map50": 0.17922823521625722
+      "map50": 0.07755852428638112
     },
     {
       "name": "battery",
       "train_boxes": 369,
-      "map50": 0.9641860105905061
+      "map50": 0.8087465720493174
     },
     {
       "name": "breadboard",
       "train_boxes": 262,
-      "map50": 0.974870015559954
+      "map50": 0.9230618798652215
     },
     {
       "name": "arduino",
       "train_boxes": 776,
-      "map50": 0.9662150082269164
+      "map50": 0.8974675138372366
     },
     {
       "name": "jumper_wire",
       "train_boxes": 83,
-      "map50": 0.8226428571428572
+      "map50": 0.921222222222222
     },
     {
       "name": "servo",
       "train_boxes": 166,
-      "map50": 0.28569317959263607
+      "map50": 0.1512112308592891
     },
     {
       "name": "dc_motor",
       "train_boxes": 67,
-      "map50": 0.8614080954693455
+      "map50": 0.6479982913301728
     },
     {
       "name": "ultrasonic_sensor",
       "train_boxes": 324,
-      "map50": 0.914226611777168
+      "map50": 0.5327240054433434
     },
     {
       "name": "display",
       "train_boxes": 622,
-      "map50": 0.9448002488128815
+      "map50": 0.7822975336458065
     }
   ],
   "examples": [
@@ -151,11 +151,11 @@
     },
     {
       "image": "/models/examples/example_2.jpg",
-      "caption": "1 parts found"
+      "caption": "0 parts found"
     },
     {
       "image": "/models/examples/example_3.jpg",
-      "caption": "2 parts found"
+      "caption": "3 parts found"
     }
   ]
 }

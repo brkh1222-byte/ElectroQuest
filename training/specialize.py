@@ -8,6 +8,7 @@ Our photos are oversampled and mixed with a replay set of public images of the s
 gets very good at our parts without forgetting the rest.
 """
 
+import os
 import json
 import random
 import shutil
@@ -22,7 +23,7 @@ WORK = base.WORK
 OWN_RAW = WORK / "own_raw"          # resized copies of the photos + our model's pre-labels
 OWN = WORK / "own"                  # reviewed labels downloaded from Roboflow (YOLO format)
 SPEC = WORK / "specialized"         # merged training set for this stage
-PROJECT = "electroquest-demo-kit"
+PROJECT = os.environ.get("RF_PROJECT", "electroquest-demo-kit")
 DEMO_CLASSES = ["resistor", "led", "transistor", "ldr", "battery", "breadboard", "jumper_wire"]
 
 
@@ -92,17 +93,27 @@ def build(oversample=5, replay=600, seed=0):
     names = yaml.safe_load(open(OWN / "data.yaml"))["names"]
     if isinstance(names, dict):
         names = [names[k] for k in sorted(names)]
-    remap = {i: base.CLASSES.index(n) if n in base.CLASSES else (base.CLASSES.index(c) if (c := base.to_canonical(n)) else None) for i, n in enumerate(names)}
+    # Only our 7 demo classes count: leftover boxes from the first noisy upload (capacitor, diode, display) are dropped,
+    # and "battery clip" is mapped to battery.
+    typos = {"jumping wire": "jumper_wire", "lrd": "ldr"}  # hand-typed class names in Roboflow
+    canon = {i: n if n in base.CLASSES else typos.get(n) or base.to_canonical(n) for i, n in enumerate(names)}
+    remap = {i: base.CLASSES.index(c) if c in DEMO_CLASSES else None for i, c in canon.items()}
     own = [(img, Path(str(img.parent).replace("images", "labels")) / (img.stem + ".txt")) for img in OWN.rglob("*.jpg") if "images" in img.parts]
     own = [(i, l) for i, l in own if l.exists()]
-    random.shuffle(own)
-    n_val = max(4, len(own) // 6)
-    for k, (img, lbl) in enumerate(own):
-        lines = []
+
+    def kept_lines(lbl):
+        out = []
         for line in lbl.read_text().splitlines():
             parts = line.split()
             if len(parts) == 5 and remap.get(int(parts[0])) is not None:
-                lines.append(" ".join([str(remap[int(parts[0])])] + parts[1:]))
+                out.append(" ".join([str(remap[int(parts[0])])] + parts[1:]))
+        return out
+
+    # Unlabelled photos would teach "no parts here", so only photos with at least one box are used.
+    own = [(img, lines) for img, lbl in own if (lines := kept_lines(lbl))]
+    random.shuffle(own)
+    n_val = max(4, len(own) // 6)
+    for k, (img, lines) in enumerate(own):
         split = "valid" if k < n_val else "train"
         copies = 1 if split == "valid" else oversample
         for c in range(copies):
