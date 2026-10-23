@@ -49,3 +49,9 @@ next-env.d.ts
 # Cloudflare build output
 /.open-next/
 /.wrangler/
+
+# local training env and data
+/training/.venv/
+/training/work/
+/training/__pycache__/
+/training/*.pt

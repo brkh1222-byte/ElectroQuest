@@ -7,6 +7,9 @@ const src = path.join(process.cwd(), "node_modules/onnxruntime-web/dist");
 const dst = path.join(process.cwd(), "public/ort");
 const files = [
   "ort.webgpu.min.mjs",
+  // The WebGPU build loads the asyncify variant in onnxruntime-web 1.2x+; jsep is kept for older builds.
+  "ort-wasm-simd-threaded.asyncify.mjs",
+  "ort-wasm-simd-threaded.asyncify.wasm",
   "ort-wasm-simd-threaded.jsep.mjs",
   "ort-wasm-simd-threaded.jsep.wasm",
   "ort.wasm.min.mjs",
