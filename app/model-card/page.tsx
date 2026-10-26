@@ -23,7 +23,7 @@ const T = {
   examples: { mn: "Жишээ таамаглал", en: "Example predictions" },
   classes: { mn: "Ангиллууд", en: "Classes" },
   defects: { mn: "Хоёр дахь загвар: самбарын гэмтэл", en: "Second model: board defects" },
-  defects_body: { mn: "Төлөвлөгдсөн. Одоогоор гэмтлийг Claude vision илрүүлдэг; defects.onnx бэлэн болмогц апп автоматаар шилжинэ.", en: "Planned. Defects are found with Claude vision for now; the app switches automatically once defects.onnx exists." },
+  defects_body: { mn: "Төлөвлөгдсөн. Одоогоор гэмтлийг Gemini vision илрүүлдэг; defects.onnx бэлэн болмогц апп автоматаар шилжинэ.", en: "Planned. Defects are found with Gemini vision for now; the app switches automatically once defects.onnx exists." },
 };
 
 const fmt = (n: number | null) => (n === null ? "—" : n.toFixed(3));

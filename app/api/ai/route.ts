@@ -1,5 +1,5 @@
 import { AiRequest, TASKS, type AiResponse, type TaskName } from "@/lib/ai-tasks";
-import { runTask, TaskError } from "@/lib/claude";
+import { runTask, TaskError } from "@/lib/ai";
 import { allowRequest, isSameSite } from "@/lib/rate-limit";
 
 export const maxDuration = 60;
@@ -9,7 +9,7 @@ export async function POST(request: Request) {
   const reply = (body: Omit<AiResponse, "latency_ms">, status = 200) =>
     Response.json({ ...body, latency_ms: Date.now() - started } satisfies AiResponse, { status });
 
-  // Every call spends Claude credits: only our own pages may call, and only so often per visitor.
+  // Every call spends the AI quota: only our own pages may call, and only so often per visitor.
   if (!isSameSite(request)) return reply({ ok: false, error: "Requests must come from the ElectroQuest app." }, 403);
   if (!(await allowRequest(request))) {
     return Response.json(

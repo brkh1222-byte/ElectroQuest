@@ -3,21 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import type { BetaContentBlockParam, BetaMessageParam } from "@anthropic-ai/sdk/resources/beta/messages/messages";
 import { TASKS, type Lang, type TaskName } from "./ai-tasks";
-import { prompts } from "./generated/data-index";
-
-/** Prompt file versions. Bump a version by adding prompts/<task>.v2.md and changing it here. */
-export const PROMPT_VERSIONS: Record<TaskName | "_system", string> = {
-  _system: "v2",
-  ping: "v1",
-  read_marking: "v1",
-  resistor_bands: "v1",
-  interpret_answer: "v1",
-  read_multimeter: "v1",
-  board_defects: "v1",
-  golden_compare: "v1",
-  repair_advice: "v1",
-  ask: "v1",
-};
+import { buildParts, parseImage, RETRY_MESSAGE, systemPrompt, TaskError } from "./ai-prompt";
 
 const MODELS = {
   fast: process.env.CLAUDE_MODEL_FAST || "claude-haiku-5-5",
@@ -37,52 +23,12 @@ function getClient() {
   return client;
 }
 
-async function loadPrompt(name: string, version: string): Promise<string> {
-  const text = prompts[`${name}.${version}`];
-  if (text === undefined) throw new Error(`missing prompt prompts/${name}.${version}.md`);
-  return text;
-}
-
-const LANG_NAME: Record<Lang, string> = { mn: "Mongolian (Cyrillic)", en: "English" };
-
-function fill(template: string, vars: Record<string, string>) {
-  return template.replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k] ?? "");
-}
-
-function imageBlock(dataUrl: string): BetaContentBlockParam {
-  const m = /^data:(image\/(?:jpeg|png|webp|gif));base64,(.*)$/s.exec(dataUrl);
-  if (!m) throw new Error("bad image data");
-  return {
-    type: "image",
-    source: { type: "base64", media_type: m[1] as "image/jpeg" | "image/png" | "image/webp" | "image/gif", data: m[2] },
-  };
-}
-
-/** Turn a validated task input into the user message content. Images go first, then a JSON block of the rest. */
-function buildContent(task: TaskName, input: Record<string, unknown>): BetaContentBlockParam[] {
-  const blocks: BetaContentBlockParam[] = [];
-  const rest: Record<string, unknown> = {};
-  for (const [k, v] of Object.entries(input)) {
-    if (typeof v === "string" && v.startsWith("data:image/")) {
-      blocks.push({ type: "text", text: `Image "${k}":` });
-      blocks.push(imageBlock(v));
-    } else if (task === "ask" && k === "history") {
-      // history is sent as real turns, see below
-    } else {
-      rest[k] = v;
-    }
-  }
-  blocks.push({ type: "text", text: "Input:\n" + JSON.stringify(rest, null, 2) });
-  return blocks;
-}
-
-export class TaskError extends Error {
-  constructor(
-    message: string,
-    public status = 500,
-  ) {
-    super(message);
-  }
+function toBlocks(task: TaskName, input: Record<string, unknown>): BetaContentBlockParam[] {
+  return buildParts(task, input).map((p) => {
+    if (p.kind === "text") return { type: "text", text: p.text };
+    const { mediaType, data } = parseImage(p.dataUrl);
+    return { type: "image", source: { type: "base64", media_type: mediaType, data } };
+  });
 }
 
 export async function runTask(task: TaskName, lang: Lang, rawInput: unknown) {
@@ -91,10 +37,7 @@ export async function runTask(task: TaskName, lang: Lang, rawInput: unknown) {
   if (!parsedInput.success) throw new TaskError(`invalid input: ${parsedInput.error.message}`, 400);
 
   const input = parsedInput.data as Record<string, unknown>;
-  const system = fill(
-    (await loadPrompt("_system", PROMPT_VERSIONS._system)) + "\n\n" + (await loadPrompt(task, PROMPT_VERSIONS[task])),
-    { lang: LANG_NAME[lang] },
-  );
+  const system = systemPrompt(task, lang);
   const model = MODELS[def.tier];
   const messages: BetaMessageParam[] = [];
   if (task === "ask") {
@@ -102,7 +45,7 @@ export async function runTask(task: TaskName, lang: Lang, rawInput: unknown) {
       messages.push({ role: h.role, content: h.text });
     }
   }
-  messages.push({ role: "user", content: buildContent(task, input) });
+  messages.push({ role: "user", content: toBlocks(task, input) });
 
   let lastError = "";
   // Ask once; if the JSON fails validation, ask again once with the error, then give up.
@@ -114,7 +57,7 @@ export async function runTask(task: TaskName, lang: Lang, rawInput: unknown) {
             ...messages,
             {
               role: "user",
-              content: `Your previous answer did not match the required JSON schema (${lastError}). Reply again with valid JSON only.`,
+              content: RETRY_MESSAGE(lastError),
             },
           ];
     const fallback = SUPPORTS_FALLBACK.test(model)

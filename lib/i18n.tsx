@@ -230,7 +230,7 @@ const mn = {
   swollen_first: "Батарей товойсон тул ЗОГС: ашиглахгүй, цэнэглэхгүй, дарахгүй. Батарейг солих шаардлагатай — итгэлгүй бол засварын газар өгнө.",
   swollen_safety: "Товойсон литийн батарейг бүү цоол, бүү цэнэглэ; төмөр биш саванд хийж, батарей хүлээн авах цэгт өгнө.",
   ai_advice_loading: "Хариулт, шалгалт, зургийг нэгтгэж байна…",
-  ai_offline: "Claude-тэй холбогдож чадсангүй. Интернэтээ шалгаад дахин оролдоно уу.",
+  ai_offline: "AI-тай холбогдож чадсангүй. Интернэтээ шалгаад дахин оролдоно уу.",
   ai_error: "Алдаа гарлаа",
   ai_not_sure: "Эргэлзээтэй",
   // model card / debug
@@ -458,7 +458,7 @@ const en: Record<StringKey, string> = {
   swollen_first: "The battery is swollen, so STOP: don't use, charge or press it. It must be replaced — if you're unsure, take it to a repair shop.",
   swollen_safety: "Never puncture or charge a swollen lithium battery; put it in a non-metal container and take it to a battery drop-off.",
   ai_advice_loading: "Combining your answers, the tests and the photo…",
-  ai_offline: "Couldn't reach Claude. Check your internet and try again.",
+  ai_offline: "Couldn't reach the AI. Check your internet and try again.",
   ai_error: "Something went wrong",
   ai_not_sure: "Not sure",
   model_card: "Model card",
