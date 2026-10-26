@@ -1,6 +1,6 @@
-// Live check of every Claude task against known images (run with the dev server up):
+// Live check of every AI task against known images (run with the dev server up):
 //   node scripts/live-check.mjs [baseUrl]
-// Uses the demo images, so the expected answers are known. Costs a few cents per run.
+// Uses the demo images, so the expected answers are known. Uses the Gemini free tier (or a few cents of Claude credit with AI_PROVIDER=claude).
 import fs from "node:fs";
 import sharp from "sharp";
 
